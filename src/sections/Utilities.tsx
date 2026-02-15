@@ -2,8 +2,10 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight, Bell, Shield, ExternalLink } from 'lucide-react';
 import { DiscordMockup, DiscordMessage, DiscordEmbed } from '@/components/DiscordMockup';
+import { useI18n } from '@/lib/i18n';
 
 export function Utilities() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -19,25 +21,22 @@ export function Utilities() {
             className="space-y-6 order-2 lg:order-1"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              Utilities
+              {t('utilities.title')}
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Moxi can perform automatic and entertainment tasks for your
-              server.
+              {t('utilities.description1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Are you anxious for the next episode of your favorite anime? Moxi
-              can notify you when it comes out.
+              {t('utilities.description2')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Auto posting waifus, anime notifications, server protection, among
-              others. Moxi can do it all.
+              {t('utilities.description3')}
             </p>
             <a
               href="#"
               className="inline-flex items-center gap-2 text-pink-500 font-semibold hover:text-pink-600 transition-colors group"
             >
-              Learn more about Utilities
+              {t('utilities.link')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
           </motion.div>
@@ -67,16 +66,16 @@ export function Utilities() {
                       <Bell className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-white font-semibold text-sm">
-                          New Episode Available
+                          {t('utilities.mockup.newEpisode')}
                         </p>
                         <p className="text-pink-400 text-sm mt-1">
                           Buddy Daddies
                         </p>
                         <p className="text-[#dcddde] text-sm">
-                          Episode 8 - Nothing seek, nothing find
+                          {t('utilities.mockup.episodeTitle')}
                         </p>
                         <button className="mt-2 inline-flex items-center gap-1 px-3 py-1.5 bg-pink-500/20 text-pink-400 text-xs rounded hover:bg-pink-500/30 transition-colors">
-                          Watch Episode
+                          {t('utilities.mockup.watchEpisode')}
                           <ExternalLink className="w-3 h-3" />
                         </button>
                       </div>
@@ -100,11 +99,10 @@ export function Utilities() {
                       <Shield className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-white font-semibold text-sm">
-                          Server Protection
+                          {t('utilities.mockup.protectionTitle')}
                         </p>
                         <p className="text-[#dcddde] text-sm mt-1">
-                          Anti-spam enabled. Your server is protected against
-                          unauthorized invite links.
+                          {t('utilities.mockup.protectionBody')}
                         </p>
                       </div>
                     </div>

@@ -11,21 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown, Sun, Moon, Crown, User, Menu, X } from 'lucide-react';
 import { useTheme } from 'next-themes';
-
-const modules = [
-  { name: 'Welcome', href: '#' },
-  { name: 'Roleplay', href: '#' },
-  { name: 'Currency', href: '#' },
-  { name: 'Utilities', href: '#' },
-  { name: 'Moderation', href: '#' },
-];
-
-const resources = [
-  { name: 'Documentation', href: '#' },
-  { name: 'Commands', href: '#/commands' },
-  { name: 'Gallery', href: '#' },
-  { name: 'Support', href: '#' },
-];
+import { useI18n, type Language } from '@/lib/i18n';
 
 const languages = [
   {
@@ -37,24 +23,38 @@ const languages = [
   },
   {
     id: 'es',
-    label: 'Español',
+    label: 'Espanol',
     short: 'ES',
     flagSrc: 'https://twemoji.maxcdn.com/v/latest/svg/1f1ea-1f1f8.svg',
-    flagAlt: 'Español',
+    flagAlt: 'Espanol',
   },
   {
-    id: 'pt',
-    label: 'Português',
-    short: 'PT',
-    flagSrc: 'https://twemoji.maxcdn.com/v/latest/svg/1f1e7-1f1f7.svg',
-    flagAlt: 'Português (BR)',
+    id: 'zh',
+    label: '中文',
+    short: 'ZH',
+    flagSrc: 'https://twemoji.maxcdn.com/v/latest/svg/1f1e8-1f1f3.svg',
+    flagAlt: '中文',
+  },
+  {
+    id: 'ja',
+    label: '日本語',
+    short: 'JA',
+    flagSrc: 'https://twemoji.maxcdn.com/v/latest/svg/1f1ef-1f1f5.svg',
+    flagAlt: '日本語',
+  },
+  {
+    id: 'ko',
+    label: '한국어',
+    short: 'KR',
+    flagSrc: 'https://twemoji.maxcdn.com/v/latest/svg/1f1f0-1f1f7.svg',
+    flagAlt: '한국어',
   },
 ];
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [languageId, setLanguageId] = useState('en');
+  const { language, setLanguage, t } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -68,7 +68,22 @@ export function Header() {
   }, []);
 
   const isDark = mounted && resolvedTheme === 'dark';
-  const activeLanguage = languages.find((language) => language.id === languageId) ?? languages[0];
+  const activeLanguage = languages.find((item) => item.id === language) ?? languages[0];
+
+  const modules = [
+    { name: t('header.modules.welcome'), href: '#' },
+    { name: t('header.modules.roleplay'), href: '#' },
+    { name: t('header.modules.currency'), href: '#' },
+    { name: t('header.modules.utilities'), href: '#' },
+    { name: t('header.modules.moderation'), href: '#' },
+  ];
+
+  const resources = [
+    { name: t('header.resources.documentation'), href: '#' },
+    { name: t('header.resources.commands'), href: '#/commands' },
+    { name: t('header.resources.gallery'), href: '#' },
+    { name: t('header.resources.support'), href: '#' },
+  ];
 
   return (
     <motion.header
@@ -101,13 +116,13 @@ export function Header() {
               href="#/commands"
               className="px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors"
             >
-              Commands
+              {t('header.nav.commands')}
             </a>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-1 px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors">
-                  Modules
+                  {t('header.nav.modules')}
                   <ChevronDown className="w-6 h-6" />
                 </button>
               </DropdownMenuTrigger>
@@ -125,7 +140,7 @@ export function Header() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-1 px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors">
-                  Resources
+                  {t('header.nav.resources')}
                   <ChevronDown className="w-6 h-6" />
                 </button>
               </DropdownMenuTrigger>
@@ -156,7 +171,7 @@ export function Header() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuRadioGroup value={languageId} onValueChange={setLanguageId}>
+                <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value as Language)}>
                   {languages.map((language) => (
                     <DropdownMenuRadioItem key={language.id} value={language.id}>
                       <span className="inline-flex items-center gap-2">
@@ -176,7 +191,7 @@ export function Header() {
             <button
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
               className="p-3 text-foreground/80 hover:text-primary transition-colors"
-              aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={isDark ? t('header.theme.light') : t('header.theme.dark')}
             >
               {isDark ? <Sun className="w-7 h-7" /> : <Moon className="w-7 h-7" />}
             </button>
@@ -186,12 +201,12 @@ export function Header() {
               className="gap-2 border-amber-400 text-amber-600 hover:bg-amber-50 px-5 py-3 text-lg"
             >
               <Crown className="w-6 h-6" />
-              Premium
+              {t('common.premium')}
             </Button>
 
             <Button variant="ghost" className="gap-2 px-5 py-3 text-lg">
               <User className="w-6 h-6" />
-              Login
+              {t('common.login')}
             </Button>
           </div>
 
@@ -214,18 +229,18 @@ export function Header() {
           >
             <nav className="flex flex-col gap-2">
               <a href="#/commands" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
-                Commands
+                {t('header.nav.commands')}
               </a>
               <a href="#" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
-                Modules
+                {t('header.nav.modules')}
               </a>
               <a href="#" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
-                Resources
+                {t('header.nav.resources')}
               </a>
               <div className="border-t border-border pt-2 mt-2">
                 <Button className="w-full gap-2 bg-pink-500 hover:bg-pink-600 text-lg py-3">
                   <User className="w-6 h-6" />
-                  Login
+                  {t('common.login')}
                 </Button>
               </div>
             </nav>

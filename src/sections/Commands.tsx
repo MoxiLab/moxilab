@@ -19,6 +19,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/lib/i18n';
+
+const ALL_CATEGORY = '__all__';
+const OTHER_CATEGORY = '__other__';
 
 type CommandItem = {
   _id?: string;
@@ -59,14 +63,15 @@ function useDebouncedValue<T>(value: T, delayMs: number) {
 }
 
 export function Commands() {
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
   const debouncedQuery = useDebouncedValue(query, 200);
 
   const [allItems, setAllItems] = useState<CommandItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORY);
   const [selectedType, setSelectedType] = useState<'all' | 'prefix' | 'slash'>(
     'all'
   );
@@ -78,7 +83,7 @@ export function Commands() {
 
     async function loadOnce() {
       setLoading(true);
-      setError(null);
+      setError(false);
       try {
         const res = await fetch('/api/commands?limit=5000', {
           signal: ac.signal,
@@ -97,7 +102,7 @@ export function Commands() {
             category:
               typeof cmd.category === 'string' && cmd.category.trim()
                 ? cmd.category.trim()
-                : 'Otros',
+                : OTHER_CATEGORY,
             description:
               typeof cmd.description === 'string'
                 ? cmd.description.trim()
@@ -110,7 +115,7 @@ export function Commands() {
       } catch {
         if (ac.signal.aborted) return;
         setAllItems([]);
-        setError('No se pudo cargar la lista desde MongoDB. Inicia el servidor con `npm run dev:full` o `npm run start` y revisa `MONGODB_URI` en tu `.env.local`.');
+        setError(true);
       } finally {
         if (!ac.signal.aborted) setLoading(false);
       }
@@ -126,7 +131,7 @@ export function Commands() {
   const categoryCounts = useMemo(() => {
     const map = new Map<string, number>();
     for (const cmd of allItems) {
-      const category = cmd.category ?? 'Otros';
+      const category = cmd.category ?? OTHER_CATEGORY;
       map.set(category, (map.get(category) ?? 0) + 1);
     }
     return map;
@@ -134,20 +139,31 @@ export function Commands() {
 
   const categories = useMemo(() => {
     const list = [...categoryCounts.keys()].sort((a, b) => a.localeCompare(b));
-    return ['Todos', ...list];
+    const otherIndex = list.indexOf(OTHER_CATEGORY);
+    if (otherIndex >= 0) {
+      list.splice(otherIndex, 1);
+      list.push(OTHER_CATEGORY);
+    }
+    return [ALL_CATEGORY, ...list];
   }, [categoryCounts]);
+
+  const getCategoryLabel = (category: string) => {
+    if (category === ALL_CATEGORY) return t('commands.category.all');
+    if (category === OTHER_CATEGORY) return t('commands.category.other');
+    return category;
+  };
 
   const filteredItems = useMemo(() => {
     const q = debouncedQuery.trim().toLowerCase();
     return allItems
       .filter((cmd) => {
-        const t = cmd.type === 'prefix' ? 'prefix' : cmd.type === 'slash' ? 'slash' : undefined;
+        const cmdType = cmd.type === 'prefix' ? 'prefix' : cmd.type === 'slash' ? 'slash' : undefined;
         if (selectedType !== 'all') {
-          if (!t) return false;
-          if (t !== selectedType) return false;
+          if (!cmdType) return false;
+          if (cmdType !== selectedType) return false;
         }
 
-        if (selectedCategory !== 'Todos' && cmd.category !== selectedCategory) {
+        if (selectedCategory !== ALL_CATEGORY && cmd.category !== selectedCategory) {
           return false;
         }
         if (!q) return true;
@@ -182,7 +198,7 @@ export function Commands() {
   const CategoriesPanel = (
     <div className="rounded-2xl border bg-card/60 backdrop-blur p-4">
       <div className="flex items-center justify-between gap-3">
-        <div className="text-sm font-semibold">Categorías</div>
+        <div className="text-sm font-semibold">{t('commands.categories')}</div>
         <Badge variant="secondary">{totalCount}</Badge>
       </div>
 
@@ -192,7 +208,7 @@ export function Commands() {
             {categories.map((cat) => {
               const isActive = cat === selectedCategory;
               const count =
-                cat === 'Todos'
+                cat === ALL_CATEGORY
                   ? totalCount
                   : (categoryCounts.get(cat) ?? 0);
 
@@ -211,7 +227,7 @@ export function Commands() {
                       : 'hover:bg-muted'
                   )}
                 >
-                  <span className="truncate">{cat}</span>
+                  <span className="truncate">{getCategoryLabel(cat)}</span>
                   <span
                     className={cn(
                       'min-w-10 text-center rounded-full px-2 py-0.5 text-xs font-semibold',
@@ -239,10 +255,10 @@ export function Commands() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            Comandos
+            {t('commands.title')}
           </h1>
           <p className="mt-2 text-muted-foreground text-lg">
-            Mira la extensa lista de comandos de Moxi
+            {t('commands.subtitle')}
           </p>
         </div>
 
@@ -256,7 +272,7 @@ export function Commands() {
                 <Input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar comandos…"
+                  placeholder={t('commands.searchPlaceholder')}
                   className="h-11 pl-9"
                 />
               </div>
@@ -266,11 +282,14 @@ export function Commands() {
                   {loading ? (
                     <span className="inline-flex items-center gap-2">
                       <Spinner className="h-4 w-4" />
-                      Cargando…
+                      {t('commands.loading')}
                     </span>
                   ) : (
                     <span>
-                      {resultsCount} resultado{resultsCount === 1 ? '' : 's'}
+                      {resultsCount}{' '}
+                      {resultsCount === 1
+                        ? t('commands.resultsSingle')
+                        : t('commands.resultsPlural')}
                     </span>
                   )}
                 </div>
@@ -283,12 +302,12 @@ export function Commands() {
                       type="button"
                     >
                       <SlidersHorizontal className="h-4 w-4" />
-                      Categorías
+                      {t('commands.categories')}
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="left" className="w-[340px]">
                     <SheetHeader>
-                      <SheetTitle>Filtrar</SheetTitle>
+                      <SheetTitle>{t('commands.filters.filterTitle')}</SheetTitle>
                     </SheetHeader>
                     <div className="mt-4">{CategoriesPanel}</div>
                   </SheetContent>
@@ -303,7 +322,8 @@ export function Commands() {
                 size="sm"
                 onClick={() => setSelectedType('all')}
               >
-                Todos <span className="ml-2 text-xs opacity-80">{totalCount}</span>
+                {t('commands.filters.all')}{' '}
+                <span className="ml-2 text-xs opacity-80">{totalCount}</span>
               </Button>
               <Button
                 type="button"
@@ -311,7 +331,8 @@ export function Commands() {
                 size="sm"
                 onClick={() => setSelectedType('prefix')}
               >
-                Comandos <span className="ml-2 text-xs opacity-80">{countPrefix}</span>
+                {t('commands.filters.prefix')}{' '}
+                <span className="ml-2 text-xs opacity-80">{countPrefix}</span>
               </Button>
               <Button
                 type="button"
@@ -319,13 +340,14 @@ export function Commands() {
                 size="sm"
                 onClick={() => setSelectedType('slash')}
               >
-                Slashcommands <span className="ml-2 text-xs opacity-80">{countSlash}</span>
+                {t('commands.filters.slash')}{' '}
+                <span className="ml-2 text-xs opacity-80">{countSlash}</span>
               </Button>
             </div>
 
             {error && (
               <div className="mt-4 rounded-xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-                {error}
+                {t('commands.errors.load')}
               </div>
             )}
 
@@ -338,8 +360,12 @@ export function Commands() {
                       ? cmd.description
                       : undefined;
 
+                  const categoryLabel = cmd.category
+                    ? getCategoryLabel(cmd.category)
+                    : undefined;
+
                   const iconLetter = (
-                    (cmd.category?.[0] ?? name[0] ?? '?') as string
+                    (categoryLabel?.[0] ?? name[0] ?? '?') as string
                   ).toUpperCase();
 
                   return (
@@ -358,7 +384,7 @@ export function Commands() {
                               <div className="font-semibold truncate">{name}</div>
                               {cmd.category ? (
                                 <Badge variant="secondary" className="hidden sm:inline-flex">
-                                  {cmd.category}
+                                  {categoryLabel}
                                 </Badge>
                               ) : null}
                             </div>
@@ -375,13 +401,13 @@ export function Commands() {
                         <div className="space-y-3">
                           {cmd.usage ? (
                             <div className="rounded-xl bg-muted px-3 py-2 text-sm">
-                              <span className="font-semibold">Uso:</span> {cmd.usage}
+                              <span className="font-semibold">{t('commands.labels.usage')}</span> {cmd.usage}
                             </div>
                           ) : null}
 
                           {cmd.aliases && cmd.aliases.length > 0 ? (
                             <div className="text-sm">
-                              <div className="font-semibold mb-1">Aliases</div>
+                              <div className="font-semibold mb-1">{t('commands.labels.aliases')}</div>
                               <div className="flex flex-wrap gap-2">
                                 {cmd.aliases.slice(0, 12).map((a) => (
                                   <Badge key={a} variant="outline">
@@ -394,7 +420,7 @@ export function Commands() {
 
                           {cmd.examples && cmd.examples.length > 0 ? (
                             <div className="text-sm">
-                              <div className="font-semibold mb-1">Ejemplos</div>
+                              <div className="font-semibold mb-1">{t('commands.labels.examples')}</div>
                               <div className="space-y-2">
                                 {cmd.examples.slice(0, 5).map((ex, i) => (
                                   <div key={`${name}-ex-${i}`} className="rounded-xl bg-muted px-3 py-2">
@@ -407,7 +433,7 @@ export function Commands() {
 
                           {cmd.type === 'slash' && cmd.subcommands && cmd.subcommands.length > 0 ? (
                             <div className="text-sm">
-                              <div className="font-semibold mb-2">Subcomandos</div>
+                              <div className="font-semibold mb-2">{t('commands.labels.subcommands')}</div>
                               <div className="space-y-2">
                                 {Object.entries(
                                   cmd.subcommands.reduce((acc, sc) => {
@@ -445,7 +471,7 @@ export function Commands() {
                                               ) : null}
                                               {sc.usage ? (
                                                 <div className="mt-2 text-xs text-muted-foreground">
-                                                  <span className="font-semibold">Uso:</span> {sc.usage}
+                                                  <span className="font-semibold">{t('commands.labels.usage')}</span> {sc.usage}
                                                 </div>
                                               ) : null}
                                             </div>
@@ -460,7 +486,7 @@ export function Commands() {
 
                           {typeof cmd.cooldown === 'number' ? (
                             <div className="text-sm text-muted-foreground">
-                              Cooldown: {cmd.cooldown}s
+                              {t('commands.labels.cooldown')} {cmd.cooldown}s
                             </div>
                           ) : null}
                         </div>
@@ -471,7 +497,7 @@ export function Commands() {
 
                 {!loading && filteredItems.length === 0 ? (
                   <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-                    No hay resultados para tu búsqueda.
+                    {t('commands.empty')}
                   </div>
                 ) : null}
               </Accordion>

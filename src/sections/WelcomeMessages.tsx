@@ -2,8 +2,10 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { DiscordMockup, DiscordMessage, DiscordEmbed } from '@/components/DiscordMockup';
+import { useI18n } from '@/lib/i18n';
 
 export function WelcomeMessages() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -22,12 +24,12 @@ export function WelcomeMessages() {
                 <DiscordEmbed>
                   <div className="space-y-2">
                     <p className="text-[#dcddde] text-sm">
-                      Welcome to the server!
+                      {t('welcomeMessages.mockup.line1')}
                     </p>
                     <p className="text-[#dcddde] text-sm">
-                      I hope you enjoy your stay,{' '}
-                      <span className="text-[#00b0f4]">@User</span>! We are now{' '}
-                      <span className="font-bold">1,000</span> members.
+                      {t('welcomeMessages.mockup.line2Prefix')}{' '}
+                      <span className="text-[#00b0f4]">@User</span>! {t('welcomeMessages.mockup.line2Middle')}{' '}
+                      <span className="font-bold">1,000</span> {t('welcomeMessages.mockup.line2Suffix')}
                     </p>
                   </div>
                 </DiscordEmbed>
@@ -43,22 +45,19 @@ export function WelcomeMessages() {
             className="space-y-6"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              Welcome messages
+              {t('welcomeMessages.title')}
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Moxi can customize welcome, farewell and boost messages for
-              improving your server.
+              {t('welcomeMessages.description1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              You can customize the messages with multiple variables so you can
-              create unique and beautiful messages. With Moxi in your server,
-              everyone will feel welcome!
+              {t('welcomeMessages.description2')}
             </p>
             <a
               href="#"
               className="inline-flex items-center gap-2 text-pink-500 font-semibold hover:text-pink-600 transition-colors group"
             >
-              Learn more about Welcome messages
+              {t('welcomeMessages.link')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
           </motion.div>

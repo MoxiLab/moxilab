@@ -2,26 +2,25 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { BookOpen, Search, Users, Globe, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/lib/i18n';
 
 const features = [
   {
+    key: 'docs',
     icon: BookOpen,
-    title: 'Extensive Documentation',
-    description: 'Over 600 commands documented in detail',
   },
   {
+    key: 'search',
     icon: Search,
-    title: 'Easy to Navigate',
-    description: 'Find what you need quickly with our search feature',
   },
   {
+    key: 'community',
     icon: Users,
-    title: 'Community Driven',
-    description: 'Regular updates by our volunteer team',
   },
 ];
 
 export function WikiCTA() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -35,10 +34,10 @@ export function WikiCTA() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-            Tutorials and guides
+            {t('wiki.title')}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Everything you need to know is available on its official Wiki
+            {t('wiki.subtitle')}
           </p>
         </motion.div>
 
@@ -47,7 +46,7 @@ export function WikiCTA() {
             const Icon = feature.icon;
             return (
               <motion.div
-                key={feature.title}
+                key={feature.key}
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
@@ -57,9 +56,11 @@ export function WikiCTA() {
                   <Icon className="w-7 h-7 text-pink-500" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">
-                  {feature.title}
+                  {t(`wiki.features.${feature.key}.title`)}
                 </h3>
-                <p className="text-muted-foreground text-sm">{feature.description}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t(`wiki.features.${feature.key}.description`)}
+                </p>
               </motion.div>
             );
           })}
@@ -77,7 +78,7 @@ export function WikiCTA() {
             className="gap-2 px-8 py-6 text-base font-semibold rounded-xl border-border hover:bg-muted transition-all hover:scale-105"
           >
             <Globe className="w-5 h-5" />
-            Go to the Wiki
+            {t('wiki.button')}
             <ArrowRight className="w-4 h-4" />
           </Button>
         </motion.div>

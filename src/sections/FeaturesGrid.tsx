@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { useI18n } from '@/lib/i18n';
 import {
   Tv,
   Heart,
@@ -19,24 +20,25 @@ import {
 } from 'lucide-react';
 
 const features = [
-  { name: 'Anime', icon: Tv },
-  { name: 'Roleplay', icon: Heart },
-  { name: 'Starboard', icon: Star },
-  { name: 'Giveaways', icon: Gift },
-  { name: 'Birthdays', icon: Cake },
-  { name: 'Levels', icon: TrendingUp },
-  { name: 'Currency', icon: Coins },
-  { name: 'Pets', icon: Cat },
-  { name: 'Marriages', icon: HeartHandshake },
-  { name: 'Moderation', icon: Shield },
-  { name: 'Logs', icon: FileText },
-  { name: 'Fun', icon: Smile },
-  { name: 'Configuration', icon: Settings },
-  { name: 'Utilities', icon: Wrench },
-  { name: 'And more...', icon: MoreHorizontal },
+  { key: 'anime', icon: Tv },
+  { key: 'roleplay', icon: Heart },
+  { key: 'starboard', icon: Star },
+  { key: 'giveaways', icon: Gift },
+  { key: 'birthdays', icon: Cake },
+  { key: 'levels', icon: TrendingUp },
+  { key: 'currency', icon: Coins },
+  { key: 'pets', icon: Cat },
+  { key: 'marriages', icon: HeartHandshake },
+  { key: 'moderation', icon: Shield },
+  { key: 'logs', icon: FileText },
+  { key: 'fun', icon: Smile },
+  { key: 'configuration', icon: Settings },
+  { key: 'utilities', icon: Wrench },
+  { key: 'more', icon: MoreHorizontal },
 ];
 
 export function FeaturesGrid() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -50,10 +52,10 @@ export function FeaturesGrid() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            The all in one bot
+            {t('featuresGrid.title')}
           </h2>
           <p className="text-2xl text-pink-500 font-semibold">
-            Moxi does everything
+            {t('featuresGrid.subtitle')}
           </p>
         </motion.div>
 
@@ -62,7 +64,7 @@ export function FeaturesGrid() {
             const Icon = feature.icon;
             return (
               <motion.div
-                key={feature.name}
+                key={feature.key}
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
@@ -74,7 +76,7 @@ export function FeaturesGrid() {
                     <Icon className="w-6 h-6 text-pink-500" />
                   </div>
                   <span className="text-base font-semibold text-foreground/80 text-center">
-                    {feature.name}
+                    {t(`featuresGrid.items.${feature.key}`)}
                   </span>
                 </div>
               </motion.div>

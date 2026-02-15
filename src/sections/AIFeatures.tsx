@@ -1,33 +1,32 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Heart, Sparkles, Star } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 const features = [
   {
+    key: 'cute',
     icon: Heart,
-    title: 'Cute and Friendly',
-    description: 'Designed to be adorable and approachable in every interaction',
   },
   {
+    key: 'adaptive',
     icon: Sparkles,
-    title: 'Adaptive and Smart',
-    description: 'Adapts to each server and learns from interactions',
   },
   {
+    key: 'companion',
     icon: Star,
-    title: 'Your Perfect Companion',
-    description: 'Programmed to make your server more fun and organized',
   },
 ];
 
 const chatMessages = [
-  { text: "Hi! I'm Moxi :3", delay: 0 },
-  { text: "How can I help you today? ✨", delay: 0.5 },
-  { text: "Image generation", delay: 1, user: true },
-  { text: "Made with Moxi", delay: 1.5, image: true },
+  { key: 'greeting', delay: 0 },
+  { key: 'help', delay: 0.5 },
+  { key: 'imageGen', delay: 1, user: true },
+  { key: 'madeWith', delay: 1.5, image: true },
 ];
 
 export function AIFeatures() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -41,10 +40,10 @@ export function AIFeatures() {
           className="text-center mb-12"
         >
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
-            Meet Your New Friend
+            {t('ai.title')}
           </h2>
           <p className="text-lg text-muted-foreground">
-            Moxi, now with artificial intelligence
+            {t('ai.subtitle')}
           </p>
         </motion.div>
 
@@ -57,7 +56,7 @@ export function AIFeatures() {
             className="space-y-8"
           >
             <h3 className="text-xl font-semibold text-foreground">
-              Unlike other bots, Moxi is:
+              {t('ai.listTitle')}
             </h3>
 
             <div className="space-y-6">
@@ -65,7 +64,7 @@ export function AIFeatures() {
                 const Icon = feature.icon;
                 return (
                   <motion.div
-                    key={feature.title}
+                    key={feature.key}
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
@@ -76,9 +75,11 @@ export function AIFeatures() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-foreground mb-1">
-                        {feature.title}
+                        {t(`ai.features.${feature.key}.title`)}
                       </h4>
-                      <p className="text-muted-foreground">{feature.description}</p>
+                      <p className="text-muted-foreground">
+                        {t(`ai.features.${feature.key}.description`)}
+                      </p>
                     </div>
                   </motion.div>
                 );
@@ -107,7 +108,9 @@ export function AIFeatures() {
                         <div className="bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg w-48 h-32 flex items-center justify-center">
                           <Sparkles className="w-8 h-8 text-pink-500" />
                         </div>
-                        <p className="text-sm text-muted-foreground mt-2">{msg.text}</p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {t(`ai.chat.${msg.key}`)}
+                        </p>
                       </div>
                     ) : (
                       <div
@@ -117,7 +120,7 @@ export function AIFeatures() {
                             : 'bg-muted text-foreground rounded-tl-none'
                         }`}
                       >
-                        <p>{msg.text}</p>
+                        <p>{t(`ai.chat.${msg.key}`)}</p>
                       </div>
                     )}
                   </motion.div>

@@ -4,6 +4,7 @@ import { DiscordMessage, DiscordMockup } from '@/components/DiscordMockup';
 import { motion, useInView } from 'framer-motion';
 import { ExternalLink, Search, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 type Subcommand = {
   name: string;
@@ -180,13 +181,14 @@ function renderMarkdownLite(text: string) {
 
 
 export function CommandPlayground() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-120px' });
 
   const [data, setData] = useState<CommandsJson | null>(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   const [preview, setPreview] = useState<PlaygroundPreviewResponse | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
@@ -197,7 +199,7 @@ export function CommandPlayground() {
     async function load() {
       try {
         setLoading(true);
-        setLoadError(null);
+        setLoadError(false);
         const ac = new AbortController();
         const t = window.setTimeout(() => ac.abort(), 6000);
 
@@ -214,7 +216,7 @@ export function CommandPlayground() {
       } catch {
         if (!cancelled) {
           setData(null);
-          setLoadError('API de MongoDB no disponible. Ejecuta `npm run dev` (o `npm run dev:api`) y recarga.');
+          setLoadError(true);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -353,7 +355,7 @@ export function CommandPlayground() {
     }
 
     if (type === 3) {
-      const placeholder = String((comp as { placeholder?: string }).placeholder ?? 'Selecciona…');
+      const placeholder = String((comp as { placeholder?: string }).placeholder ?? t('commandPlayground.selectPlaceholder'));
       return (
         <div key={index} className="pg-select">
           {placeholder}
@@ -376,7 +378,7 @@ export function CommandPlayground() {
               className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card/50 px-4 py-2 text-sm font-medium text-foreground/80 shadow-sm backdrop-blur"
             >
               <Sparkles className="h-4 w-4 text-primary" />
-              Toque Moxi: comandos reales
+              {t('commandPlayground.kicker')}
             </motion.div>
 
             <motion.h2
@@ -385,7 +387,7 @@ export function CommandPlayground() {
               transition={{ duration: 0.45, delay: 0.05 }}
               className="mt-4 text-4xl sm:text-5xl font-bold text-foreground"
             >
-              Prueba un comando en 5 segundos
+              {t('commandPlayground.title')}
             </motion.h2>
 
             <motion.p
@@ -394,8 +396,7 @@ export function CommandPlayground() {
               transition={{ duration: 0.45, delay: 0.1 }}
               className="mt-3 text-xl text-muted-foreground max-w-2xl"
             >
-              Esto no es un mock: está alimentado por la misma lista que se ve en la
-              página de Commands.
+              {t('commandPlayground.description')}
             </motion.p>
 
             <div className="mt-6 flex flex-wrap gap-2">
@@ -417,31 +418,41 @@ export function CommandPlayground() {
                 <Input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Escribe: .auction help, /audit on, 8ball…"
+                  placeholder={t('commandPlayground.placeholder')}
                   className="h-11 pl-9 rounded-2xl"
                 />
               </div>
               <Button asChild variant="outline" className="rounded-2xl gap-2">
                 <a href="#/commands">
                   <ExternalLink className="h-4 w-4" />
-                  Ver todo
+                  {t('common.viewAll')}
                 </a>
               </Button>
             </div>
 
             <div className="mt-4 text-sm text-muted-foreground">
               {loading ? (
-                <span>Cargando comandos…</span>
+                <span>{t('commandPlayground.loading')}</span>
               ) : data ? (
                 <span>
-                  {data.count} total · {data.countPrefix} prefix · {data.countSlash} slash
-                  {previewLoading ? ' · preparando preview…' : ''}
+                  {t('commandPlayground.counts', {
+                    total: data.count,
+                    prefix: data.countPrefix,
+                    slash: data.countSlash,
+                  })}
+                  {previewLoading ? ` ${t('commandPlayground.previewLoading')}` : ''}
                   {preview && !preview.matched && preview.pending
-                    ? ` · preview en cola (${preview.status ?? 'queued'})`
+                    ? ` ${t('commandPlayground.previewQueued', {
+                        status: preview.status ?? t('commandPlayground.previewQueuedStatus'),
+                      })}`
                     : ''}
                 </span>
               ) : (
-                <span>{loadError ?? 'No se pudo cargar desde MongoDB'}</span>
+                <span>
+                  {loadError
+                    ? t('commandPlayground.errors.load')
+                    : t('commandPlayground.errors.fallback')}
+                </span>
               )}
             </div>
           </div>
@@ -471,7 +482,7 @@ export function CommandPlayground() {
                     </div>
                   ) : (
                     <div className="text-[#dcddde] text-sm">
-                      No hay preview guardado en playground_jobs para este comando.
+                      {t('commandPlayground.noPreview')}
                     </div>
                   )}
                 </DiscordMessage>

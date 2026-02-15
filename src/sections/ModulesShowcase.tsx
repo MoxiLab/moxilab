@@ -8,53 +8,43 @@ import {
   Sparkles,
   Wand2,
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 const modules = [
   {
-    title: 'Welcome & Boost',
-    description:
-      'Mensajes de bienvenida, despedida y boosts con variables y estilos personalizados.',
+    key: 'welcome',
     icon: Sparkles,
-    chips: ['Variables', 'Embeds', 'Auto roles'],
+    chipIndexes: [0, 1, 2],
   },
   {
-    title: 'Roleplay',
-    description:
-      'Reacciones, gifs y contadores para que la comunidad interactúe y se divierta.',
+    key: 'roleplay',
     icon: Heart,
-    chips: ['+100 comandos', 'Counters', 'All-ages'],
+    chipIndexes: [0, 1, 2],
   },
   {
-    title: 'Currency',
-    description:
-      'Economía simple y rankings para incentivar actividad y recompensas.',
+    key: 'currency',
     icon: Coins,
-    chips: ['Rankings', 'Rewards', 'Balance'],
+    chipIndexes: [0, 1, 2],
   },
   {
-    title: 'Utilities',
-    description:
-      'Automatizaciones, avisos y herramientas para llevar el server al día.',
+    key: 'utilities',
     icon: Bell,
-    chips: ['Notificaciones', 'Auto tasks', 'Helpers'],
+    chipIndexes: [0, 1, 2],
   },
   {
-    title: 'Moderation',
-    description:
-      'Herramientas claras para mantener tu servidor seguro y ordenado.',
+    key: 'moderation',
     icon: Shield,
-    chips: ['Anti-raid', 'Logs', 'Filters'],
+    chipIndexes: [0, 1, 2],
   },
   {
-    title: 'Custom vibes',
-    description:
-      'Pequeños detalles que hacen que Moxi se sienta “tuya”: tonos, respuestas y estilo.',
+    key: 'vibes',
     icon: Wand2,
-    chips: ['Personalidad', 'Estilo', 'Consistencia'],
+    chipIndexes: [0, 1, 2],
   },
 ] as const;
 
 export function ModulesShowcase() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -78,7 +68,7 @@ export function ModulesShowcase() {
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card/50 px-4 py-1.5 text-sm font-medium text-foreground/80 shadow-sm backdrop-blur"
           >
             <Sparkles className="h-4 w-4 text-primary" />
-            Módulos pensados para comunidad
+            {t('modulesShowcase.badge')}
           </motion.div>
 
           <motion.h2
@@ -87,7 +77,7 @@ export function ModulesShowcase() {
             transition={{ duration: 0.45, delay: 0.05 }}
             className="mt-5 text-3xl sm:text-4xl font-bold text-foreground"
           >
-            Tu server, tu estilo
+            {t('modulesShowcase.title')}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
@@ -95,8 +85,7 @@ export function ModulesShowcase() {
             transition={{ duration: 0.45, delay: 0.1 }}
             className="mt-3 text-lg text-muted-foreground"
           >
-            En vez de una lista infinita, aquí tienes un mapa claro: qué hace Moxi y
-            por qué se siente diferente.
+            {t('modulesShowcase.description')}
           </motion.p>
         </div>
 
@@ -105,7 +94,7 @@ export function ModulesShowcase() {
             const Icon = m.icon;
             return (
               <motion.div
-                key={m.title}
+                key={m.key}
                 initial={{ opacity: 0, y: 16 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.06 + index * 0.04 }}
@@ -118,21 +107,21 @@ export function ModulesShowcase() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-foreground">
-                      {m.title}
+                      {t(`modulesShowcase.modules.${m.key}.title`)}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-                      {m.description}
+                      {t(`modulesShowcase.modules.${m.key}.description`)}
                     </p>
                   </div>
                 </div>
 
                 <div className="relative mt-4 flex flex-wrap gap-2">
-                  {m.chips.map((chip) => (
+                  {m.chipIndexes.map((chipIndex) => (
                     <span
-                      key={chip}
+                      key={`${m.key}-${chipIndex}`}
                       className="inline-flex items-center rounded-full bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground"
                     >
-                      {chip}
+                      {t(`modulesShowcase.modules.${m.key}.chips.${chipIndex}`)}
                     </span>
                   ))}
                 </div>

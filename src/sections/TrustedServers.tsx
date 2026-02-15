@@ -1,6 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { Check } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 const servers = [
   { name: 'GermanClan', members: 334706, icon: '🐺', verified: true },
@@ -47,6 +48,7 @@ function AnimatedCounter({ target }: { target: number }) {
 }
 
 export function TrustedServers() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -70,17 +72,17 @@ export function TrustedServers() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/50 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-pink-500" />
-            Trusted servers
+            {t('trustedServers.badge')}
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold text-gradient mb-4">
-            Thank you for trusting Moxi
+            {t('trustedServers.title')}
           </h2>
           <p className="text-lg text-muted-foreground">
-            There are{' '}
+            {t('trustedServers.descriptionPrefix')}{' '}
             <span className="text-pink-600 font-semibold">
               {isInView && <AnimatedCounter target={4300000} />}
             </span>{' '}
-            servers using our bot every day
+            {t('trustedServers.descriptionSuffix')}
           </p>
         </motion.div>
 
@@ -107,12 +109,12 @@ export function TrustedServers() {
                     {server.verified && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-600 dark:text-emerald-300 border border-emerald-500/20">
                         <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-300" />
-                        Verified
+                        {t('trustedServers.verified')}
                       </span>
                     )}
                   </div>
                   <div className="mt-1 inline-flex items-center rounded-full bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
-                    {server.members.toLocaleString()} members
+                    {server.members.toLocaleString()} {t('trustedServers.members')}
                   </div>
                 </div>
               </div>

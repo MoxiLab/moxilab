@@ -1,6 +1,7 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowRight, Crown, Sparkles } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 const rankingData = [
   { rank: 1, name: 'User1', score: 1234567, crown: true },
@@ -11,6 +12,7 @@ const rankingData = [
 ];
 
 export function Currency() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -28,7 +30,7 @@ export function Currency() {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                   <Crown className="w-5 h-5 text-amber-400" />
-                  <span className="font-bold text-pink-500">Ranking global</span>
+                  <span className="font-bold text-pink-500">{t('currency.ranking')}</span>
                 </div>
                 <Sparkles className="w-5 h-5 text-pink-400" />
               </div>
@@ -86,26 +88,22 @@ export function Currency() {
             className="space-y-6"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              Currency
+              {t('currency.title')}
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              Moxi has a complete global currency system that encourages
-              interaction between server members.
+              {t('currency.description1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Levels, balances, pets, clubs, marriages and much more. Moxi's
-              currency is very complete and fun.
+              {t('currency.description2')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Every two months global events are activated in which you have the
-              opportunity to win exclusive items. Climb the leaderboards and reach
-              the top of the global currency.
+              {t('currency.description3')}
             </p>
             <a
               href="#"
               className="inline-flex items-center gap-2 text-pink-500 font-semibold hover:text-pink-600 transition-colors group"
             >
-              Learn more about Currency
+              {t('currency.link')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
           </motion.div>

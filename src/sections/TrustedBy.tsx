@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 function AnimatedCounter({ target, duration = 2 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -25,6 +26,7 @@ function AnimatedCounter({ target, duration = 2 }: { target: number; duration?: 
 }
 
 export function TrustedBy() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -37,7 +39,7 @@ export function TrustedBy() {
           transition={{ duration: 0.5 }}
           className="text-pink-500 font-semibold text-lg mb-4"
         >
-          Trusted by
+          {t('trustedBy.kicker')}
         </motion.p>
 
         <motion.h2
@@ -47,9 +49,9 @@ export function TrustedBy() {
           className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-2"
         >
           <span className="relative inline-block">
-            more than{' '}
+            {t('trustedBy.headingPrefix')}{' '}
             <span className="text-gradient">
-              <AnimatedCounter target={4000000} /> million
+              <AnimatedCounter target={4000000} /> {t('trustedBy.million')}
             </span>
             <svg
               className="absolute -bottom-2 left-0 w-full"
@@ -68,7 +70,7 @@ export function TrustedBy() {
               />
             </svg>
           </span>{' '}
-          servers
+          {t('trustedBy.headingSuffix')}
         </motion.h2>
 
         <motion.p
@@ -77,7 +79,7 @@ export function TrustedBy() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-muted-foreground text-lg mt-6"
         >
-          Built with love for Discord communities around the world
+          {t('trustedBy.description')}
         </motion.p>
       </div>
     </section>

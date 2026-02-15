@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 interface DiscordMockupProps {
   children: ReactNode;
@@ -6,6 +7,8 @@ interface DiscordMockupProps {
 }
 
 export function DiscordMockup({ children, className = '' }: DiscordMockupProps) {
+  const { t } = useI18n();
+
   return (
     <div
       className={`bg-[#36393f] rounded-2xl shadow-2xl overflow-hidden ${className}`}
@@ -16,7 +19,7 @@ export function DiscordMockup({ children, className = '' }: DiscordMockupProps) 
         <div className="w-3 h-3 rounded-full bg-[#faa61a]" />
         <div className="w-3 h-3 rounded-full bg-[#3ba55d]" />
         <div className="flex-1 text-center text-xs text-white/60">
-          Moxi Preview
+          {t('discord.preview')}
         </div>
       </div>
       <div className="p-4">{children}</div>

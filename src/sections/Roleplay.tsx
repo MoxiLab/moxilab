@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { DiscordMockup, DiscordMessage, DiscordEmbed } from '@/components/DiscordMockup';
+import { useI18n } from '@/lib/i18n';
 
 function AnimatedCounter({ target }: { target: number }) {
   const [count, setCount] = useState(0);
@@ -26,6 +27,7 @@ function AnimatedCounter({ target }: { target: number }) {
 }
 
 export function Roleplay() {
+  const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -41,23 +43,19 @@ export function Roleplay() {
             className="space-y-6 order-2 lg:order-1"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-              Roleplay
+              {t('roleplay.title')}
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              With more than 100 commands and 10,000 gifs ranging from hugs, pats,
-              bites among others, Moxi is the bot with the most variety of
-              roleplay commands.
+              {t('roleplay.description1')}
             </p>
             <p className="text-muted-foreground leading-relaxed">
-              Moxi has counters so you can see how many times you have received
-              hugs, kisses, pats and more. The gifs have been meticulously selected
-              to guarantee the best experience for its members and for all ages.
+              {t('roleplay.description2')}
             </p>
             <a
               href="#"
               className="inline-flex items-center gap-2 text-pink-500 font-semibold hover:text-pink-600 transition-colors group"
             >
-              Learn more about Roleplay
+              {t('roleplay.link')}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </a>
           </motion.div>
@@ -74,8 +72,9 @@ export function Roleplay() {
                 <DiscordEmbed>
                   <div className="space-y-3">
                     <p className="text-[#dcddde] text-sm">
-                      <span className="text-[#00b0f4]">@Gwee</span> gives a hug
-                      to <span className="text-[#00b0f4]">@Kwee</span>{' '}
+                      <span className="text-[#00b0f4]">@Gwee</span>{' '}
+                      {t('roleplay.mockup.hugVerb')}{' '}
+                      <span className="text-[#00b0f4]">@Kwee</span>{' '}
                       <span className="text-pink-400">💕</span>
                     </p>
                     <div className="rounded-lg overflow-hidden">
@@ -86,12 +85,12 @@ export function Roleplay() {
                       />
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Anime hug gif</span>
+                      <span>{t('roleplay.mockup.gifLabel')}</span>
                     </div>
                   </div>
                 </DiscordEmbed>
                 <div className="mt-2 text-sm text-[#dcddde]">
-                  Times hugged:{' '}
+                  {t('roleplay.mockup.timesHugged')}{' '}
                   <span className="text-pink-400 font-bold">
                     {isInView && <AnimatedCounter target={42} />}
                   </span>
