@@ -1,0 +1,279 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 330 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 330 80% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 330 80% 60%;
+    --radius: 0.625rem;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 330 80% 60%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 330 80% 60%;
+  }
+
+  .dark {
+    /* Indigo night theme (similar to the reference screenshot) */
+    --background: 235 18% 12%;
+    --foreground: 0 0% 98%;
+    --card: 235 18% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 235 18% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 330 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 235 14% 18%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 235 14% 18%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 330 80% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 235 14% 22%;
+    --input: 235 14% 22%;
+    --ring: 330 80% 60%;
+    --sidebar-background: 235 18% 13%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 330 80% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 235 14% 18%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 235 14% 22%;
+    --sidebar-ring: 330 80% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-pink-500 to-pink-600 bg-clip-text text-transparent;
+  }
+  
+  .bg-gradient-pink {
+    @apply bg-gradient-to-br from-pink-50 via-white to-pink-50;
+  }
+}
+
+@layer components {
+  .pg-md {
+    display: grid;
+    gap: 6px;
+    color: #dbdee1;
+  }
+
+  .pg-md-spacer {
+    height: 2px;
+  }
+
+  .pg-md-line {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .pg-md-pill {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #3f4147;
+    background: #1e1f22;
+    color: #f2f3f5;
+  }
+
+  .pg-md-sep {
+    font-size: 13px;
+    color: #8b8d98;
+  }
+
+  .pg-md-text {
+    font-size: 13px;
+    color: #dbdee1;
+  }
+
+  .pg-md-h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f2f3f5;
+  }
+
+  .pg-md-h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #f2f3f5;
+  }
+
+  .pg-md-h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f2f3f5;
+  }
+
+  .pg-md-paragraph {
+    font-size: 14px;
+    color: #dbdee1;
+    white-space: pre-wrap;
+  }
+
+  .pg-md-strong {
+    font-weight: 600;
+    color: #f2f3f5;
+  }
+
+  .pg-md-underline {
+    text-decoration: underline;
+    color: #dbdee1;
+  }
+
+  .pg-md-quote {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 14px;
+    color: #dbdee1;
+  }
+
+  .pg-md-quote-mark {
+    color: #8b8d98;
+  }
+
+  .pg-mention {
+    padding: 0 4px;
+    border-radius: 4px;
+    background: rgba(88, 101, 242, 0.2);
+    color: #c9d1ff;
+    font-weight: 600;
+  }
+
+  .pg-card {
+    border: 1px solid #3f4147;
+    border-left: 4px solid #5865f2;
+    border-radius: 8px;
+    padding: 12px;
+    background: #2b2d31;
+    color: #dbdee1;
+    font-family: "gg sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: grid;
+    gap: 10px;
+  }
+
+  .pg-divider {
+    height: 1px;
+    background: #3f4147;
+  }
+
+  .pg-action-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .pg-btn {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .pg-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .pg-btn-1 {
+    background: #5865f2;
+    color: #fff;
+  }
+
+  .pg-btn-2 {
+    background: #4f545c;
+    color: #fff;
+  }
+
+  .pg-btn-3 {
+    background: #3ba55c;
+    color: #fff;
+  }
+
+  .pg-btn-4 {
+    background: #ed4245;
+    color: #fff;
+  }
+
+  .pg-btn-5 {
+    background: transparent;
+    color: #00a8fc;
+    text-decoration: underline;
+  }
+
+  .pg-select {
+    border: 1px solid #3f4147;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #b5bac1;
+    background: #1e1f22;
+  }
+
+  .pg-ui-wrap {
+    display: grid;
+    gap: 16px;
+    font-size: 15px;
+  }
+
+  .pg-card {
+    font-size: 15px;
+  }
+
+  .pg-md-h1 {
+    font-size: 22px;
+  }
+
+  .pg-md-h2 {
+    font-size: 20px;
+  }
+
+  .pg-md-h3 {
+    font-size: 16px;
+  }
+}
