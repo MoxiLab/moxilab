@@ -5,20 +5,341 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MongoClient, ObjectId } from 'mongodb';
+import { createLogger } from './logger.js';
 
 dotenv.config({ path: fs.existsSync('.env.local') ? '.env.local' : '.env' });
 
 const PORT = Number(process.env.PORT ?? 8787);
+const WEB_APP_URL = (
+  process.env.WEB_APP_URL ??
+  (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5173')
+).replace(/\/$/, '');
+const BOT_API_URL = (process.env.BOT_API_URL ?? 'http://127.0.0.1:3099').replace(/\/$/, '');
+const BOT_API_SECRET = (process.env.BOT_API_SECRET ?? '').trim();
 const MONGODB_URI = process.env.MONGODB_URI;
 const DB_OVERRIDE = process.env.MONGODB_DB;
 const COMMANDS_COLLECTION = process.env.MONGODB_COMMANDS_COLLECTION ?? 'commands';
 const PLAYGROUND_JOBS_COLLECTION =
   process.env.MONGODB_PLAYGROUND_JOBS_COLLECTION ?? 'playground_jobs';
+const LOGS_DASHBOARD_KEY = (process.env.LOGS_DASHBOARD_KEY ?? '').trim();
+const DISCORD_CLIENT_ID = (process.env.DISCORD_CLIENT_ID ?? process.env.VITE_DISCORD_CLIENT_ID ?? '').trim();
+const DISCORD_CLIENT_SECRET = (process.env.DISCORD_CLIENT_SECRET ?? '').trim();
+const DISCORD_REDIRECT_URI = (process.env.DISCORD_REDIRECT_URI ?? process.env.VITE_DISCORD_REDIRECT_URI ?? '').trim();
+const logger = createLogger({
+  level: process.env.LOG_LEVEL ?? 'info',
+  logDirectory: path.resolve(process.cwd(), 'logs'),
+});
 
-if (!MONGODB_URI) {
-  // Never hardcode or print credentials. Use environment variables.
-  console.error('Missing MONGODB_URI env var.');
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function renderLogsDashboard(entries) {
+  const homeHref = WEB_APP_URL ? `${WEB_APP_URL}/` : '/';
+  const commandsHref = WEB_APP_URL ? `${WEB_APP_URL}/#/commands` : '/#/commands';
+  const resourcesHref = WEB_APP_URL ? `${WEB_APP_URL}/#` : '/#';
+  const logoSrc = WEB_APP_URL ? `${WEB_APP_URL}/moxi-hero.jpg` : '/moxi-hero.jpg';
+
+  const rows = entries
+    .map((entry) => {
+      const level = escapeHtml(entry.level || 'info');
+      const ts = escapeHtml(entry.ts || '');
+      const msg = escapeHtml(entry.msg || '');
+      const meta = escapeHtml(
+        entry.meta ? JSON.stringify(entry.meta, null, 0) : ''
+      );
+      const searchable = escapeHtml(`${ts} ${level} ${msg} ${meta}`.toLowerCase());
+      return `<tr data-row="1" data-level="${level}" data-text="${searchable}">
+        <td>${ts}</td>
+        <td class="level ${level}">${level}</td>
+        <td>${msg}</td>
+        <td><pre>${meta}</pre></td>
+      </tr>`;
+    })
+    .join('');
+
+  return `<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Logs Dashboard</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      color: #e6edf3;
+      background:
+        radial-gradient(70rem 35rem at 110% -10%, rgba(217, 70, 239, 0.14), transparent 55%),
+        radial-gradient(64rem 30rem at -10% 110%, rgba(99, 102, 241, 0.14), transparent 60%),
+        linear-gradient(135deg, #111528 0%, #0f1426 45%, #121930 100%);
+    }
+    .bg-blob {
+      position: fixed;
+      pointer-events: none;
+      border-radius: 2.5rem;
+      filter: blur(50px);
+      opacity: 0.45;
+      z-index: 0;
+    }
+    .bg-blob.one {
+      width: 360px;
+      height: 360px;
+      right: -120px;
+      top: -120px;
+      background: rgba(244, 114, 182, 0.28);
+      transform: rotate(12deg);
+    }
+    .bg-blob.two {
+      width: 440px;
+      height: 440px;
+      left: -140px;
+      bottom: -160px;
+      background: rgba(129, 140, 248, 0.24);
+      transform: rotate(-10deg);
+    }
+    .wrap { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 112px 18px 32px; }
+    .dashboard-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 5;
+      border-bottom: 1px solid rgba(86, 97, 124, 0.3);
+      background: linear-gradient(180deg, rgba(17, 24, 42, 0.96), rgba(15, 21, 37, 0.95));
+      backdrop-filter: blur(8px);
+    }
+    .dashboard-nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand img {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+    .brand-title { font-weight: 800; letter-spacing: 0.2px; font-size: 30px; }
+    .brand-sub { color: #9fb0c7; font-size: 12px; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 18px;
+    }
+    .nav-links a {
+      color: rgba(230, 237, 243, 0.82);
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 600;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: all .2s ease;
+    }
+    .nav-links a:hover {
+      color: #f472b6;
+      background: rgba(244, 114, 182, 0.1);
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-chip {
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 7px 11px;
+      white-space: nowrap;
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .nav-link-muted {
+      color: rgba(230, 237, 243, 0.88);
+      text-decoration: none;
+      font-size: 16px;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+    .nav-link-muted:hover {
+      background: rgba(99, 102, 241, 0.15);
+    }
+    .badge {
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 5px 9px;
+      white-space: nowrap;
+      background: rgba(245, 158, 11, 0.08);
+    }
+    h1 { margin: 0 0 6px; font-size: clamp(26px, 4vw, 38px); letter-spacing: -0.03em; }
+    .sub { color: #9fb0c7; margin-bottom: 16px; font-size: 15px; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+    .toolbar input, .toolbar select, .toolbar button {
+      background: rgba(18, 27, 46, 0.85);
+      border: 1px solid rgba(70, 85, 117, 0.55);
+      color: #e6edf3;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+    .toolbar button {
+      cursor: pointer;
+      border-color: rgba(236, 72, 153, 0.55);
+      background: linear-gradient(180deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.1));
+    }
+    .toolbar button:hover { filter: brightness(1.1); }
+    .toolbar input { min-width: 260px; flex: 1; }
+    .toolbar .count { color: #9fb0c7; font-size: 13px; margin-left: auto; }
+    .card {
+      border: 1px solid rgba(85, 99, 130, 0.45);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(19, 28, 49, 0.88), rgba(16, 23, 40, 0.88));
+      backdrop-filter: blur(4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.26);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th { text-align: left; background: rgba(25, 38, 66, 0.9); padding: 10px; border-bottom: 1px solid rgba(85, 99, 130, 0.45); }
+    tbody td { padding: 10px; border-bottom: 1px solid rgba(42, 57, 88, 0.75); vertical-align: top; }
+    tbody tr:hover { background: rgba(34, 49, 79, 0.65); }
+    pre { margin: 0; white-space: pre-wrap; word-break: break-word; color: #c2d4f1; }
+    .level { font-weight: 700; text-transform: uppercase; }
+    .level.info { color: #78d3ff; }
+    .level.warn { color: #ffd166; }
+    .level.error { color: #ff7b7b; }
+    .level.debug { color: #b9a3ff; }
+    @media (max-width: 740px) {
+      .toolbar .count { width: 100%; margin-left: 0; }
+      .dashboard-nav-inner { padding: 10px 12px; }
+      .brand-title { font-size: 24px; }
+      .nav-links { display: none; }
+      .nav-link-muted { display: none; }
+      .wrap { padding-top: 96px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-blob one"></div>
+  <div class="bg-blob two"></div>
+  <div class="dashboard-nav">
+    <div class="dashboard-nav-inner">
+      <div style="display:flex;align-items:center;min-width:0;">
+        <a class="brand" href="${homeHref}" title="Ir al inicio">
+          <img src="${logoSrc}" alt="Moxi" />
+          <div class="brand-title">Moxi</div>
+        </a>
+        <nav class="nav-links">
+          <a href="${homeHref}">Inicio</a>
+          <a href="${commandsHref}">Comandos</a>
+          <a href="${resourcesHref}">Recursos</a>
+        </nav>
+      </div>
+      <div class="nav-right">
+        <a href="#" class="nav-link-muted">ES</a>
+        <div class="nav-chip">Premium</div>
+        <span class="nav-link-muted" aria-current="page">Sesión activa</span>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <h1>Logs del API</h1>
+    <div class="sub">Mostrando los últimos ${entries.length} eventos. Puedes filtrar por nivel y buscar texto.</div>
+    <div class="toolbar">
+      <input id="searchInput" type="text" placeholder="Buscar por evento, ruta, error, ip, etc." />
+      <select id="levelFilter">
+        <option value="all">Todos los niveles</option>
+        <option value="error">Error</option>
+        <option value="warn">Warn</option>
+        <option value="info">Info</option>
+        <option value="debug">Debug</option>
+      </select>
+      <button id="refreshBtn" type="button">Recargar</button>
+      <span class="count" id="visibleCount"></span>
+    </div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 220px;">Fecha</th>
+            <th style="width: 90px;">Nivel</th>
+            <th style="width: 220px;">Evento</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="4">Sin logs todavía.</td></tr>'}</tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const levelFilter = document.getElementById('levelFilter');
+    const visibleCount = document.getElementById('visibleCount');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const rows = Array.from(document.querySelectorAll('tbody tr[data-row="1"]'));
+
+    function applyFilters() {
+      const query = String(searchInput.value || '').trim().toLowerCase();
+      const selectedLevel = String(levelFilter.value || 'all');
+      let visible = 0;
+
+      for (const row of rows) {
+        const rowText = String(row.dataset.text || '');
+        const rowLevel = String(row.dataset.level || 'info');
+        const matchLevel = selectedLevel === 'all' || rowLevel === selectedLevel;
+        const matchText = !query || rowText.includes(query);
+        const show = matchLevel && matchText;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      }
+
+      visibleCount.textContent = visible + ' visibles de ' + rows.length;
+    }
+
+    searchInput.addEventListener('input', applyFilters);
+    levelFilter.addEventListener('change', applyFilters);
+    refreshBtn.addEventListener('click', () => window.location.reload());
+    applyFilters();
+  </script>
+</body>
+</html>`;
+}
+
+if (!MONGODB_URI && !BOT_API_URL) {
+  logger.error('Falta MONGODB_URI o BOT_API_URL en el .env');
   process.exit(1);
+}
+
+// ─── Bot internal API ─────────────────────────────────────────────────────────
+async function fetchBotCommands() {
+  const headers = { Accept: 'application/json' };
+  if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+  const res = await fetch(`${BOT_API_URL}/api/commands`, { headers, signal: AbortSignal.timeout(4000) });
+  if (!res.ok) throw new Error(`Bot API responded ${res.status}`);
+  return res.json();
 }
 
 const client = new MongoClient(MONGODB_URI, {
@@ -464,8 +785,58 @@ app.use(
   })
 );
 
+// Access logs for every API request.
+app.use((req, res, next) => {
+  const started = Date.now();
+  res.on('finish', () => {
+    logger.http(req, res, Date.now() - started);
+  });
+  next();
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, mongo: 'unknown' });
+});
+
+app.get('/api/stats', async (_req, res) => {
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const r = await fetch(`${BOT_API_URL}/api/guilds`, { headers, signal: AbortSignal.timeout(4000) });
+    if (!r.ok) throw new Error(`status ${r.status}`);
+    const data = await r.json();
+    return res.json({ guildCount: data.count ?? 0, source: 'bot' });
+  } catch {
+    // Fallback: consultar la API de Discord directamente con el bot token si está disponible
+    const botToken = (process.env.BOT_TOKEN ?? '').trim();
+    if (botToken) {
+      try {
+        const r = await fetch('https://discord.com/api/v10/users/@me/guilds?with_counts=true', {
+          headers: { Authorization: `Bot ${botToken}` },
+          signal: AbortSignal.timeout(5000),
+        });
+        if (r.ok) {
+          // Este endpoint está limitado a 200 guilds por página; devolvemos lo que tengamos
+          const guilds = await r.json();
+          return res.json({ guildCount: Array.isArray(guilds) ? guilds.length : 0, source: 'discord' });
+        }
+      } catch { /* ignorar */ }
+    }
+    return res.json({ guildCount: 0, source: 'unavailable' });
+  }
+});
+
+app.get('/admin/logs', (req, res) => {
+  if (LOGS_DASHBOARD_KEY) {
+    const provided = String(req.query.key ?? '').trim();
+    if (provided !== LOGS_DASHBOARD_KEY) {
+      return res.status(401).send('Unauthorized');
+    }
+  }
+
+  const entries = logger.getRecentEntries(250);
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  return res.send(renderLogsDashboard(entries));
 });
 
 app.get('/api/health/mongo', async (_req, res) => {
@@ -476,12 +847,25 @@ app.get('/api/health/mongo', async (_req, res) => {
     await db.command({ ping: 1 });
     res.json({ ok: true, mongo: 'ok' });
   } catch (err) {
-    console.error(err);
+    logger.error('health_mongo_failed', { error: err?.message ?? String(err) });
     res.status(503).json({ ok: false, mongo: 'down' });
   }
 });
 
 app.get('/api/commands', async (req, res) => {
+  // 1) Intentar obtener desde la API interna del bot
+  try {
+    const data = await fetchBotCommands();
+    return res.json(data);
+  } catch (botErr) {
+    logger.warn('bot_api_unavailable_fallback_mongo', { error: botErr?.message ?? String(botErr) });
+  }
+
+  // 2) Fallback a MongoDB
+  if (!MONGODB_URI) {
+    return res.status(503).json({ error: 'Bot API no disponible y MongoDB no configurado.' });
+  }
+
   try {
     const commands = await getCommandsCollection();
 
@@ -495,61 +879,31 @@ app.get('/api/commands', async (req, res) => {
     });
 
     const filter = {};
-
-    if (category) {
-      filter.category = category;
-    }
-
+    if (category) filter.category = category;
     if (q) {
       const rx = new RegExp(escapeRegex(q), 'i');
-      filter.$or = [
-        { name: rx },
-        { description: rx },
-        { usage: rx },
-        { aliases: rx },
-      ];
+      filter.$or = [{ name: rx }, { description: rx }, { usage: rx }, { aliases: rx }];
     }
 
     const projection = {
-      name: 1,
-      description: 1,
-      category: 1,
-      usage: 1,
-      aliases: 1,
-      type: 1,
-      kind: 1,
-      slash: 1,
-      isSlash: 1,
-      isSlashCommand: 1,
-      is_slash: 1,
-      commandType: 1,
-      subcommands: 1,
-      subCommands: 1,
-      subcommand: 1,
-      subCommand: 1,
-      sub: 1,
-      options: 1,
+      name: 1, description: 1, category: 1, usage: 1, aliases: 1,
+      type: 1, kind: 1, slash: 1, isSlash: 1, isSlashCommand: 1, is_slash: 1,
+      commandType: 1, subcommands: 1, subCommands: 1, subcommand: 1,
+      subCommand: 1, sub: 1, options: 1,
     };
 
-    const docs = await commands
-      .find(filter, { projection })
-      .sort({ name: 1 })
-      .limit(limit)
-      .toArray();
-
+    const docs = await commands.find(filter, { projection }).sort({ name: 1 }).limit(limit).toArray();
     const items = docs.map(mapCommandDoc).filter(Boolean);
-    const countPrefix = items.filter((c) => c.type === 'prefix').length;
-    const countSlash = items.filter((c) => c.type === 'slash').length;
 
     res.json({
       generatedAt: new Date().toISOString(),
       count: items.length,
-      countPrefix,
-      countSlash,
+      countPrefix: items.filter((c) => c.type === 'prefix').length,
+      countSlash: items.filter((c) => c.type === 'slash').length,
       items,
     });
   } catch (err) {
-    console.error(err);
+    logger.error('api_commands_failed', { error: err?.message ?? String(err) });
     res.status(503).json({ error: 'Failed to load commands (mongo unavailable)' });
   }
 });
@@ -582,6 +936,16 @@ app.get('/api/commands/:name', async (req, res) => {
       options: 1,
     };
 
+    // Intentar primero la API del bot
+    try {
+      const data = await fetchBotCommands();
+      const item = (data.items ?? []).find((c) => c.name === name);
+      if (item) return res.json({ item });
+      return res.status(404).json({ error: 'Command not found' });
+    } catch { /* fallback a mongo */ }
+
+    if (!MONGODB_URI) return res.status(503).json({ error: 'Bot API no disponible y MongoDB no configurado.' });
+
     const doc = await commands.findOne({ name }, { projection });
     if (!doc) return res.status(404).json({ error: 'Command not found' });
 
@@ -590,8 +954,148 @@ app.get('/api/commands/:name', async (req, res) => {
 
     res.json({ item });
   } catch (err) {
-    console.error(err);
+    logger.error('api_command_by_name_failed', {
+      error: err?.message ?? String(err),
+      commandName: req.params?.name,
+    });
     res.status(503).json({ error: 'Failed to load command (mongo unavailable)' });
+  }
+});
+
+// ─── Discord OAuth2 Auth ───────────────────────────────────────────────────────
+
+// Helper: fetch bot guild IDs
+async function fetchBotGuildIds() {
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const res = await fetch(`${BOT_API_URL}/api/guilds`, {
+      headers,
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!res.ok) return new Set();
+    const data = await res.json();
+    const ids = Array.isArray(data.items)
+      ? data.items.map((g) => (typeof g === 'string' ? g : String(g.id ?? '')))
+      : Array.isArray(data)
+        ? data.map((g) => (typeof g === 'string' ? g : String(g.id ?? '')))
+        : [];
+    return new Set(ids.filter(Boolean));
+  } catch {
+    return new Set();
+  }
+}
+
+function mapUserGuilds(rawGuilds, botGuildIds) {
+  const MANAGE_GUILD = BigInt(0x20);
+  const ADMINISTRATOR = BigInt(0x8);
+  return (Array.isArray(rawGuilds) ? rawGuilds : [])
+    .filter((g) => {
+      const perms = BigInt(g.permissions ?? 0);
+      return (perms & MANAGE_GUILD) === MANAGE_GUILD || (perms & ADMINISTRATOR) === ADMINISTRATOR;
+    })
+    .map((g) => ({
+      id: String(g.id ?? ''),
+      name: String(g.name ?? ''),
+      icon: g.icon ?? null,
+      hasBot: botGuildIds.has(String(g.id ?? '')),
+    }))
+    .sort((a, b) => Number(b.hasBot) - Number(a.hasBot));
+}
+
+// POST /api/auth/callback — intercambia code por token + datos del usuario
+app.post('/api/auth/callback', async (req, res) => {
+  const code = String(req.body?.code ?? '').trim();
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+
+  if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_REDIRECT_URI) {
+    logger.warn('auth_callback_not_configured');
+    return res.status(500).json({ error: 'OAuth no configurado en el servidor. Agrega DISCORD_CLIENT_SECRET y DISCORD_REDIRECT_URI al .env.local' });
+  }
+
+  try {
+    // 1) Intercambiar code por access_token
+    const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: DISCORD_CLIENT_ID,
+        client_secret: DISCORD_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: DISCORD_REDIRECT_URI,
+      }).toString(),
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!tokenRes.ok) {
+      const errBody = await tokenRes.text();
+      logger.warn('auth_token_exchange_failed', { status: tokenRes.status, body: errBody.slice(0, 200) });
+      return res.status(400).json({ error: 'Token exchange failed' });
+    }
+
+    const tokenData = await tokenRes.json();
+    const accessToken = String(tokenData.access_token ?? '');
+    if (!accessToken) return res.status(400).json({ error: 'No access_token received' });
+
+    // 2) Obtener datos del usuario y sus servidores en paralelo
+    const [userRes, guildsRes, botGuildIds] = await Promise.all([
+      fetch('https://discord.com/api/users/@me', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(6000),
+      }),
+      fetch('https://discord.com/api/users/@me/guilds', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        signal: AbortSignal.timeout(6000),
+      }),
+      fetchBotGuildIds(),
+    ]);
+
+    if (!userRes.ok) return res.status(401).json({ error: 'Could not fetch user' });
+
+    const userRaw = await userRes.json();
+    const rawGuilds = guildsRes.ok ? await guildsRes.json() : [];
+
+    const user = {
+      id: String(userRaw.id ?? ''),
+      username: String(userRaw.username ?? ''),
+      discriminator: String(userRaw.discriminator ?? ''),
+      avatar: userRaw.avatar ?? null,
+      globalName: userRaw.global_name ?? null,
+    };
+
+    const guilds = mapUserGuilds(rawGuilds, botGuildIds);
+
+    logger.info('auth_login', { userId: user.id, username: user.username, guilds: guilds.length });
+    return res.json({ accessToken, user, guilds });
+  } catch (err) {
+    logger.error('auth_callback_error', { error: err?.message ?? String(err) });
+    return res.status(500).json({ error: 'Internal error during OAuth flow' });
+  }
+});
+
+// GET /api/auth/guilds — refresca la lista de servidores
+app.get('/api/auth/guilds', async (req, res) => {
+  const token = String(req.headers.authorization ?? '').replace(/^Bearer\s+/i, '').trim();
+  if (!token) return res.status(401).json({ error: 'Missing token' });
+
+  try {
+    const [guildsRes, botGuildIds] = await Promise.all([
+      fetch('https://discord.com/api/users/@me/guilds', {
+        headers: { Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(6000),
+      }),
+      fetchBotGuildIds(),
+    ]);
+
+    if (!guildsRes.ok) return res.status(401).json({ error: 'Invalid or expired token' });
+
+    const rawGuilds = await guildsRes.json();
+    const guilds = mapUserGuilds(rawGuilds, botGuildIds);
+    return res.json({ guilds });
+  } catch (err) {
+    logger.error('auth_guilds_error', { error: err?.message ?? String(err) });
+    return res.status(500).json({ error: 'Internal error fetching guilds' });
   }
 });
 
@@ -770,7 +1274,7 @@ app.get('/api/playground/preview', async (req, res) => {
 
     return res.json({ ok: true, matched: false, input: parsed.raw });
   } catch (err) {
-    console.error(err);
+    logger.error('api_playground_preview_failed', { error: err?.message ?? String(err) });
     res.status(503).json({ ok: false, error: 'Failed to load playground preview (mongo unavailable)' });
   }
 });
@@ -787,12 +1291,12 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const server = app.listen(PORT, () => {
-  console.log(`API listening on http://localhost:${PORT}`);
+  logger.info(`API listening on http://localhost:${PORT}`);
 });
 
 async function shutdown(signal) {
   try {
-    console.log(`\nReceived ${signal}, shutting down...`);
+    logger.info(`Received ${signal}, shutting down...`);
     server.close(() => {
       // noop
     });
