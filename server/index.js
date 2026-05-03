@@ -383,7 +383,61 @@ function normalizeText(value) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
+}
+
+function normalizeModuleId(value) {
+  const key = normalizeText(value);
+  if (!key) return '';
+
+  const aliases = new Map([
+    ['welcome', 'welcome'],
+    ['bienvenida', 'welcome'],
+    ['sistema de bienvenida', 'welcome'],
+    ['roleplay', 'roleplay'],
+    ['rol', 'roleplay'],
+    ['economia', 'economy'],
+    ['economy', 'economy'],
+    ['utilidades', 'utilities'],
+    ['utilidad', 'utilities'],
+    ['herramientas', 'utilities'],
+    ['utilities', 'utilities'],
+    ['moderacion', 'moderation'],
+    ['moderation', 'moderation'],
+    ['musica', 'music'],
+    ['music', 'music'],
+    ['ia', 'ai'],
+    ['inteligencia artificial', 'ai'],
+    ['ai', 'ai'],
+    ['sorteos', 'giveaways'],
+    ['giveaways', 'giveaways'],
+    ['tickets', 'tickets'],
+    ['soporte', 'tickets'],
+    ['logs', 'logs'],
+    ['registros', 'logs'],
+    ['automod', 'automod'],
+    ['automoderacion', 'automod'],
+    ['wiki', 'wiki'],
+    ['voz', 'voice'],
+    ['voice', 'voice'],
+    ['owner', 'owner'],
+    ['propietario', 'owner'],
+    ['fun', 'fun'],
+    ['diversion', 'fun'],
+    ['juegos', 'fun'],
+    ['administracion', 'administration'],
+    ['administration', 'administration'],
+    ['sistema', 'systems'],
+    ['sistemas', 'systems'],
+    ['systems', 'systems'],
+    ['streaming', 'streaming'],
+    ['genshin', 'genshin'],
+    ['matrimonio', 'matrimonio'],
+  ]);
+
+  return aliases.get(key) ?? key.replace(/\s+/g, '-');
 }
 
 function parsePlaygroundInput(input) {
@@ -849,6 +903,98 @@ app.get('/api/health/mongo', async (_req, res) => {
   } catch (err) {
     logger.error('health_mongo_failed', { error: err?.message ?? String(err) });
     res.status(503).json({ ok: false, mongo: 'down' });
+  }
+});
+
+app.get('/api/guilds', async (_req, res) => {
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const r = await fetch(`${BOT_API_URL}/api/guilds`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!r.ok) {
+      throw new Error(`Bot API responded ${r.status}`);
+    }
+
+    const data = await r.json();
+    const items = Array.isArray(data?.items)
+      ? data.items
+      : Array.isArray(data)
+        ? data
+        : [];
+
+    const normalized = items
+      .map((g) => ({
+        id: String(g?.id ?? ''),
+        name: String(g?.name ?? ''),
+        memberCount: Number(g?.memberCount ?? 0),
+        icon: g?.icon ?? null,
+        iconUrl: g?.iconUrl ?? null,
+      }))
+      .filter((g) => g.id && g.name);
+
+    return res.json({
+      source: 'bot',
+      count: normalized.length,
+      items: normalized,
+    });
+  } catch (err) {
+    logger.warn('api_guilds_failed', { error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudo obtener la lista de servidores del bot.' });
+  }
+});
+
+app.get('/api/modules', async (_req, res) => {
+  // 1) Intentar obtener lista de módulos directamente del bot
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const r = await fetch(`${BOT_API_URL}/api/modules`, { headers, signal: AbortSignal.timeout(4000) });
+    if (!r.ok) throw new Error(`Bot API responded ${r.status}`);
+    const data = await r.json();
+    const rawItems = Array.isArray(data?.items) ? data.items : [];
+    const seen = new Set();
+    const items = [];
+    for (const item of rawItems) {
+      const rawId = item?.id ?? item?.name ?? item?.module ?? item?.key;
+      const id = normalizeModuleId(rawId);
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      items.push({
+        id,
+        rawId: String(rawId ?? id),
+        name: typeof item?.name === 'string' ? item.name : undefined,
+        description: typeof item?.description === 'string' ? item.description : undefined,
+        icon: typeof item?.icon === 'string' ? item.icon : undefined,
+        configColor: typeof item?.configColor === 'string' ? item.configColor : undefined,
+        dashboardColor: typeof item?.dashboardColor === 'string' ? item.dashboardColor : undefined,
+      });
+    }
+    return res.json({ source: 'bot', items });
+  } catch (botErr) {
+    logger.warn('bot_modules_unavailable_fallback_commands', { error: botErr?.message ?? String(botErr) });
+  }
+
+  // 2) Fallback: derivar módulos únicos de las categorías de los comandos
+  try {
+    const data = await fetchBotCommands();
+    const items = data.items ?? [];
+    const seen = new Set();
+    const modules = [];
+    for (const cmd of items) {
+      const cat = (cmd.category ?? '').trim();
+      const id = normalizeModuleId(cat);
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      modules.push({ id, rawId: cat || id });
+    }
+    return res.json({ source: 'derived', items: modules });
+  } catch (err) {
+    logger.error('api_modules_failed', { error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudo obtener la lista de módulos del bot.' });
   }
 });
 
