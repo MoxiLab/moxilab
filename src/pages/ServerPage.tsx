@@ -7,20 +7,16 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
   ChevronLeft,
-  MessageSquare,
-  Swords,
-  Coins,
-  Wrench,
-  Shield,
-  Sparkles,
-  BookOpen,
-  Music,
-  Gift,
-  Ticket,
-  Bell,
-  Bot,
   ExternalLink,
 } from 'lucide-react';
+import { useModules } from '@/hooks/use-modules';
+import { getDashboardBackgroundTheme } from '@/lib/dashboard-background';
+
+function prettyModuleName(id: string) {
+  return id
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 interface Module {
   id: string;
@@ -32,21 +28,6 @@ interface Module {
   enabled: boolean;
   docsHref?: string;
 }
-
-const MODULE_META: { id: string; icon: React.ReactNode; color: string }[] = [
-  { id: 'welcome',    icon: <MessageSquare className="w-6 h-6" />, color: 'from-blue-500/20 to-cyan-500/20 border-blue-500/30' },
-  { id: 'roleplay',   icon: <Swords className="w-6 h-6" />,       color: 'from-rose-500/20 to-pink-500/20 border-rose-500/30' },
-  { id: 'economy',    icon: <Coins className="w-6 h-6" />,        color: 'from-yellow-500/20 to-amber-500/20 border-yellow-500/30' },
-  { id: 'utilities',  icon: <Wrench className="w-6 h-6" />,       color: 'from-slate-500/20 to-gray-500/20 border-slate-500/30' },
-  { id: 'moderation', icon: <Shield className="w-6 h-6" />,       color: 'from-red-500/20 to-orange-500/20 border-red-500/30' },
-  { id: 'ai',         icon: <Sparkles className="w-6 h-6" />,     color: 'from-violet-500/20 to-purple-500/20 border-violet-500/30' },
-  { id: 'music',      icon: <Music className="w-6 h-6" />,        color: 'from-green-500/20 to-emerald-500/20 border-green-500/30' },
-  { id: 'giveaways',  icon: <Gift className="w-6 h-6" />,         color: 'from-fuchsia-500/20 to-pink-500/20 border-fuchsia-500/30' },
-  { id: 'tickets',    icon: <Ticket className="w-6 h-6" />,       color: 'from-indigo-500/20 to-blue-500/20 border-indigo-500/30' },
-  { id: 'logs',       icon: <Bell className="w-6 h-6" />,         color: 'from-teal-500/20 to-cyan-500/20 border-teal-500/30' },
-  { id: 'automod',    icon: <Bot className="w-6 h-6" />,          color: 'from-orange-500/20 to-red-500/20 border-orange-500/30' },
-  { id: 'wiki',       icon: <BookOpen className="w-6 h-6" />,     color: 'from-lime-500/20 to-green-500/20 border-lime-500/30' },
-];
 
 function guildIconUrl(guild: DiscordGuild): string | null {
   if (!guild.icon) return null;
@@ -114,19 +95,27 @@ export function ServerPage() {
   const { user, guilds, isLoading } = useAuth();
   const navigate = useNavigate();
   const { t } = useI18n();
+  const { modules: moduleMeta } = useModules();
 
-  const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(MODULE_META.map(m => [m.id, true]))
-  );
+  const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
 
-  const modules = useMemo<Module[]>(() => MODULE_META.map((m) => ({
-    ...m,
-    enabled: enabledModules[m.id] ?? true,
-    name: t(`server.modules.${m.id}.name`),
-    description: t(`server.modules.${m.id}.description`),
-    available: true,
-    docsHref: '#',
-  })), [t, enabledModules]);
+  const modules = useMemo<Module[]>(() => moduleMeta.map((m) => {
+    const Icon = m.Icon;
+    const nameKey = `server.modules.${m.id}.name`;
+    const descriptionKey = `server.modules.${m.id}.description`;
+    const nameText = t(nameKey);
+    const descriptionText = t(descriptionKey);
+    return {
+      id: m.id,
+      icon: <Icon className="w-6 h-6" />,
+      color: m.dashboardColor,
+      enabled: enabledModules[m.id] ?? true,
+      name: nameText === nameKey ? prettyModuleName(m.id) : nameText,
+      description: descriptionText === descriptionKey ? t('server.modulesDesc') : descriptionText,
+      available: true,
+      docsHref: '#',
+    };
+  }), [t, enabledModules, moduleMeta]);
 
   const handleToggleModule = (id: string, enabled: boolean) => {
     setEnabledModules(prev => ({ ...prev, [id]: enabled }));
@@ -147,6 +136,7 @@ export function ServerPage() {
   const guild = guilds.find((g) => g.id === guildId);
   const icon = guild ? guildIconUrl(guild) : null;
   const initial = (guild?.name?.[0] ?? '?').toUpperCase();
+  const bgTheme = useMemo(() => getDashboardBackgroundTheme(`${guildId ?? 'server'}-modules`), [guildId]);
 
   if (isLoading) {
     return (
@@ -169,11 +159,11 @@ export function ServerPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="relative overflow-hidden pb-16 pt-32">
+      <div className="relative overflow-hidden pb-16 pt-32" style={bgTheme.containerStyle}>
         {/* Blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-32 right-1/3 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute top-20 left-1/4 w-80 h-80 rounded-full bg-purple-600/8 blur-3xl" />
+          <div className="absolute -top-32 right-1/3 w-96 h-96 rounded-full blur-3xl" style={bgTheme.blobOneStyle} />
+          <div className="absolute top-20 left-1/4 w-80 h-80 rounded-full blur-3xl" style={bgTheme.blobTwoStyle} />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

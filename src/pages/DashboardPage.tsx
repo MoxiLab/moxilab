@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth, type DiscordGuild } from '@/hooks/use-auth';
 import { useI18n } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { LogOut, RefreshCw, Settings, Plus, Crown } from 'lucide-react';
+import { getDashboardBackgroundTheme } from '@/lib/dashboard-background';
 
 const BOT_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID ?? '';
 const BOT_PERMISSIONS = '8'; // administrator
@@ -130,6 +131,7 @@ export function DashboardPage() {
 
   const withBot = guilds.filter((g) => g.hasBot);
   const withoutBot = guilds.filter((g) => !g.hasBot);
+  const bgTheme = useMemo(() => getDashboardBackgroundTheme(`${user?.id ?? 'guest'}-dashboard`), [user?.id]);
 
   if (isLoading || isExchangingCode) {
     return (
@@ -147,11 +149,11 @@ export function DashboardPage() {
   return (
     <main className="min-h-screen">
       {/* Hero del dashboard */}
-      <div className="relative overflow-hidden pb-12 pt-32">
+      <div className="relative overflow-hidden pb-12 pt-32" style={bgTheme.containerStyle}>
         {/* Blobs de fondo */}
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute -top-32 right-1/4 w-96 h-96 rounded-full bg-primary/10 blur-3xl" />
-          <div className="absolute top-0 left-1/3 w-80 h-80 rounded-full bg-purple-600/8 blur-3xl" />
+          <div className="absolute -top-32 right-1/4 w-96 h-96 rounded-full blur-3xl" style={bgTheme.blobOneStyle} />
+          <div className="absolute top-0 left-1/3 w-80 h-80 rounded-full blur-3xl" style={bgTheme.blobTwoStyle} />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
