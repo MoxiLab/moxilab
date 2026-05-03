@@ -1,50 +1,18 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import {
-  Bell,
-  Coins,
-  Heart,
-  Shield,
-  Sparkles,
-  Wand2,
-} from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { useModules } from '@/hooks/use-modules';
 
-const modules = [
-  {
-    key: 'welcome',
-    icon: Sparkles,
-    chipIndexes: [0, 1, 2],
-  },
-  {
-    key: 'roleplay',
-    icon: Heart,
-    chipIndexes: [0, 1, 2],
-  },
-  {
-    key: 'currency',
-    icon: Coins,
-    chipIndexes: [0, 1, 2],
-  },
-  {
-    key: 'utilities',
-    icon: Bell,
-    chipIndexes: [0, 1, 2],
-  },
-  {
-    key: 'moderation',
-    icon: Shield,
-    chipIndexes: [0, 1, 2],
-  },
-  {
-    key: 'vibes',
-    icon: Wand2,
-    chipIndexes: [0, 1, 2],
-  },
-] as const;
+function prettyModuleName(id: string) {
+  return id
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export function ModulesShowcase() {
   const { t } = useI18n();
+  const { modules } = useModules();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
@@ -91,10 +59,15 @@ export function ModulesShowcase() {
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {modules.map((m, index) => {
-            const Icon = m.icon;
+            const Icon = m.Icon;
+            const titleKey = `modulesShowcase.modules.${m.id}.title`;
+            const descriptionKey = `modulesShowcase.modules.${m.id}.description`;
+            const titleText = t(titleKey);
+            const descriptionText = t(descriptionKey);
+            const chips = t(`modulesShowcase.modules.${m.id}.chips`) as unknown as string[];
             return (
               <motion.div
-                key={m.key}
+                key={m.id}
                 initial={{ opacity: 0, y: 16 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.06 + index * 0.04 }}
@@ -107,21 +80,21 @@ export function ModulesShowcase() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-foreground">
-                      {t(`modulesShowcase.modules.${m.key}.title`)}
+                      {titleText === titleKey ? prettyModuleName(m.id) : titleText}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-                      {t(`modulesShowcase.modules.${m.key}.description`)}
+                      {descriptionText === descriptionKey ? t('modulesShowcase.description') : descriptionText}
                     </p>
                   </div>
                 </div>
 
                 <div className="relative mt-4 flex flex-wrap gap-2">
-                  {m.chipIndexes.map((chipIndex) => (
+                  {Array.isArray(chips) && chips.map((chip, chipIndex) => (
                     <span
-                      key={`${m.key}-${chipIndex}`}
+                      key={`${m.id}-${chipIndex}`}
                       className="inline-flex items-center rounded-full bg-muted/40 px-2.5 py-1 text-xs font-medium text-muted-foreground"
                     >
-                      {t(`modulesShowcase.modules.${m.key}.chips.${chipIndex}`)}
+                      {chip}
                     </span>
                   ))}
                 </div>

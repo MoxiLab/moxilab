@@ -3,15 +3,26 @@ import { useEffect, useRef, useState } from 'react';
 import { Check } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 
-const servers = [
-  { name: 'GermanClan', members: 334706, icon: '🐺', verified: true },
-  { name: 'AURONERS', members: 320374, icon: '💎', verified: true },
-  { name: 'La Casa De ElMariana', members: 314042, icon: '🏠', verified: true },
-  { name: '#MIKIES', members: 284421, icon: '💎', verified: true },
-  { name: 'El Asilo de Dylantero', members: 193113, icon: '🏥', verified: true },
-  { name: 'JuanSGuarnizo', members: 80519, icon: '🎮', verified: true },
-  { name: 'Rivers', members: 73910, icon: '🌊', verified: true },
-  { name: 'AriGameplays', members: 55665, icon: '👾', verified: true },
+const FALLBACK_COUNT = 4_300_000;
+const MAX_VISIBLE_SERVERS = 8;
+
+interface TrustedServerItem {
+  id: string;
+  name: string;
+  members: number;
+  iconUrl: string | null;
+  verified: boolean;
+}
+
+const FALLBACK_SERVERS: TrustedServerItem[] = [
+  { id: 'germanclan', name: 'GermanClan', members: 334706, iconUrl: null, verified: true },
+  { id: 'auroners', name: 'AURONERS', members: 320374, iconUrl: null, verified: true },
+  { id: 'casa-elmariana', name: 'La Casa De ElMariana', members: 314042, iconUrl: null, verified: true },
+  { id: 'mikies', name: '#MIKIES', members: 284421, iconUrl: null, verified: true },
+  { id: 'asilo-dylantero', name: 'El Asilo de Dylantero', members: 193113, iconUrl: null, verified: true },
+  { id: 'juansguarnizo', name: 'JuanSGuarnizo', members: 80519, iconUrl: null, verified: true },
+  { id: 'rivers', name: 'Rivers', members: 73910, iconUrl: null, verified: true },
+  { id: 'arigameplays', name: 'AriGameplays', members: 55665, iconUrl: null, verified: true },
 ];
 
 function AnimatedCounter({ target }: { target: number }) {
@@ -42,7 +53,10 @@ function AnimatedCounter({ target }: { target: number }) {
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
     >
-      {(count / 1_000_000).toFixed(1)}M+
+      {new Intl.NumberFormat('es-ES', {
+        notation: 'compact',
+        maximumFractionDigits: 1,
+      }).format(count)}+
     </motion.span>
   );
 }
@@ -51,6 +65,41 @@ export function TrustedServers() {
   const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const [guildCount, setGuildCount] = useState(FALLBACK_COUNT);
+  const [servers, setServers] = useState<TrustedServerItem[]>(FALLBACK_SERVERS);
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then((r) => r.json())
+      .then((data) => {
+        if (typeof data.guildCount === 'number' && data.guildCount > 0) {
+          setGuildCount(data.guildCount);
+        }
+      })
+      .catch(() => null);
+
+    fetch('/api/guilds')
+      .then((r) => r.json())
+      .then((data) => {
+        const items = Array.isArray(data?.items) ? data.items : [];
+        const top = items
+          .map((g: { id?: string; name?: string; memberCount?: number; iconUrl?: string | null }) => ({
+            id: String(g.id ?? ''),
+            name: String(g.name ?? ''),
+            members: Number(g.memberCount ?? 0),
+            iconUrl: typeof g.iconUrl === 'string' ? g.iconUrl : null,
+            verified: true,
+          }))
+          .filter((g: TrustedServerItem) => g.id && g.name)
+          .sort((a: TrustedServerItem, b: TrustedServerItem) => b.members - a.members)
+          .slice(0, MAX_VISIBLE_SERVERS);
+
+        if (top.length > 0) {
+          setServers(top);
+        }
+      })
+      .catch(() => null);
+  }, []);
 
   return (
     <section
@@ -80,7 +129,7 @@ export function TrustedServers() {
           <p className="text-lg text-muted-foreground">
             {t('trustedServers.descriptionPrefix')}{' '}
             <span className="text-pink-600 font-semibold">
-              {isInView && <AnimatedCounter target={4300000} />}
+              {isInView && <AnimatedCounter target={guildCount} />}
             </span>{' '}
             {t('trustedServers.descriptionSuffix')}
           </p>
@@ -99,7 +148,13 @@ export function TrustedServers() {
               <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br from-pink-500/10 via-transparent to-fuchsia-500/10" />
               <div className="flex items-center gap-3">
                 <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-pink-500/10 to-fuchsia-500/10 border border-border flex items-center justify-center text-2xl shadow-sm">
-                  {server.icon}
+                  {server.iconUrl ? (
+                    <img src={server.iconUrl} alt={server.name} className="h-full w-full rounded-2xl object-cover" />
+                  ) : (
+                    <span className="text-sm font-bold text-foreground/80">
+                      {(server.name?.[0] ?? '?').toUpperCase()}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1">
