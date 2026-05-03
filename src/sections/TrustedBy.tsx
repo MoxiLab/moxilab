@@ -2,6 +2,23 @@ import { motion, useInView } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 
+const FALLBACK_COUNT = 4_000_000;
+
+function formatCount(n: number): { value: string; suffix: string } {
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000;
+    // Si es entero muestra "4", si tiene decimales muestra "4.5"
+    const value = Number.isInteger(m) ? m.toLocaleString() : m.toFixed(1);
+    return { value, suffix: ' millones' };
+  }
+  if (n >= 1_000) {
+    const k = n / 1_000;
+    const value = Number.isInteger(k) ? k.toLocaleString() : k.toFixed(1);
+    return { value, suffix: ' mil' };
+  }
+  return { value: n.toLocaleString(), suffix: '' };
+}
+
 function AnimatedCounter({ target, duration = 2 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -22,13 +39,26 @@ function AnimatedCounter({ target, duration = 2 }: { target: number; duration?: 
     requestAnimationFrame(animate);
   }, [isInView, target, duration]);
 
-  return <span ref={ref}>{count.toLocaleString()}</span>;
+  const { value, suffix } = formatCount(count);
+  return <span ref={ref}>{value}{suffix}</span>;
 }
 
 export function TrustedBy() {
   const { t } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const [guildCount, setGuildCount] = useState(FALLBACK_COUNT);
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then((data) => {
+        if (typeof data.guildCount === 'number' && data.guildCount > 0) {
+          setGuildCount(data.guildCount);
+        }
+      })
+      .catch(() => { /* usa fallback */ });
+  }, []);
 
   return (
     <section ref={sectionRef} className="py-20 bg-background">
@@ -49,9 +79,9 @@ export function TrustedBy() {
           className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-2"
         >
           <span className="relative inline-block">
-            {t('trustedBy.headingPrefix')}{' '}
+            {guildCount >= 10_000 && <>{t('trustedBy.headingPrefix')}{' '}</>}
             <span className="text-gradient">
-              <AnimatedCounter target={4000000} /> {t('trustedBy.million')}
+              <AnimatedCounter target={guildCount} />
             </span>
             <svg
               className="absolute -bottom-2 left-0 w-full"

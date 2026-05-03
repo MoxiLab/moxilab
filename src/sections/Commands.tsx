@@ -95,13 +95,16 @@ export function Commands() {
         const data = (await res.json()) as { items?: CommandItem[] };
         const next = Array.isArray(data.items) ? data.items : [];
         // Normalize a bit to avoid undefined categories.
+        const stripEmojis = (str: string) =>
+          str.replace(/\p{Emoji_Presentation}\s*/gu, '').trim();
+
         const normalized = next
           .map((cmd) => ({
             ...cmd,
             name: typeof cmd.name === 'string' ? cmd.name.trim() : cmd.name,
             category:
               typeof cmd.category === 'string' && cmd.category.trim()
-                ? cmd.category.trim()
+                ? stripEmojis(cmd.category.trim()) || OTHER_CATEGORY
                 : OTHER_CATEGORY,
             description:
               typeof cmd.description === 'string'

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,11 +8,13 @@ import {
   DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Sun, Moon, Crown, User, Menu, X } from 'lucide-react';
+import { ChevronDown, Sun, Moon, Crown, User, Menu, X, LayoutDashboard, LogOut } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useI18n, type Language } from '@/lib/i18n';
+import { useAuth } from '@/hooks/use-auth';
 
 const languages = [
   {
@@ -57,6 +60,32 @@ export function Header() {
   const { language, setLanguage, t } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const loginHref = (() => {
+    const customUrl = (import.meta.env.VITE_LOGIN_URL || '').trim();
+    if (customUrl) return customUrl;
+
+    const clientId = (import.meta.env.VITE_DISCORD_CLIENT_ID || '').trim();
+    if (!clientId) return 'https://discord.com/login';
+
+    const fallbackOrigin =
+      typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
+    const redirectUri =
+      (import.meta.env.VITE_DISCORD_REDIRECT_URI || '').trim() || `${fallbackOrigin}/`;
+    const scopes =
+      (import.meta.env.VITE_DISCORD_SCOPES || '').trim() || 'identify guilds';
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      response_type: 'code',
+      redirect_uri: redirectUri,
+      scope: scopes,
+      prompt: 'consent',
+    });
+
+    return `https://discord.com/oauth2/authorize?${params.toString()}`;
+  })();
 
   useEffect(() => {
     setMounted(true);
@@ -204,10 +233,49 @@ export function Header() {
               {t('common.premium')}
             </Button>
 
-            <Button variant="ghost" className="gap-2 px-5 py-3 text-lg">
-              <User className="w-6 h-6" />
-              {t('common.login')}
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/8 transition-colors">
+                    <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-primary/40">
+                      {user.avatar ? (
+                        <img
+                          src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`}
+                          alt={user.globalName ?? user.username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-primary/60 flex items-center justify-center text-sm font-bold text-white">
+                          {(user.globalName ?? user.username)[0].toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-sm font-medium text-foreground max-w-28 truncate">
+                      {user.globalName ?? user.username}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-foreground/60" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')} className="gap-2 cursor-pointer">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Mi panel
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="w-4 h-4" />
+                    Cerrar sesión
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" className="gap-2 px-5 py-3 text-lg" asChild>
+                <a href={loginHref}>
+                  <User className="w-6 h-6" />
+                  {t('common.login')}
+                </a>
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -238,10 +306,31 @@ export function Header() {
                 {t('header.nav.resources')}
               </a>
               <div className="border-t border-border pt-2 mt-2">
-                <Button className="w-full gap-2 bg-pink-500 hover:bg-pink-600 text-lg py-3">
-                  <User className="w-6 h-6" />
-                  {t('common.login')}
-                </Button>
+                {user ? (
+                  <div className="flex flex-col gap-2 px-4">
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                      className="flex items-center gap-2 py-2.5 text-lg text-foreground/80 hover:text-primary"
+                    >
+                      <LayoutDashboard className="w-5 h-5" />
+                      Mi panel
+                    </button>
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); logout(); }}
+                      className="flex items-center gap-2 py-2.5 text-lg text-destructive/80 hover:text-destructive"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      Cerrar sesión
+                    </button>
+                  </div>
+                ) : (
+                  <Button className="w-full gap-2 bg-pink-500 hover:bg-pink-600 text-lg py-3" asChild>
+                    <a href={loginHref}>
+                      <User className="w-6 h-6" />
+                      {t('common.login')}
+                    </a>
+                  </Button>
+                )}
               </div>
             </nav>
           </motion.div>
