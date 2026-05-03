@@ -40,7 +40,7 @@ function ModuleCard({ mod, index, onToggle, guildId }: { mod: Module; index: num
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Prevenir navegación si se hace clic en el switch o en el link de docs
-    if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('a')) {
+    if ((e.target as HTMLElement).closest('[data-module-toggle]') || (e.target as HTMLElement).closest('a')) {
       return;
     }
     navigate(`/dashboard/servers/${guildId}/modules/${mod.id}`);
@@ -74,11 +74,19 @@ function ModuleCard({ mod, index, onToggle, guildId }: { mod: Module; index: num
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
-          <Switch
-            checked={mod.enabled}
-            onCheckedChange={(checked) => onToggle(mod.id, checked)}
-            className="data-[state=checked]:bg-green-500"
-          />
+          <div
+            data-module-toggle
+            onClick={(event) => event.stopPropagation()}
+            onPointerDown={(event) => event.stopPropagation()}
+          >
+            <Switch
+              checked={mod.enabled}
+              onClick={(event) => event.stopPropagation()}
+              onPointerDown={(event) => event.stopPropagation()}
+              onCheckedChange={(checked) => onToggle(mod.id, checked)}
+              className="data-[state=checked]:bg-green-500"
+            />
+          </div>
         </div>
       </div>
 
@@ -98,6 +106,7 @@ export function ServerPage() {
   const { modules: moduleMeta } = useModules();
 
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
+  const [savingModules, setSavingModules] = useState<Record<string, boolean>>({});
 
   const modules = useMemo<Module[]>(() => moduleMeta.map((m) => {
     const Icon = m.Icon;
@@ -113,12 +122,32 @@ export function ServerPage() {
       name: nameText === nameKey ? prettyModuleName(m.id) : nameText,
       description: descriptionText === descriptionKey ? t('server.modulesDesc') : descriptionText,
       available: true,
-      docsHref: '#',
+      docsHref: undefined,
     };
   }), [t, enabledModules, moduleMeta]);
 
-  const handleToggleModule = (id: string, enabled: boolean) => {
-    setEnabledModules(prev => ({ ...prev, [id]: enabled }));
+  const handleToggleModule = async (id: string, enabled: boolean) => {
+    if (!guildId) return;
+
+    setEnabledModules((prev) => ({ ...prev, [id]: enabled }));
+    setSavingModules((prev) => ({ ...prev, [id]: true }));
+
+    try {
+      const response = await fetch(`/api/guilds/${guildId}/module-states/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabled }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Module toggle API responded ${response.status}`);
+      }
+    } catch (error) {
+      console.error('No se pudo guardar el estado del modulo:', error);
+      setEnabledModules((prev) => ({ ...prev, [id]: !enabled }));
+    } finally {
+      setSavingModules((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
   useEffect(() => {
@@ -132,6 +161,32 @@ export function ServerPage() {
       navigate('/dashboard', { replace: true }); // Servidor no encontrado
     }
   }, [isLoading, user, guildId, guilds, navigate]);
+
+  useEffect(() => {
+    if (!guildId) return;
+
+    const controller = new AbortController();
+
+    fetch(`/api/guilds/${guildId}/module-states`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`Module states API responded ${response.status}`);
+        }
+        return response.json() as Promise<{ moduleStates?: Record<string, boolean> }>;
+      })
+      .then((data) => {
+        const moduleStates = data?.moduleStates && typeof data.moduleStates === 'object'
+          ? data.moduleStates
+          : {};
+        setEnabledModules(moduleStates);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        console.error('No se pudieron cargar los estados de módulos:', error);
+      });
+
+    return () => controller.abort();
+  }, [guildId]);
 
   const guild = guilds.find((g) => g.id === guildId);
   const icon = guild ? guildIconUrl(guild) : null;
@@ -216,7 +271,14 @@ export function ServerPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {modules.map((mod, i) => (
-              <ModuleCard key={mod.id} mod={mod} index={i} onToggle={handleToggleModule} guildId={guildId ?? ''} />
+              <div key={mod.id} className="relative">
+                <ModuleCard mod={mod} index={i} onToggle={handleToggleModule} guildId={guildId ?? ''} />
+                {savingModules[mod.id] && (
+                  <div className="pointer-events-none absolute inset-x-3 bottom-3 rounded-lg border border-white/10 bg-black/40 px-2 py-1 text-center text-[10px] font-medium text-white/70 backdrop-blur">
+                    Guardando...
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>

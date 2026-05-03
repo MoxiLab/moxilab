@@ -89,6 +89,8 @@ function normalizeModuleId(value: string): string {
     systems: 'systems',
     streaming: 'streaming',
     genshin: 'genshin',
+    marriage: 'matrimonio',
+    boda: 'matrimonio',
     matrimonio: 'matrimonio',
   };
 

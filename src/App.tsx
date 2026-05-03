@@ -1,15 +1,17 @@
 import { Header } from '@/sections/Header';
 import { Footer } from '@/sections/Footer';
 import { Route, Routes } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
 import { HomePage } from '@/pages/HomePage';
 import { CommandsPage } from '@/pages/CommandsPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { ServerPage } from '@/pages/ServerPage';
-import { ModuleConfigPage } from '@/pages/ModuleConfigPage';
+import { ModuleConfigPage } from './pages/ModuleConfigPage';
 
 function App() {
   return (
     <div className="min-h-screen bg-background">
+      <Toaster position="bottom-right" richColors />
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
