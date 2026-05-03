@@ -342,6 +342,14 @@ async function fetchBotCommands() {
   return res.json();
 }
 
+async function fetchBotJson(apiPath, timeoutMs = 4000) {
+  const headers = { Accept: 'application/json' };
+  if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+  const res = await fetch(`${BOT_API_URL}${apiPath}`, { headers, signal: AbortSignal.timeout(timeoutMs) });
+  if (!res.ok) throw new Error(`Bot API responded ${res.status}`);
+  return res.json();
+}
+
 const client = new MongoClient(MONGODB_URI, {
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 5000,
@@ -434,6 +442,8 @@ function normalizeModuleId(value) {
     ['systems', 'systems'],
     ['streaming', 'streaming'],
     ['genshin', 'genshin'],
+    ['marriage', 'matrimonio'],
+    ['boda', 'matrimonio'],
     ['matrimonio', 'matrimonio'],
   ]);
 
@@ -947,6 +957,261 @@ app.get('/api/guilds', async (_req, res) => {
   }
 });
 
+app.get('/api/guilds/:guildId/music-panel', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) {
+    return res.status(400).json({ error: 'guildId es obligatorio.' });
+  }
+
+  try {
+    const data = await fetchBotJson(`/api/music-panel?guildId=${encodeURIComponent(guildId)}`, 5000);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_music_panel_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudo obtener el panel de música del bot.' });
+  }
+});
+
+app.get('/api/guilds/:guildId/module-states', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) {
+    return res.status(400).json({ error: 'guildId es obligatorio.' });
+  }
+
+  try {
+    const data = await fetchBotJson(`/api/guilds/${encodeURIComponent(guildId)}/module-states`, 5000);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_module_states_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron obtener los estados de módulos.' });
+  }
+});
+
+app.put('/api/guilds/:guildId/module-states/:moduleId', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  const moduleId = String(req.params.moduleId ?? '').trim();
+  const enabled = req.body?.enabled;
+
+  if (!guildId || !moduleId || typeof enabled !== 'boolean') {
+    return res.status(400).json({ error: 'guildId, moduleId y enabled son obligatorios.' });
+  }
+
+  try {
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/module-states/${encodeURIComponent(moduleId)}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ enabled }),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error || `Bot API responded ${response.status}`);
+    }
+
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_module_toggle_failed', { guildId, moduleId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudo actualizar el estado del módulo.' });
+  }
+});
+
+app.get('/api/guilds/:guildId/channels', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/channels`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_channels_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron obtener los canales.' });
+  }
+});
+
+app.get('/api/guilds/:guildId/roles', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/roles`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_roles_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron obtener los roles.' });
+  }
+});
+
+app.get('/api/guilds/:guildId/members', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+  const limit = Math.min(Number(req.query.limit) || 100, 500);
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/members?limit=${limit}`, {
+      headers,
+      signal: AbortSignal.timeout(8000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_members_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron obtener los miembros.' });
+  }
+});
+
+app.put('/api/guilds/:guildId/moderation-settings', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+  try {
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/moderation-settings`, {
+      method: 'PUT', headers, body: JSON.stringify(req.body ?? {}), signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_moderation_settings_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron guardar los ajustes de moderación.' });
+  }
+});
+
+app.put('/api/guilds/:guildId/streaming-settings', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+  try {
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/streaming-settings`, {
+      method: 'PUT', headers, body: JSON.stringify(req.body ?? {}), signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_streaming_settings_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron guardar los ajustes de streaming.' });
+  }
+});
+
+app.get('/api/guilds/:guildId/marriage-settings', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/marriage-settings`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_marriage_settings_get_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron obtener los ajustes de matrimonio.' });
+  }
+});
+
+app.put('/api/guilds/:guildId/marriage-settings', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  const payload = req.body ?? {};
+
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+
+  try {
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/marriage-settings`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_marriage_settings_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron guardar los ajustes de matrimonio.' });
+  }
+});
+
+app.get('/api/guilds/:guildId/economy-settings', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  if (!guildId) return res.status(400).json({ error: 'guildId es obligatorio.' });
+
+  try {
+    const headers = { Accept: 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/economy-settings`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data?.error || `Bot API responded ${response.status}`);
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_economy_settings_get_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron cargar los ajustes de economía.' });
+  }
+});
+
+app.put('/api/guilds/:guildId/economy-settings', async (req, res) => {
+  const guildId = String(req.params.guildId ?? '').trim();
+  const payload = req.body ?? {};
+
+  if (!guildId) {
+    return res.status(400).json({ error: 'guildId es obligatorio.' });
+  }
+  if (
+    typeof payload.enabled !== 'boolean' &&
+    !('channelId' in payload) &&
+    typeof payload.exclusive !== 'boolean'
+  ) {
+    return res.status(400).json({ error: 'Se requiere al menos un campo: enabled, channelId o exclusive.' });
+  }
+
+  try {
+    const headers = { Accept: 'application/json', 'Content-Type': 'application/json' };
+    if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
+    const response = await fetch(`${BOT_API_URL}/api/guilds/${encodeURIComponent(guildId)}/economy-settings`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(5000),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error || `Bot API responded ${response.status}`);
+    }
+    return res.json(data);
+  } catch (err) {
+    logger.warn('api_economy_settings_failed', { guildId, error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudieron guardar los ajustes de economía.' });
+  }
+});
+
 app.get('/api/modules', async (_req, res) => {
   // 1) Intentar obtener lista de módulos directamente del bot
   try {
@@ -1050,8 +1315,18 @@ app.get('/api/commands', async (req, res) => {
     });
   } catch (err) {
     logger.error('api_commands_failed', { error: err?.message ?? String(err) });
-    res.status(503).json({ error: 'Failed to load commands (mongo unavailable)' });
   }
+
+  // 3) Fallback a commands.json estático
+  try {
+    const data = loadStaticCommands();
+    logger.info('api_commands_static_fallback');
+    return res.json(data);
+  } catch (staticErr) {
+    logger.error('api_commands_static_failed', { error: staticErr?.message ?? String(staticErr) });
+  }
+
+  res.status(503).json({ error: 'No se pudieron cargar los comandos.' });
 });
 
 app.get('/api/commands/:name', async (req, res) => {
@@ -1428,6 +1703,12 @@ app.get('/api/playground/preview', async (req, res) => {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distPath = path.resolve(__dirname, '..', 'dist');
+const STATIC_COMMANDS_PATH = path.resolve(__dirname, '..', 'public', 'commands.json');
+
+function loadStaticCommands() {
+  const raw = fs.readFileSync(STATIC_COMMANDS_PATH, 'utf8');
+  return JSON.parse(raw);
+}
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(distPath));
