@@ -1,16 +1,15 @@
 {
-  "generatedAt": "2026-02-09T17:36:50.317Z",
-  "count": 198,
-  "countPrefix": 125,
-  "countSlash": 73,
+  "generatedAt": "2026-05-03T18:36:15.531Z",
+  "count": 233,
+  "countPrefix": 153,
+  "countSlash": 80,
   "items": [
     {
       "name": "8ball",
-      "description": "commands:CMD_8BALL_DESC",
+      "description": "Pregunta a la bola mágica 8.",
       "category": "Diversión",
       "usage": "8ball <pregunta>",
       "aliases": [
-        "8ball",
         "ball",
         "bola8"
       ],
@@ -18,27 +17,32 @@
       "type": "prefix"
     },
     {
-      "name": "add",
-      "description": "Añade canciones a la cola",
-      "category": "Música",
-      "usage": "add <cantidad>",
+      "name": "8ball",
+      "description": "Responde a tu pregunta con una respuesta aleatoria",
+      "category": "Diversión",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "acceptmarriage",
+      "description": "Aceptar una propuesta de matrimonio pendiente.",
+      "category": "Matrimonio",
+      "usage": "acceptmarriage [@proponente]",
       "aliases": [
-        "anadir",
-        "sumar",
-        "agregar"
+        "acceptm"
       ],
+      "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "addemoji",
-      "description": "Add an emoji to the server",
-      "category": "Administración",
-      "usage": "addemoji <emoji/url> <name>",
+      "name": "add",
+      "category": "Música",
+      "usage": "add <cantidad>",
       "aliases": [
-        "addemy",
-        "ae"
+        "añadir",
+        "sumar",
+        "agregar"
       ],
-      "cooldown": 5,
       "type": "prefix"
     },
     {
@@ -47,15 +51,20 @@
       "category": "Herramientas",
       "usage": "afk [global|server] [mensaje]",
       "aliases": [
-        "afk",
         "ausente"
       ],
       "type": "prefix"
     },
     {
+      "name": "afk",
+      "description": "Set your AFK status with a message and scope",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "amadd",
       "description": "Crea una regla de auto-moderación (keywords/spam/mentions/presets).",
-      "category": "Moderación",
+      "category": "Moderation",
       "usage": "amadd <keyword> | amadd --trigger spam | amadd --trigger mention --mention-limit N | amadd --trigger preset --preset profanity",
       "aliases": [
         "creaautoregla",
@@ -69,7 +78,7 @@
     {
       "name": "amdel",
       "description": "Elimina una regla de auto-moderación por ID.",
-      "category": "Moderación",
+      "category": "Moderation",
       "usage": "amdel <id>",
       "aliases": [
         "eliminautoregla",
@@ -83,7 +92,7 @@
     {
       "name": "amget",
       "description": "Muestra una regla de auto-moderación por ID.",
-      "category": "Moderación",
+      "category": "Moderation",
       "usage": "amget <id>",
       "aliases": [
         "autoregla",
@@ -96,7 +105,7 @@
     {
       "name": "amls",
       "description": "Lista todas las reglas de auto-moderación del servidor.",
-      "category": "Moderación",
+      "category": "Moderation",
       "usage": "amls",
       "aliases": [
         "listareglasauto",
@@ -110,7 +119,7 @@
     {
       "name": "amtgl",
       "description": "Activa o desactiva una regla de auto-moderación por ID.",
-      "category": "Moderación",
+      "category": "Moderation",
       "usage": "amtgl <id> <on|off>",
       "aliases": [
         "editaautoregla",
@@ -122,8 +131,34 @@
       "type": "prefix"
     },
     {
+      "name": "anniversary",
+      "description": "Ver fecha de aniversario y tiempo juntos.",
+      "category": "Matrimonio",
+      "usage": "anniversary [set DD/MM/YYYY | @usuario]",
+      "aliases": [
+        "aniversario"
+      ],
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "artifact",
+      "description": "Muestra informacion clara de un set: rareza, efectos, dominio, personajes recomendados e iconos de piezas.",
+      "category": "Genshin",
+      "usage": "artifact <nombre>",
+      "aliases": [
+        "art",
+        "gart",
+        "giart",
+        "artefacto",
+        "setartefactos"
+      ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
       "name": "auction",
-      "description": "commands:CMD_AUCTION_DESC",
+      "description": "Gestiona subastas.",
       "category": "Economía",
       "usage": "auction [subcomando]",
       "aliases": [
@@ -134,24 +169,50 @@
       "type": "prefix"
     },
     {
-      "name": "audit",
-      "description": "Configura el canal de auditoría (modlog).",
-      "category": "Administración",
-      "usage": "audit set #canal | audit off | audit status",
-      "aliases": [
-        "modlog",
-        "auditlog"
+      "name": "auction",
+      "category": "Economía",
+      "subcommands": [
+        {
+          "name": "help",
+          "fullName": "auction help"
+        },
+        {
+          "name": "add",
+          "fullName": "auction add"
+        },
+        {
+          "name": "bid",
+          "fullName": "auction bid"
+        },
+        {
+          "name": "bids",
+          "fullName": "auction bids"
+        },
+        {
+          "name": "cancel",
+          "fullName": "auction cancel"
+        },
+        {
+          "name": "list",
+          "fullName": "auction list"
+        },
+        {
+          "name": "search",
+          "fullName": "auction search"
+        },
+        {
+          "name": "upgrade",
+          "fullName": "auction upgrade"
+        }
       ],
-      "cooldown": 10,
-      "type": "prefix"
+      "cooldown": 0,
+      "type": "slash"
     },
     {
       "name": "autonuke",
-      "description": "Elimina y recrea el canal actual",
       "category": "Herramientas",
       "usage": "autonuke",
       "aliases": [
-        "autonuke",
         "nukechannel",
         "nuke",
         "nag"
@@ -160,18 +221,18 @@
     },
     {
       "name": "autoplay",
-      "description": "Activa la reproducción automática",
       "category": "Música",
       "usage": "autoplay <plataforma>",
       "aliases": [
         "ap",
-        "reproduccionautomatica"
+        "reproduccionautomatica",
+        "reproducciónautomática"
       ],
       "type": "prefix"
     },
     {
       "name": "bag",
-      "description": "commands:CMD_BAG_DESC",
+      "description": "Muestra tu inventario.",
       "category": "Economía",
       "usage": "bag [pagina]",
       "aliases": [
@@ -183,8 +244,14 @@
       "type": "prefix"
     },
     {
+      "name": "bag",
+      "description": "Página (opcional)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "bal",
-      "description": "commands:CMD_BAL_DESC",
       "category": "Economía",
       "usage": "bal [@usuario] | balance [@usuario]",
       "aliases": [
@@ -196,33 +263,67 @@
     },
     {
       "name": "balance",
-      "description": "commands:CMD_BALANCE_DESC",
+      "description": "Consulta el saldo de monedas.",
       "category": "Economía",
       "usage": "balance [@usuario]",
-      "aliases": [
-        "balance"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "balance",
+      "description": "Usuario (opcional)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "ban",
-      "description": "Banea a un usuario del servidor.",
       "category": "Moderación",
       "usage": "ban <@usuario|id> [motivo]",
       "aliases": [
-        "ban",
         "b"
       ],
       "type": "prefix"
     },
     {
+      "name": "birthday",
+      "description": "🎂 **Módulo de cumpleaños**",
+      "category": "Sistemas",
+      "usage": "[subcomando]",
+      "aliases": [
+        "cumple",
+        "cumpleaños",
+        "bday"
+      ],
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
+      "name": "birthday",
+      "description": "Modulo de cumpleaños del perfil.",
+      "category": "Sistemas",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "blacklistguide",
+      "category": "Herramientas",
+      "usage": "blacklistguide",
+      "aliases": [
+        "blguide",
+        "guia-blacklist",
+        "blacklist-help",
+        "blacklistguia"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
       "name": "blackmarket",
-      "description": "commands:CMD_BLACKMARKET_DESC",
+      "description": "Accede al mercado negro.",
       "category": "Economía",
       "usage": "blackmarket | blackmarket buy <1-3>",
       "aliases": [
-        "blackmarket",
         "bm",
         "mercadonegro"
       ],
@@ -231,7 +332,6 @@
     },
     {
       "name": "botstats",
-      "description": "Muestra estadísticas del bot",
       "category": "Herramientas",
       "usage": "botstats",
       "aliases": [
@@ -243,8 +343,14 @@
       "type": "prefix"
     },
     {
+      "name": "botstats",
+      "description": "Muestra estadísticas del bot",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "buffs",
-      "description": "commands:CMD_BUFFS_DESC",
+      "description": "Ver tus buffs activos.",
       "category": "Economía",
       "usage": "buffs",
       "aliases": [
@@ -255,18 +361,26 @@
       "type": "prefix"
     },
     {
+      "name": "buffs",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "bug",
-      "description": "¿Has encontrado un error o crees que un comando no funciona bien? Repórtalo usando /bug para avisar al desarrollador.",
       "category": "Herramientas",
       "usage": "bug <descripción> [adjunto]",
-      "aliases": [
-        "bug"
-      ],
       "type": "prefix"
     },
     {
+      "name": "bug",
+      "description": "Configura el foro oficial de reportes de bugs",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "buy",
-      "description": "commands:CMD_BUY_DESC",
+      "description": "Compra un ítem de la tienda.",
       "category": "Economía",
       "usage": "buy <id|nombre|itemId> [cantidad]",
       "aliases": [
@@ -276,68 +390,74 @@
       "type": "prefix"
     },
     {
-      "name": "byes",
-      "description": "Configura el sistema de despedidas (byes) (sylphacard, discord-arts o canvacard).",
-      "category": "Sistema de bienvenida",
-      "usage": "byes set #canal | byes off | byes style [sylphacard|discord-arts|canvacard] | byes message <texto> | byes message <lang> <texto> | byes message clear [lang] | byes test",
-      "aliases": [
-        "bye",
-        "despedida",
-        "despedidas"
-      ],
-      "cooldown": 10,
-      "type": "prefix"
+      "name": "buy",
+      "description": "Nombre o itemId (ej:",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
     },
     {
       "name": "carnival",
-      "description": "commands:CMD_CARNIVAL_DESC",
+      "description": "Accede al carnaval.",
       "category": "Economía",
       "usage": "carnival",
-      "aliases": [
-        "carnival"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "channel",
-      "description": "Configura el canal de auditoría (modlog).",
-      "category": "Administración",
-      "usage": "channel <crear|borrar|mover|renombrar> <tipo> <nombre> [opciones]",
+      "name": "carnival",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "characters",
+      "description": "Muestra lista de personajes o la ficha de uno en específico.",
+      "category": "Genshin",
+      "usage": "characters [página|nombre]",
       "aliases": [
-        "canal",
-        "channel",
-        "ch"
+        "chars",
+        "gicharacters",
+        "gichar",
+        "personajes",
+        "gipersonajes",
+        "allchars"
       ],
+      "cooldown": 2,
       "type": "prefix"
     },
     {
       "name": "chop",
-      "description": "commands:CMD_CHOP_DESC",
+      "description": "Tala madera para obtener recursos.",
       "category": "Economía",
       "usage": "chop",
-      "aliases": [
-        "chop"
-      ],
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "chop",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "claimcode",
+      "description": "Canjea un código especial.",
+      "category": "Economía",
+      "usage": "claimcode <codigo>",
       "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "claimcode",
-      "description": "commands:CMD_CLAIMCODE_DESC",
       "category": "Economía",
-      "usage": "claimcode <codigo>",
-      "aliases": [
-        "claimcode"
-      ],
       "cooldown": 0,
-      "type": "prefix"
+      "type": "slash"
     },
     {
       "name": "cls",
       "description": "Limpia el chat borrando los mensajes recientes (máx 100)",
       "category": "Herramientas",
-      "usage": "",
       "aliases": [
         "clear",
         "limpiar"
@@ -345,12 +465,18 @@
       "type": "prefix"
     },
     {
+      "name": "cls",
+      "description": "Limpia el chat borrando los mensajes recientes (máx 100)",
+      "category": "Herramientas",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "coinflip",
-      "description": "commands:CMD_COINFLIP_DESC",
+      "description": "Apuesta monedas cara o cruz.",
       "category": "Economía",
       "usage": "coinflip",
       "aliases": [
-        "coinflip",
         "flip",
         "coin"
       ],
@@ -358,19 +484,66 @@
       "type": "prefix"
     },
     {
+      "name": "coinflip",
+      "description": "Lanza una moneda (cara o cruz)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "colab",
+      "category": "Herramientas",
+      "usage": "colab crear <categoria> | <titulo> | <descripcion> | colab listar [estado] | colab aceptar <id> [motivo] | colab denegar <id> [motivo] | colab cancelar <id> [motivo] | colab estado | colab set #canal | colab staff @rol | colab on/off",
+      "aliases": [
+        "colaboracion",
+        "colaboración",
+        "collab"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
+      "name": "colab",
+      "description": "Sistema de colaboraciones del servidor",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "collect",
-      "description": "commands:CMD_COLLECT_DESC",
+      "description": "Recolecta tus ganancias pasivas.",
       "category": "Economía",
       "usage": "collect",
-      "aliases": [
-        "collect"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "collect",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "compat",
+      "description": "Calcula compatibilidad social entre dos usuarios.",
+      "category": "Diversión",
+      "usage": "compat @usuario",
+      "aliases": [
+        "compatibilidad",
+        "matchsocial"
+      ],
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
+      "name": "compat",
+      "description": "Calcula compatibilidad social con otro usuario.",
+      "category": "Diversión",
+      "cooldown": 3,
+      "type": "slash"
+    },
+    {
       "name": "craft",
-      "description": "commands:CMD_CRAFT_DESC",
+      "description": "Fabrica ítems combinando materiales.",
       "category": "Economía",
       "usage": "craft [-p página] <item> [anvil]",
       "aliases": [
@@ -381,8 +554,14 @@
       "type": "prefix"
     },
     {
+      "name": "craft",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "crime",
-      "description": "commands:CMD_CRIME_DESC",
+      "description": "Comete un crimen para ganar monedas (con riesgo).",
       "category": "Economía",
       "usage": "crime",
       "aliases": [
@@ -395,34 +574,39 @@
       "type": "prefix"
     },
     {
+      "name": "crime",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "daily",
-      "description": "commands:CMD_DAILY_DESC",
+      "description": "Reclama tu recompensa diaria de monedas.",
       "category": "Economía",
       "usage": "daily",
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "daily",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "declinemarriage",
+      "description": "Rechazar una propuesta de matrimonio pendiente.",
+      "category": "Matrimonio",
+      "usage": "declinemarriage [@proponente]",
       "aliases": [
-        "daily"
+        "declinem"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "delemoji",
-      "description": "DELEMOJI_DESC",
-      "category": "Administración",
-      "usage": "delemoji <emoji|id|nombre> [razón]",
-      "aliases": [
-        "deleteemoji",
-        "removeemoji",
-        "rememoji",
-        "delemoji",
-        "de"
-      ],
-      "cooldown": 5,
-      "type": "prefix"
-    },
-    {
       "name": "deposit",
-      "description": "commands:CMD_DEPOSIT_DESC",
+      "description": "Deposita monedas en el banco.",
       "category": "Economía",
       "usage": "deposit [cantidad]",
       "aliases": [
@@ -433,12 +617,18 @@
       "type": "prefix"
     },
     {
+      "name": "deposit",
+      "description": "Cantidad a depositar (si se omite, deposita todo)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "dice",
-      "description": "commands:CMD_DICE_DESC",
+      "description": "Tira un dado.",
       "category": "Diversión",
       "usage": "dice [lados]",
       "aliases": [
-        "dice",
         "dado",
         "dados",
         "roll"
@@ -447,22 +637,43 @@
       "type": "prefix"
     },
     {
-      "name": "economy",
-      "description": "Configura la economía (activar/desactivar y canal dedicado)",
-      "category": "Administración",
-      "usage": "economy on | economy off | economy set #canal | economy clear | economy exclusive on/off | economy status",
+      "name": "dice",
+      "description": "Tira un dado",
+      "category": "Diversión",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "divorce",
+      "description": "Divorciarte de tu pareja.",
+      "category": "Matrimonio",
+      "usage": "divorce",
       "aliases": [
-        "eco",
-        "economyconfig",
-        "econconfig"
+        "divorcio"
       ],
-      "cooldown": 5,
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "domain",
+      "description": "Muestra info de un dominio de Genshin Impact.",
+      "category": "Genshin",
+      "usage": "domain <nombre>",
+      "aliases": [
+        "dom",
+        "gdom",
+        "gidom",
+        "dominio",
+        "dominios",
+        "domainlist"
+      ],
+      "cooldown": 2,
       "type": "prefix"
     },
     {
       "name": "emojiinfo",
       "description": "Get detailed information about an emoji",
-      "category": "Utilidad",
+      "category": "Utiility",
       "usage": "emojiinfo <emoji/name>",
       "aliases": [
         "ei",
@@ -472,30 +683,64 @@
       "type": "prefix"
     },
     {
+      "name": "enemies",
+      "description": "Muestra lista de enemigos o la ficha de uno en específico.",
+      "category": "Genshin",
+      "usage": "enemies [página|nombre]",
+      "aliases": [
+        "enemy",
+        "enemigo",
+        "enemigos",
+        "gienemies",
+        "gienemy"
+      ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
+      "name": "Estado actual",
+      "description": "Potencia los graves",
+      "category": "Música",
+      "usage": "filter <off|filtro>",
+      "aliases": [
+        "filtro",
+        "filters",
+        "fx"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
       "name": "event",
-      "description": "commands:CMD_EVENT_DESC",
+      "description": "Información del evento actual.",
       "category": "Economía",
       "usage": "event | event claim",
-      "aliases": [
-        "event"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "event",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "feedback",
       "description": "Share your thoughts about the bot",
-      "category": "Utilidad",
+      "category": "Utiility",
       "usage": "feedback <text>",
-      "aliases": [
-        "feedback"
-      ],
       "cooldown": 60,
       "type": "prefix"
     },
     {
+      "name": "feedback",
+      "description": "Send feedback about the bot",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "fish",
-      "description": "commands:CMD_FISH_DESC",
+      "description": "Ve a pescar y consigue recursos.",
       "category": "Economía",
       "usage": "fish [zona|nivel] | fish zones",
       "aliases": [
@@ -506,45 +751,222 @@
       "type": "prefix"
     },
     {
+      "name": "fish",
+      "description": "Fishing zone (id or alias). If omitted, picks an available one.",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "fortune",
-      "description": "commands:CMD_FORTUNE_DESC",
+      "description": "Consulta tu fortuna.",
       "category": "Economía",
       "usage": "fortune",
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "fortune",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "genshin",
+      "description": "Muestra la cuenta de Genshin vinculada.",
+      "category": "Genshin",
+      "usage": "genshin [@usuario]",
       "aliases": [
-        "fortune"
+        "gime",
+        "migenshin",
+        "genshinperfil",
+        "genshinprofile",
+        "genshinacc",
+        "genshinaccount",
+        "genshincuenta",
+        "genshinuid",
+        "genshininfo",
+        "genshinshowcase",
+        "account",
+        "acc"
       ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
+      "name": "genshin",
+      "description": "Muestra guias y recursos utiles de Genshin Impact.",
+      "category": "Genshin",
+      "cooldown": 3,
+      "type": "slash"
+    },
+    {
+      "name": "genshinadd",
+      "description": "Agrega un personaje a tu roster manual de Genshin.",
+      "category": "Genshin",
+      "usage": "genshinadd <nombre del personaje>",
+      "aliases": [
+        "giadd",
+        "agregargenshinchar",
+        "genshincharadd"
+      ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
+      "name": "genshinguide",
+      "description": "Muestra guias y recursos utiles de Genshin Impact.",
+      "category": "Genshin",
+      "usage": "genshinguide [general|builds|characters|map|codes]",
+      "aliases": [
+        "gi",
+        "genshinhelp"
+      ],
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
+      "name": "genshinlink",
+      "description": "Vincula tu cuenta de Genshin por UID (sin login).",
+      "category": "Genshin",
+      "usage": "genshinlink <uid> [EU|NA|ASIA|SAR]",
+      "aliases": [
+        "gilink",
+        "vinculargenshin",
+        "linkgenshin",
+        "vinculargi",
+        "linkgi",
+        "linkg",
+        "link"
+      ],
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
+      "name": "genshinmap",
+      "description": "Muestra mapas utiles de Genshin y accesos por region.",
+      "category": "Genshin",
+      "usage": "genshinmap [region]",
+      "aliases": [
+        "gimap",
+        "mapagi",
+        "mapa",
+        "maps",
+        "map",
+        "mapas"
+      ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
+      "name": "genshinremove",
+      "description": "Elimina un personaje de tu roster manual de Genshin.",
+      "category": "Genshin",
+      "usage": "genshinremove <nombre del personaje>",
+      "aliases": [
+        "giremove",
+        "quitargenshinchar",
+        "genshincharrm",
+        "removegenshinchar",
+        "rmgenshinchar",
+        "removegichar",
+        "rmgichar",
+        "removechar",
+        "rmchar"
+      ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
+      "name": "genshinunlink",
+      "description": "Desvincula tu cuenta de Genshin.",
+      "category": "Genshin",
+      "usage": "genshinunlink",
+      "aliases": [
+        "giunlink",
+        "desvinculargenshin",
+        "unlinkgenshin",
+        "desvinculargi",
+        "unlinkgi",
+        "unlinkg",
+        "unlink",
+        "desvincular",
+        "desvinculargi",
+        "desvinculargenshin"
+      ],
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
+      "name": "gift",
+      "description": "Regala un ítem a otro usuario.",
+      "category": "Economía",
+      "usage": "gift [coins|item] <@usuario|id> <cantidad|item...>",
       "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "gift",
-      "description": "commands:CMD_GIFT_DESC",
+      "description": "Regala coins a un usuario",
       "category": "Economía",
-      "usage": "gift [coins|item] <@usuario|id> <cantidad|item...>",
-      "aliases": [
-        "gift"
-      ],
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "give",
+      "description": "Transfiere monedas a otro usuario.",
+      "category": "Economía",
+      "usage": "give <@usuario|id> <cantidad>",
       "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "give",
-      "description": "commands:CMD_GIVE_DESC",
+      "description": "Usuario que recibirá las coins",
       "category": "Economía",
-      "usage": "give <@usuario|id> <cantidad>",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "globalrank",
+      "description": "Ranking global de monedas.",
+      "category": "Economía",
+      "usage": "globalrank",
       "aliases": [
-        "give"
+        "grank",
+        "rankglobal"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "globalrank",
+      "description": "Muestra el ranking global de niveles entre todos los servidores.",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "guide",
-      "description": "commands:CMD_GUIDE_DESC",
+      "description": "Guía del sistema de economía.",
       "category": "Economía",
       "usage": "guide",
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "guide",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "help",
+      "category": "Herramientas",
+      "usage": "help [comando|categoria]",
       "aliases": [
-        "guide"
+        "h",
+        "commands"
       ],
       "cooldown": 0,
       "type": "prefix"
@@ -553,31 +975,24 @@
       "name": "help",
       "description": "Muestra la lista de comandos disponibles y su uso",
       "category": "Herramientas",
-      "usage": "help [comando|categoria]",
-      "aliases": [
-        "h",
-        "commands"
-      ],
-      "type": "prefix"
+      "cooldown": 0,
+      "type": "slash"
     },
     {
       "name": "ia",
-      "description": "Activa o desactiva el modo IA en este canal",
       "category": "Herramientas",
       "usage": "ia <on|off|status|prompt|model|temp|cooldown|ownersonly>",
       "aliases": [
-        "ia",
         "ai"
       ],
       "type": "prefix"
     },
     {
       "name": "invest",
-      "description": "commands:CMD_INVEST_DESC",
+      "description": "Invierte monedas para obtener ganancias.",
       "category": "Economía",
       "usage": "invest <cantidad>",
       "aliases": [
-        "invest",
         "inversion",
         "invertir"
       ],
@@ -586,18 +1001,24 @@
     },
     {
       "name": "invite",
-      "description": "Crea una invitación permanente del servidor.",
       "category": "Herramientas",
       "usage": "invite [#canal|canalId]",
       "aliases": [
         "inv",
-        "invitacion"
+        "invitacion",
+        "invitación"
       ],
       "type": "prefix"
     },
     {
+      "name": "invite",
+      "description": "Crea una invitación permanente del servidor",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "iteminfo",
-      "description": "commands:CMD_ITEMINFO_DESC",
+      "description": "Consulta información de un ítem.",
       "category": "Economía",
       "usage": "iteminfo <id|nombre|itemId>",
       "aliases": [
@@ -614,83 +1035,50 @@
       "type": "prefix"
     },
     {
+      "name": "iteminfo",
+      "description": "ID del ítem (se ve en /shop list y /bag)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "kick",
-      "description": "Expulsa a un usuario del servidor.",
       "category": "Moderación",
       "usage": "kick <@usuario|id> [motivo]",
-      "aliases": [
-        "kick"
-      ],
-      "type": "prefix"
-    },
-    {
-      "name": "language",
-      "description": "Configura el idioma del bot para este servidor.",
-      "category": "Administración",
-      "usage": "language [código de idioma]",
-      "aliases": [
-        "language",
-        "lang",
-        "idioma",
-        "lenguaje"
-      ],
-      "cooldown": 30,
-      "type": "prefix"
-    },
-    {
-      "name": "lava",
-      "description": "Muestra el estado del nodo Lavalink",
-      "category": "Propietario",
-      "usage": "",
-      "aliases": [
-        "lavanode",
-        "lavastatus",
-        "lavainfo",
-        "lavalink",
-        "infolava",
-        "lstatus",
-        "lava"
-      ],
       "type": "prefix"
     },
     {
       "name": "leaderboard",
-      "description": "commands:CMD_LEADERBOARD_DESC",
+      "description": "Muestra el ranking de monedas.",
       "category": "Economía",
       "usage": "leaderboard",
       "aliases": [
-        "leaderboard",
         "lb"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "leave",
-      "description": "Hace que el bot abandone el servidor actual",
-      "category": "Administración",
-      "usage": "",
-      "aliases": [
-        "leave"
-      ],
-      "type": "prefix"
+      "name": "leaderboard",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
     },
     {
-      "name": "levelconfig",
-      "description": "Configura el sistema de niveles del servidor",
-      "category": "Administración",
-      "usage": "levelconfig set <#canal> | levelconfig notificaciones <si/no> [#canal] | levelconfig xp <minimo> <maximo> <cooldown_seg> | levelconfig prestige <si/no> [nivel] | levelconfig dailybonus <si/no> [xp] | levelconfig reaccionbonus <si/no> [xp] | levelconfig canal_bloqueado <#canal> <si/no> | levelconfig preview",
+      "name": "letter",
+      "description": "Enviar una carta de amor a tu pareja.",
+      "category": "Matrimonio",
+      "usage": "letter [@pareja] <mensaje>",
       "aliases": [
-        "levelconfig-admin",
-        "config-level"
+        "marriageletter"
       ],
-      "cooldown": 5,
+      "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "levels",
       "description": "Muestra el leaderboard de niveles",
-      "category": "Utilidad",
+      "category": "Utiility",
       "usage": "levels [tipo]",
       "aliases": [
         "leaderboard",
@@ -701,39 +1089,25 @@
       "type": "prefix"
     },
     {
-      "name": "levelsetup",
-      "description": "Muestra el diseño LevelUp",
-      "category": "Administración",
-      "usage": "levelsetup",
-      "aliases": [
-        "levelup",
-        "level-up",
-        "levelcard",
-        "level-card",
-        "levelstyle",
-        "level-style"
-      ],
-      "cooldown": 5,
-      "type": "prefix"
-    },
-    {
       "name": "market",
-      "description": "commands:CMD_MARKET_DESC",
+      "description": "Accede al mercado de jugadores.",
       "category": "Economía",
       "usage": "market [categoria] [pagina]",
-      "aliases": [
-        "market"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "market",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "markettrends",
-      "description": "commands:CMD_MARKETTRENDS_DESC",
+      "description": "Consulta las tendencias del mercado.",
       "category": "Economía",
       "usage": "markettrends",
       "aliases": [
-        "markettrends",
         "trends",
         "tendencias"
       ],
@@ -741,25 +1115,81 @@
       "type": "prefix"
     },
     {
+      "name": "marriage",
+      "description": "Comandos de matrimonio.",
+      "category": "Matrimonio",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "marriages",
+      "description": "Ver estado matrimonial de un usuario.",
+      "category": "Matrimonio",
+      "usage": "marriages [@usuario]",
+      "aliases": [
+        "marriagestatus",
+        "matrimonios"
+      ],
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "marry",
+      "description": "Enviar una propuesta de matrimonio.",
+      "category": "Matrimonio",
+      "usage": "marry @usuario [DD/MM/YYYY]",
+      "aliases": [
+        "proposemarriage",
+        "pedirmatrimonio"
+      ],
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "material",
+      "description": "Muestra info corta de un material.",
+      "category": "Genshin",
+      "usage": "material <nombre>",
+      "aliases": [
+        "mat",
+        "gim",
+        "gimat",
+        "materiales",
+        "materialinfo",
+        "materialesinfo",
+        "matinfo",
+        "matinf",
+        "mat"
+      ],
+      "cooldown": 2,
+      "type": "prefix"
+    },
+    {
       "name": "mine",
-      "description": "commands:CMD_MINE_DESC",
+      "description": "Mina recursos del servidor.",
       "category": "Economía",
       "usage": "mine zones [página]",
       "aliases": [
         "minar",
         "mineria",
+        "minería",
         "mining"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "mine",
+      "description": "Mining zone (id or alias). If omitted, picks an available one.",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "minesweeper",
-      "description": "commands:CMD_MINESWEEPER_DESC",
       "category": "Juegos",
       "usage": "minesweeper",
       "aliases": [
-        "minesweeper",
         "buscaminas",
         "msw"
       ],
@@ -767,35 +1197,78 @@
       "type": "prefix"
     },
     {
+      "name": "minesweeper",
+      "description": "Inicia una partida de buscaminas",
+      "category": "Juegos",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "mix",
-      "description": "commands:CMD_MIX_DESC",
+      "description": "Mezcla materiales.",
       "category": "Economía",
       "usage": "mix <receta> | mix list [-p pagina]",
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "mix",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "mod",
+      "description": "${EMOJIS.shield} ${moxi.translate(",
+      "category": "Moderación",
+      "cooldown": 3,
+      "type": "slash"
+    },
+    {
+      "name": "modengine",
+      "description": "Configura el motor de moderacion avanzado (anti-raid, scoring y reglas).",
+      "category": "Moderación",
+      "usage": "modengine status | modengine on/off | modengine log #canal|off | modengine defense off|soft|hard [dur=10m] | modengine thresholds warn=4 mute=7 kick=10 ban=13 | modengine allowlinks add|remove #canal | modengine allowinvites add|remove #canal | modengine rule list|add|remove ...",
       "aliases": [
-        "mix"
+        "automodengine",
+        "automod",
+        "modeng"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
+      "name": "modengineguide",
+      "category": "Moderación",
+      "usage": "modengineguide",
+      "aliases": [
+        "automodguide",
+        "modenginehelp"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
+      "name": "moxi",
+      "description": "${EMOJIS.wind} Pausa, deja que el viento lleve tu melodía",
+      "category": "Música",
+      "cooldown": 5,
+      "type": "slash"
+    },
+    {
+      "name": "Moxi Say",
+      "description": "Repite un mensaje como si fuera el usuario (webhook / APP) y borra el comando.",
+      "category": "Herramientas",
+      "usage": "sayu <mensaje>",
+      "aliases": [
+        "sayuser"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "mongo",
-      "description": "",
-      "category": "Propietario",
-      "usage": "",
-      "aliases": [
-        "mongonode",
-        "mongostatus",
-        "mongoinfo",
-        "mongodb",
-        "infomongo",
-        "mstatus",
-        "mongo"
-      ],
-      "type": "prefix"
-    },
-    {
       "name": "moxidex",
-      "description": "commands:CMD_MOXIDEX_DESC",
+      "description": "Enciclopedia de ítems y recursos.",
       "category": "Economía",
       "usage": "moxidex",
       "aliases": [
@@ -807,8 +1280,13 @@
       "type": "prefix"
     },
     {
+      "name": "moxidex",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "moxishop",
-      "description": "commands:CMD_MOXISHOP_DESC",
       "category": "Economía",
       "usage": "moxishop list [categoria] [pagina] | moxishop buy <id|nombre|itemId> [cantidad]",
       "aliases": [
@@ -823,19 +1301,43 @@
       "type": "prefix"
     },
     {
+      "name": "moxishop",
+      "description": "Muestra la lista de ítems disponibles",
+      "category": "Economía",
+      "subcommands": [
+        {
+          "name": "list",
+          "fullName": "moxishop list",
+          "description": "Muestra la lista de ítems disponibles"
+        }
+      ],
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "musicpanel",
+      "description": "Activar panel en este canal",
+      "category": "Música",
+      "usage": "musicpanel <status|on|off|image> [#canal|#categoria|url]",
+      "aliases": [
+        "panelmusica",
+        "panelmusic",
+        "pnaelmusic",
+        "mpanel"
+      ],
+      "type": "prefix"
+    },
+    {
       "name": "mute",
-      "description": "Silencia temporalmente a un usuario.",
       "category": "Moderación",
       "usage": "mute <@usuario|id> [motivo]",
       "aliases": [
-        "mute",
         "vmute"
       ],
       "type": "prefix"
     },
     {
       "name": "pause",
-      "description": "Pausa la música",
       "category": "Música",
       "usage": "pause",
       "aliases": [
@@ -846,45 +1348,40 @@
       "type": "prefix"
     },
     {
-      "name": "permiso",
-      "description": "Edita permisos de canales, roles y miembros.",
-      "category": "Administración",
-      "usage": "permiso canales ver | permiso canal <#canal|nombre> ver | permiso canal todos ver | permiso canal <#canal|nombre> <permiso> <permitir|denegar> [@rol|@miembro] | permiso rol <@rol|nombre> ver|añadir|quitar <permiso> | permiso miembro <@miembro> [#canal] <permiso> <permitir|denegar>",
-      "aliases": [
-        "perms"
-      ],
-      "type": "prefix"
-    },
-    {
       "name": "pet",
-      "description": "commands:CMD_PET_DESC",
+      "description": "Gestiona tu mascota virtual.",
       "category": "Economía",
       "usage": "pet",
-      "aliases": [
-        "pet"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "pet",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "ping",
-      "description": "Muestra la latencia del bot",
       "category": "Herramientas",
       "usage": "ping",
       "aliases": [
-        "ping",
         "latency",
         "p"
       ],
       "type": "prefix"
     },
     {
+      "name": "ping",
+      "description": "Muestra la latencia del bot y de la API",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "play",
-      "description": "Reproduce una canción (YouTube o Spotify)",
       "category": "Música",
-      "usage": "play <canción> <plataforma>",
+      "usage": "play <canción> [youtube|spotify|soundcloud]",
       "aliases": [
-        "play",
         "reproducir",
         "tocar"
       ],
@@ -892,9 +1389,8 @@
     },
     {
       "name": "portal",
-      "description": "Muestra el portal del servidor (invitación oficial).",
       "category": "Herramientas",
-      "usage": "portal",
+      "usage": "portal [#canal|canal_id]",
       "aliases": [
         "port",
         "serverportal"
@@ -902,17 +1398,10 @@
       "type": "prefix"
     },
     {
-      "name": "prefix",
-      "description": "Cambia el prefijo del bot para este servidor.",
-      "category": "Administración",
-      "usage": "prefix [nuevo prefijo]",
-      "aliases": [
-        "setprefix",
-        "prefix",
-        "sp"
-      ],
-      "cooldown": 10,
-      "type": "prefix"
+      "name": "portal",
+      "description": "Muestra el portal del servidor (enlace oficial de invitación)",
+      "category": "Tools",
+      "type": "slash"
     },
     {
       "name": "premium",
@@ -927,9 +1416,15 @@
       "type": "prefix"
     },
     {
+      "name": "premium",
+      "description": "Sistema de usuarios premium",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "prestige",
       "description": "Sube tu rango de prestige",
-      "category": "Utilidad",
+      "category": "Utiility",
       "usage": "prestige",
       "aliases": [
         "ascend",
@@ -939,19 +1434,66 @@
       "type": "prefix"
     },
     {
-      "name": "quest",
-      "description": "commands:CMD_QUEST_DESC",
-      "category": "Economía",
-      "usage": "quest | quest claim",
+      "name": "privacy",
+      "category": "Herramientas",
+      "usage": "privacy",
       "aliases": [
-        "quest"
+        "privacidad",
+        "datos"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "privacy",
+      "description": "Muestra la política de privacidad y solicitud de borrado",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
+      "name": "profile",
+      "description": "Muestra un perfil completo del usuario",
+      "category": "Economía",
+      "usage": "profile [@usuario]",
+      "aliases": [
+        "perfil"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
+      "name": "profile",
+      "description": "Muestra un perfil completo del usuario",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "proposals",
+      "description": "Ver tu propuesta de matrimonio pendiente.",
+      "category": "Matrimonio",
+      "usage": "proposals",
+      "aliases": [
+        "marriageproposals"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "quest",
+      "description": "Ver y completar quests.",
+      "category": "Economía",
+      "usage": "quest | quest claim",
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "quest",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "queue",
-      "description": "Muestra la cola de reproducción",
       "category": "Música",
       "usage": "queue",
       "aliases": [
@@ -962,20 +1504,51 @@
       "type": "prefix"
     },
     {
+      "name": "quitarfondo",
+      "category": "Herramientas",
+      "usage": "quitarfondo <url|adjunto>",
+      "aliases": [
+        "removebg",
+        "nobg",
+        "sinfondo",
+        "rb"
+      ],
+      "type": "prefix"
+    },
+    {
       "name": "race",
-      "description": "commands:CMD_RACE_DESC",
+      "description": "Participa en una carrera.",
       "category": "Economía",
       "usage": "race",
-      "aliases": [
-        "race"
-      ],
       "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "race",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "Raiden Shogun",
+      "description": "Guia rapida de equipos recomendados para un personaje.",
+      "category": "Genshin",
+      "usage": "guia <personaje>",
+      "aliases": [
+        "guia",
+        "giguia",
+        "team",
+        "equipo",
+        "comp",
+        "teamcomp"
+      ],
+      "cooldown": 2,
       "type": "prefix"
     },
     {
       "name": "rank",
       "description": "Muestra tu tarjeta de rango actual",
-      "category": "Utilidad",
+      "category": "Utiility",
       "usage": "rank [usuario]",
       "aliases": [
         "rango",
@@ -985,77 +1558,42 @@
       "type": "prefix"
     },
     {
-      "name": "ranksetup",
-      "description": "Configura el estilo de la tarjeta de rank",
-      "category": "Administración",
-      "usage": "ranksetup [style] | ranksetup style <sylphacard|discord-arts|canvacard>",
-      "aliases": [
-        "rank-config",
-        "rankstyle",
-        "rank-setup"
-      ],
-      "cooldown": 5,
-      "type": "prefix"
-    },
-    {
       "name": "reglas",
       "description": "Muestra las reglas del servidor",
       "category": "Herramientas",
-      "usage": "",
       "aliases": [
         "rules"
       ],
       "type": "prefix"
     },
     {
-      "name": "reload",
-      "description": "Recarga módulos en caliente (solo owners).",
-      "category": "Propietario",
-      "usage": "reload [commands|slash|events|interacciones|restart|restartall|all]",
+      "name": "relate",
+      "description": "Agregar a alguien como amigo/a, hermano/a, crush u otro tipo de relación.",
+      "category": "Matrimonio",
+      "usage": "relate @usuario [tipo]",
       "aliases": [
-        "rl",
-        "recargar"
+        "relacion",
+        "vincular"
       ],
+      "cooldown": 3,
       "type": "prefix"
     },
     {
       "name": "repair",
-      "description": "commands:CMD_REPAIR_DESC",
+      "description": "Repara un ítem.",
       "category": "Economía",
       "usage": "repair <id|nombre|itemId>",
-      "aliases": [
-        "repair"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "resetlevels",
-      "description": "Resetea los niveles de un usuario o servidor",
-      "category": "Administración",
-      "usage": "resetlevels [usuario]",
-      "aliases": [
-        "reset-levels",
-        "resetear"
-      ],
-      "cooldown": 5,
-      "type": "prefix"
-    },
-    {
-      "name": "restart",
-      "description": "CMD_RESTART_DESC",
-      "category": "Propietario",
-      "usage": "",
-      "aliases": [
-        "reboot",
-        "reiniciar",
-        "reload"
-      ],
-      "type": "prefix"
+      "name": "repair",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
     },
     {
       "name": "resume",
-      "description": "Reanuda la música",
       "category": "Música",
       "usage": "resume",
       "aliases": [
@@ -1067,18 +1605,8 @@
       "type": "prefix"
     },
     {
-      "name": "rol",
-      "description": "Gestiona roles: crear, borrar, editar, asignar, quitar.",
-      "category": "Administración",
-      "usage": "rol <crear|borrar|editar|asignar|quitar> <nombre> [opciones]",
-      "aliases": [
-        "rol"
-      ],
-      "type": "prefix"
-    },
-    {
       "name": "roulette",
-      "description": "commands:CMD_ROULETTE_DESC",
+      "description": "Juega a la ruleta.",
       "category": "Economía",
       "usage": "roulette <cantidad|all> <rojo|negro|par|impar|alto|bajo|docena1|docena2|docena3|0-36>",
       "aliases": [
@@ -1093,12 +1621,17 @@
       "type": "prefix"
     },
     {
+      "name": "roulette",
+      "description": "Cantidad a apostar",
+      "category": "Economía",
+      "cooldown": 2,
+      "type": "slash"
+    },
+    {
       "name": "rps",
-      "description": "commands:CMD_RPS_DESC",
       "category": "Juegos",
       "usage": "rps",
       "aliases": [
-        "rps",
         "ppt",
         "piedrapapeltijera"
       ],
@@ -1106,12 +1639,24 @@
       "type": "prefix"
     },
     {
+      "name": "rps",
+      "description": "Piedra, papel o tijera",
+      "category": "Juegos",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "rules",
+      "description": "Muestra las reglas del servidor en tu idioma",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "salary",
-      "description": "commands:CMD_SALARY_DESC",
+      "description": "Cobra tu salario.",
       "category": "Economía",
       "usage": "salary",
       "aliases": [
-        "salary",
         "sueldo",
         "payday"
       ],
@@ -1130,30 +1675,35 @@
       "type": "prefix"
     },
     {
-      "name": "sayu",
-      "description": "Repite un mensaje como si fuera el usuario (webhook / APP) y borra el comando.",
+      "name": "say",
+      "description": "Envía un mensaje como el bot",
       "category": "Herramientas",
-      "usage": "sayu <mensaje>",
-      "aliases": [
-        "sayuser"
-      ],
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "sayu",
+      "description": "Envía un mensaje por webhook con atribución visible",
+      "category": "Herramientas",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "sell",
+      "description": "Vende ítems de tu inventario.",
+      "category": "Economía",
+      "usage": "sell <id|nombre|itemId> [cantidad]",
       "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "sell",
-      "description": "commands:CMD_SELL_DESC",
       "category": "Economía",
-      "usage": "sell <id|nombre|itemId> [cantidad]",
-      "aliases": [
-        "sell"
-      ],
       "cooldown": 0,
-      "type": "prefix"
+      "type": "slash"
     },
     {
       "name": "servers",
-      "description": "Muestra los servidores donde está el bot (solo owners).",
       "category": "Herramientas",
       "usage": "servers [limite=25] [buscar...]",
       "aliases": [
@@ -1163,57 +1713,78 @@
       "type": "prefix"
     },
     {
+      "name": "servers",
+      "description": "Muestra los servidores donde está el bot",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "servershop",
-      "description": "commands:CMD_SERVERSHOP_DESC",
+      "description": "Tienda personalizada del servidor.",
       "category": "Economía",
       "usage": "servershop [categoria] [pagina]",
-      "aliases": [
-        "servershop"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "setlevel",
-      "description": "Establece el nivel de un usuario",
-      "category": "Administración",
-      "usage": "setlevel <usuario> <nivel>",
+      "name": "servershop",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "setprofile",
+      "description": "Edita tu frase, cumpleaños y stats sociales del perfil",
+      "category": "Economía",
+      "usage": "setprofile frase <texto> | setprofile cumpleaños <DD/MM|off> | setprofile pats|carisma|muertes <numero>",
       "aliases": [
-        "set-level",
-        "nivel"
+        "perfilset",
+        "editprofile"
       ],
-      "cooldown": 5,
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
+      "name": "setprofile",
+      "description": "Edita los campos personales de tu perfil",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "settings",
+      "description": "Muestra la configuración actual de economía.",
+      "category": "Economía",
+      "usage": "settings",
+      "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "settings",
-      "description": "commands:CMD_SETTINGS_DESC",
       "category": "Economía",
-      "usage": "settings",
-      "aliases": [
-        "settings"
-      ],
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "share",
+      "description": "Comparte recursos con otro usuario.",
+      "category": "Economía",
+      "usage": "share <@usuario|id> <cantidad>",
       "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "share",
-      "description": "commands:CMD_SHARE_DESC",
       "category": "Economía",
-      "usage": "share <@usuario|id> <cantidad>",
-      "aliases": [
-        "share"
-      ],
       "cooldown": 0,
-      "type": "prefix"
+      "type": "slash"
     },
     {
       "name": "ship",
-      "description": "commands:CMD_SHIP_DESC",
+      "description": "Calcula la compatibilidad entre dos usuarios.",
       "category": "Diversión",
       "usage": "ship @persona1 [@persona2] | ship nombre1 | nombre2",
       "aliases": [
-        "ship",
         "love",
         "pareja",
         "match"
@@ -1222,8 +1793,14 @@
       "type": "prefix"
     },
     {
+      "name": "ship",
+      "description": "Haz ship entre dos personas",
+      "category": "Diversión",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "skip",
-      "description": "Salta la canción actual",
       "category": "Música",
       "usage": "skip",
       "aliases": [
@@ -1236,14 +1813,17 @@
     },
     {
       "name": "slots",
-      "description": "commands:CMD_SLOTS_DESC",
+      "description": "Juega a las tragaperras.",
       "category": "Economía",
       "usage": "slots <cantidad|all> <rojo|negro|par|impar|alto|bajo|docena1|docena2|docena3|0-36>",
-      "aliases": [
-        "slots"
-      ],
       "cooldown": 0,
       "type": "prefix"
+    },
+    {
+      "name": "slots",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
     },
     {
       "name": "starboard",
@@ -1256,21 +1836,24 @@
       "type": "prefix"
     },
     {
+      "name": "starboard",
+      "description": "Configura o consulta el sistema starboard",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "stats",
-      "description": "CMD_STATS_DESC",
-      "category": "Utilidad",
+      "category": "Utiility",
       "usage": "stats [usuario]",
       "aliases": [
         "estadisticas",
-        "profile",
-        "informacion"
+        "información"
       ],
       "cooldown": 5,
       "type": "prefix"
     },
     {
       "name": "stop",
-      "description": "Detiene la música",
       "category": "Música",
       "usage": "stop",
       "aliases": [
@@ -1284,18 +1867,127 @@
     },
     {
       "name": "storage",
-      "description": "commands:CMD_STORAGE_DESC",
+      "description": "Accede al almacenamiento.",
       "category": "Economía",
       "usage": "storage [pagina]",
-      "aliases": [
-        "storage"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "storage",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "streamadd",
+      "description": "Añade un canal a la lista de alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamadd <twitch|youtube|kick> <usuario>",
+      "aliases": [
+        "liveadd",
+        "directoadd",
+        "directosadd"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamcanal",
+      "description": "Configura el canal donde se enviarán las alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamcanal #canal",
+      "aliases": [
+        "livecanal",
+        "directocanal",
+        "directoscanal"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamcheck",
+      "description": "Comprueba ahora mismo si un canal está en directo.",
+      "category": "Streaming",
+      "usage": "streamcheck <twitch|youtube|kick> <usuario>",
+      "aliases": [
+        "livecheck",
+        "directocheck",
+        "directoscheck"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamlist",
+      "description": "Muestra los canales registrados para alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamlist",
+      "aliases": [
+        "livelist",
+        "directolist",
+        "directoslist"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamnotify",
+      "category": "Streaming",
+      "usage": "streamnotify status | streamnotify <start|live|end> <on|off> | streamnotify interval <minutos>",
+      "aliases": [
+        "streamnoti",
+        "notifystream"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
+      "name": "streamoff",
+      "description": "Desactiva las alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamoff",
+      "aliases": [
+        "liveoff",
+        "directooff",
+        "directosoff"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamon",
+      "description": "Activa las alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamon",
+      "aliases": [
+        "liveon",
+        "directoon",
+        "directoson"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamremove",
+      "description": "Elimina un canal de la lista de alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamremove <twitch|youtube|kick> <usuario>",
+      "aliases": [
+        "liveremove",
+        "directoremove",
+        "directodel"
+      ],
+      "type": "prefix"
+    },
+    {
+      "name": "streamstatus",
+      "description": "Muestra el estado de las alertas de directos.",
+      "category": "Streaming",
+      "usage": "streamstatus",
+      "aliases": [
+        "lifestatus",
+        "directostatus",
+        "directoestado"
+      ],
+      "type": "prefix"
+    },
+    {
       "name": "suggest",
-      "description": "Sistema de sugerencias del servidor.",
       "category": "Herramientas",
       "usage": "suggest <texto> | suggest status | suggest set #canal | suggest staff #canal | suggest off | suggest approve <id> [motivo] | suggest deny <id> [motivo]",
       "aliases": [
@@ -1308,12 +2000,22 @@
       "type": "prefix"
     },
     {
+      "name": "teammate",
+      "description": "Ver la pareja (teammate) de un usuario casado.",
+      "category": "Matrimonio",
+      "usage": "teammate [@usuario]",
+      "aliases": [
+        "partner",
+        "spouse"
+      ],
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
       "name": "tictactoe",
-      "description": "commands:CMD_TICTACTOE_DESC",
       "category": "Juegos",
       "usage": "tictactoe",
       "aliases": [
-        "tictactoe",
         "ttt",
         "3enraya",
         "tresenraya"
@@ -1322,41 +2024,82 @@
       "type": "prefix"
     },
     {
+      "name": "tictactoe",
+      "description": "Tres en raya (vs bot)",
+      "category": "Juegos",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "timeout",
-      "description": "Aplica un timeout temporal a un usuario.",
       "category": "Moderación",
       "usage": "timeout <@usuario|id> <minutos> [motivo]",
       "aliases": [
-        "timeout",
         "to"
       ],
       "type": "prefix"
     },
     {
       "name": "timer",
-      "description": "Crea y consulta temporizadores visuales",
       "category": "Herramientas",
       "usage": "timer [minutos]",
       "aliases": [
+        "temporizador",
+        "temporizador",
         "temporizador"
       ],
       "cooldown": 5,
       "type": "prefix"
     },
     {
+      "name": "timer",
+      "description": "Crea un temporizador visual y elegante",
+      "category": "Tools",
+      "type": "slash"
+    },
+    {
       "name": "trade",
-      "description": "commands:CMD_TRADE_DESC",
+      "description": "Intercambia ítems con otro usuario.",
       "category": "Economía",
       "usage": "trade <@usuario|id> <cantidad>",
+      "cooldown": 0,
+      "type": "prefix"
+    },
+    {
+      "name": "trade",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
+      "name": "transcript-chat",
+      "description": "Genera un transcript estilo ticket del canal actual o de un canal/hilo, puede enviarlo a otro canal y filtrar por tiempo.",
+      "category": "Herramientas",
+      "usage": "tc [id-del-chat] [id-del-canal-destino] [limite] [rango]",
       "aliases": [
-        "trade"
+        "tc",
+        "transcriptchat",
+        "transcript",
+        "trascript-chat",
+        "trascriptchat"
+      ],
+      "cooldown": 5,
+      "type": "prefix"
+    },
+    {
+      "name": "tree",
+      "description": "Mostrar arbol de pareja del matrimonio.",
+      "category": "Matrimonio",
+      "usage": "tree [@usuario]",
+      "aliases": [
+        "marriagetree",
+        "familytree"
       ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
       "name": "tts",
-      "description": "Reproduce TTS en tu canal de voz (sin Lavalink). Usa \"texto\" para enviar el MP3 al canal.",
       "category": "Herramientas",
       "usage": "tts <mensaje> | tts texto <mensaje>",
       "aliases": [
@@ -1364,6 +2107,13 @@
       ],
       "cooldown": 3,
       "type": "prefix"
+    },
+    {
+      "name": "tts",
+      "description": "Envía un mensaje con TTS (texto a voz)",
+      "category": "Herramientas",
+      "cooldown": 5,
+      "type": "slash"
     },
     {
       "name": "ttsvoice",
@@ -1378,32 +2128,36 @@
     },
     {
       "name": "unban",
-      "description": "Desbanea a un usuario por ID.",
       "category": "Moderación",
       "usage": "unban <idUsuario> [motivo]",
-      "aliases": [
-        "unban"
-      ],
       "type": "prefix"
     },
     {
       "name": "unmute",
-      "description": "Quita el silencio a un usuario.",
       "category": "Moderación",
       "usage": "unmute <@usuario|id>",
       "aliases": [
-        "unmute",
         "vunmute"
       ],
       "type": "prefix"
     },
     {
+      "name": "unrelate",
+      "description": "Eliminar una relación con otro usuario.",
+      "category": "Matrimonio",
+      "usage": "unrelate @usuario",
+      "aliases": [
+        "quitarrelacion",
+        "desvincular"
+      ],
+      "cooldown": 3,
+      "type": "prefix"
+    },
+    {
       "name": "uptime",
-      "description": "Muestra el tiempo que el bot lleva encendido.",
       "category": "Herramientas",
       "usage": "uptime",
       "aliases": [
-        "uptime",
         "tiempo",
         "up"
       ],
@@ -1411,7 +2165,7 @@
     },
     {
       "name": "use",
-      "description": "commands:CMD_USE_DESC",
+      "description": "Usa un ítem del inventario.",
       "category": "Economía",
       "usage": "use <id|nombre> [cantidad]",
       "aliases": [
@@ -1422,12 +2176,17 @@
       "type": "prefix"
     },
     {
+      "name": "use",
+      "description": "ID del ítem (se ve en /bag y /shop list)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "user",
-      "description": "Muestra información del usuario",
       "category": "Herramientas",
       "usage": "user [@usuario|ID]",
       "aliases": [
-        "user",
         "userinfo",
         "usuario",
         "info"
@@ -1435,22 +2194,32 @@
       "type": "prefix"
     },
     {
-      "name": "verify",
-      "description": "Configura la verificación por captcha con imagen (usa /verify o .verify setup)",
-      "category": "Administración",
-      "usage": "verify setup #canal @Verificado [@SinVerificar] | verify panel | verify status | verify off",
+      "name": "Usuario",
+      "description": "Comando directo: ver estado, proponer o divorciarse.",
+      "category": "Matrimonio",
+      "usage": "marriage [@usuario] [DD/MM/YYYY] | marriage divorce",
       "aliases": [
-        "verificacion",
-        "verificar",
-        "captcha",
-        "verification"
+        "marriage",
+        "matrimonio"
       ],
-      "cooldown": 10,
+      "cooldown": 0,
       "type": "prefix"
     },
     {
+      "name": "verificacion",
+      "description": "Configura la verificación por captcha con imagen",
+      "category": "Administración",
+      "cooldown": 5,
+      "type": "slash"
+    },
+    {
+      "name": "verify",
+      "description": "Setup image captcha verification",
+      "category": "Verification",
+      "type": "slash"
+    },
+    {
       "name": "volume",
-      "description": "Ajusta el volumen",
       "category": "Música",
       "usage": "volume <cantidad>",
       "aliases": [
@@ -1461,11 +2230,9 @@
     },
     {
       "name": "warn",
-      "description": "Advierte a un usuario.",
       "category": "Moderación",
       "usage": "warn <@usuario|id> [motivo]",
       "aliases": [
-        "warn",
         "adv",
         "warning"
       ],
@@ -1473,8 +2240,7 @@
     },
     {
       "name": "welcome",
-      "description": "Configura el sistema de bienvenidas (sylphacard o discord-arts).",
-      "category": "Sistema de bienvenida",
+      "category": "Sistemas",
       "usage": "welcome set #canal | welcome off | welcome style [sylphacard|discord-arts|canvacard] | welcome message <texto> | welcome message <lang> <texto> | welcome message clear [lang] | welcome test",
       "aliases": [
         "bienvenida",
@@ -1485,7 +2251,7 @@
     },
     {
       "name": "withdraw",
-      "description": "commands:CMD_WITHDRAW_DESC",
+      "description": "Retira monedas del banco.",
       "category": "Economía",
       "usage": "withdraw [cantidad]",
       "aliases": [
@@ -1496,8 +2262,15 @@
       "type": "prefix"
     },
     {
+      "name": "withdraw",
+      "description": "Cantidad a retirar (si se omite, retira todo)",
+      "category": "Economía",
+      "cooldown": 0,
+      "type": "slash"
+    },
+    {
       "name": "work",
-      "description": "commands:CMD_WORK_DESC",
+      "description": "Trabaja para ganar monedas.",
       "category": "Economía",
       "usage": "work list | work apply <id|nombre> | work leave | work shift | work stats | work top",
       "aliases": [
@@ -1505,888 +2278,34 @@
         "trabajo",
         "job"
       ],
-      "cooldown": 900,
       "type": "prefix"
     },
     {
+      "name": "work",
+      "description": "Mira la lista de trabajos",
+      "category": "Economía",
+      "type": "slash"
+    },
+    {
       "name": "xmas",
-      "description": "commands:CMD_XMAS_DESC",
+      "description": "Comando especial de Navidad.",
       "category": "Economía",
       "usage": "xmas",
-      "aliases": [
-        "xmas"
-      ],
       "cooldown": 0,
       "type": "prefix"
     },
     {
-      "name": "8ball",
-      "description": "Ask the Magic 8-Ball a question.",
-      "category": "Diversión",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "afk",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "auction",
-      "type": "slash",
-      "description": "Auction and bid on items in the auction market.",
-      "category": "Economía",
-      "subcommands": [
-        {
-          "name": "help",
-          "description": "Show auction help",
-          "fullName": "auction help"
-        },
-        {
-          "name": "add",
-          "description": "Auction an item (coming soon)",
-          "fullName": "auction add"
-        },
-        {
-          "name": "bid",
-          "description": "Bid on an item (coming soon)",
-          "fullName": "auction bid"
-        },
-        {
-          "name": "bids",
-          "description": "View your bids (coming soon)",
-          "fullName": "auction bids"
-        },
-        {
-          "name": "cancel",
-          "description": "Cancel an auction (coming soon)",
-          "fullName": "auction cancel"
-        },
-        {
-          "name": "list",
-          "description": "View your auctions (coming soon)",
-          "fullName": "auction list"
-        },
-        {
-          "name": "search",
-          "description": "Search auctions (coming soon)",
-          "fullName": "auction search"
-        },
-        {
-          "name": "upgrade",
-          "description": "Upgrade your auction limit (coming soon)",
-          "fullName": "auction upgrade"
-        }
-      ]
-    },
-    {
-      "name": "audit",
-      "type": "slash",
-      "description": "Command",
-      "category": "Administración",
-      "subcommands": [
-        {
-          "name": "set",
-          "description": "Establecer el canal de auditoría",
-          "fullName": "audit set"
-        },
-        {
-          "name": "status",
-          "description": "Ver el estado actual",
-          "fullName": "audit status"
-        },
-        {
-          "name": "on",
-          "description": "Activar auditoría (requiere canal configurado)",
-          "fullName": "audit on"
-        },
-        {
-          "name": "off",
-          "description": "Desactivar auditoría",
-          "fullName": "audit off"
-        }
-      ]
-    },
-    {
-      "name": "bag",
-      "description": "Shows your backpack (inventory).",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "balance",
-      "description": "Shows your balance (coins/bank/sakuras).",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "botstats",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "buffs",
-      "description": "Shows your boosters and loot bonuses.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "bug",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "buy",
-      "description": "Buys a shop item by ID, name, or itemId.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "carnival",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "chop",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "claimcode",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "cls",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "coinflip",
-      "description": "Flip a coin (heads or tails).",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "collect",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "craft",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "crime",
-      "description": "Commit a crime to try to earn coins (with risk).",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "daily",
-      "description": "Claim your daily coins reward.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "deposit",
-      "description": "Deposit coins from your balance into the bank.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "dice",
-      "description": "Roll a dice (optionally choose sides).",
-      "category": "Diversión",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "economy",
-      "type": "slash",
-      "description": "Command",
-      "category": "Administración",
-      "subcommands": [
-        {
-          "name": "status",
-          "description": "Ver el estado actual",
-          "fullName": "economy status"
-        },
-        {
-          "name": "on",
-          "description": "Activar economía",
-          "fullName": "economy on"
-        },
-        {
-          "name": "off",
-          "description": "Desactivar economía",
-          "fullName": "economy off"
-        },
-        {
-          "name": "set-channel",
-          "description": "Establecer el canal de economía",
-          "fullName": "economy set-channel"
-        },
-        {
-          "name": "clear-channel",
-          "description": "Quitar restricción de canal de economía",
-          "fullName": "economy clear-channel"
-        },
-        {
-          "name": "exclusive",
-          "description": "Bloquear comandos no-econ en el canal de economía",
-          "fullName": "economy exclusive"
-        }
-      ]
-    },
-    {
-      "name": "event",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "feedback",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "fish",
-      "description": "Go fishing! Explore zones to find rare fish and treasures.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "fortune",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "gift",
-      "type": "slash",
-      "description": "Gift coins or items to another user.",
-      "category": "Economía",
-      "subcommands": [
-        {
-          "name": "coins",
-          "description": "Regala coins a un usuario",
-          "fullName": "gift coins"
-        },
-        {
-          "name": "item",
-          "description": "Regala un ítem a un usuario",
-          "fullName": "gift item"
-        }
-      ]
-    },
-    {
-      "name": "give",
-      "description": "Give coins to another user.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "guide",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "help",
-      "description": "Shows the list of available commands and their usage",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "invite",
-      "description": "Creates a permanent server invite",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "iteminfo",
-      "description": "Shows item info by ID, name, or itemId.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "leaderboard",
-      "description": "Shows the top users by total wealth (bank + coins + sakuras).",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "market",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "mine",
-      "description": "Shows the mining zones.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "minesweeper",
-      "description": "Starts a Minesweeper game",
-      "category": "Juegos",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "mix",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "mod",
-      "type": "slash",
-      "description": "Command",
-      "category": "Moderación",
-      "subcommands": [
-        {
-          "name": "ban",
-          "description": "CMD_BAN_DESC",
-          "fullName": "mod ban"
-        },
-        {
-          "name": "kick",
-          "description": "CMD_KICK_DESC",
-          "fullName": "mod kick"
-        },
-        {
-          "name": "timeout",
-          "description": "CMD_TIMEOUT_DESC",
-          "fullName": "mod timeout"
-        },
-        {
-          "name": "unban",
-          "description": "CMD_UNBAN_DESC",
-          "fullName": "mod unban"
-        },
-        {
-          "name": "warn",
-          "description": "CMD_WARN_DESC",
-          "fullName": "mod warn"
-        },
-        {
-          "name": "mute",
-          "description": "CMD_MUTE_DESC",
-          "fullName": "mod mute"
-        },
-        {
-          "name": "unmute",
-          "description": "CMD_UNMUTE_DESC",
-          "fullName": "mod unmute"
-        }
-      ]
-    },
-    {
-      "name": "moxi",
-      "type": "slash",
-      "description": "Listen to your favorite music",
-      "category": "Música",
-      "subcommands": [
-        {
-          "name": "play",
-          "description": "CMD_PLAY_DESC",
-          "fullName": "moxi play"
-        },
-        {
-          "name": "pause",
-          "description": "🌬 Pausa, deja que el viento lleve tu melodía",
-          "fullName": "moxi pause"
-        },
-        {
-          "name": "resume",
-          "description": "🌟 Reanuda la música y deja que las estrellas guíen tu ritmo",
-          "fullName": "moxi resume"
-        },
-        {
-          "name": "skip",
-          "description": "⏭ Salta a la siguiente canción",
-          "fullName": "moxi skip"
-        },
-        {
-          "name": "queue",
-          "description": "📜 Muestra la cola de reproducción",
-          "fullName": "moxi queue"
-        },
-        {
-          "name": "autoplay",
-          "description": "💧 El flujo musical sigue, como un río eterno.",
-          "fullName": "moxi autoplay"
-        },
-        {
-          "name": "add",
-          "description": "OPT_ADD_AMOUNT_DESC",
-          "fullName": "moxi add"
-        },
-        {
-          "name": "stop",
-          "description": "🛑 Detén la música y permite que el silencio reine.",
-          "fullName": "moxi stop"
-        },
-        {
-          "name": "volume",
-          "description": "🔊 Ajusta el volumen y deja que la música llene el aire.",
-          "fullName": "moxi volume"
-        }
-      ]
-    },
-    {
-      "name": "moxidex",
-      "description": "Shows your Moxidex (pets).",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "moxishop",
-      "type": "slash",
-      "description": "Shop: browse and buy items.",
-      "category": "Economía",
-      "subcommands": [
-        {
-          "name": "list",
-          "description": "Muestra la lista de ítems disponibles",
-          "fullName": "moxishop list"
-        },
-        {
-          "name": "buy",
-          "description": "Compra un ítem por su ID, nombre o itemId de la tienda",
-          "fullName": "moxishop buy"
-        }
-      ]
-    },
-    {
-      "name": "pet",
-      "description": "Manage your pet and egg incubation.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "portal",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "premium",
-      "type": "slash",
-      "description": "Command",
-      "category": "Herramientas",
-      "subcommands": [
-        {
-          "name": "me",
-          "description": "Mira tu estado premium",
-          "fullName": "premium me"
-        },
-        {
-          "name": "check",
-          "description": "Comprueba el premium de un usuario",
-          "fullName": "premium check"
-        },
-        {
-          "name": "add",
-          "description": "Dar premium a un usuario (solo owners)",
-          "fullName": "premium add"
-        },
-        {
-          "name": "remove",
-          "description": "Quitar premium a un usuario (solo owners)",
-          "fullName": "premium remove"
-        }
-      ]
-    },
-    {
-      "name": "profile",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "quest",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "race",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "repair",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "roulette",
-      "description": "Play roulette and bet coins.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "rps",
-      "description": "Play rock, paper, scissors",
-      "category": "Juegos",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "rules",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "say",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "sayu",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "sell",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "servers",
-      "description": "Shows the servers where the bot is in",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "servershop",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "settings",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "share",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "ship",
-      "description": "Calculates compatibility between two people.",
-      "category": "Diversión",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "slots",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "starboard",
-      "type": "slash",
-      "description": "Command",
-      "category": "Herramientas",
-      "subcommands": [
-        {
-          "name": "help",
-          "description": "Muestra la explicación de cómo funciona el starboard",
-          "fullName": "starboard help"
-        }
-      ]
-    },
-    {
-      "name": "storage",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "tictactoe",
-      "description": "Tres en raya (vs bot)",
-      "category": "Juegos",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "timer",
-      "description": "Creates a visual and elegant timer",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "trade",
-      "description": "Comando en desarrollo",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "tts",
-      "description": "Command",
-      "category": "Herramientas",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "use",
-      "description": "Use (consume) an item from your backpack.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "verificacion",
-      "type": "slash",
-      "description": "Command",
-      "category": "Administración",
-      "subcommands": [
-        {
-          "name": "set",
-          "description": "Configurar canal/roles y (opcional) enviar el panel",
-          "fullName": "verificacion set"
-        },
-        {
-          "name": "panel",
-          "description": "Enviar/recrear el panel en el canal configurado",
-          "fullName": "verificacion panel"
-        },
-        {
-          "name": "status",
-          "description": "Ver el estado de la verificación",
-          "fullName": "verificacion status"
-        },
-        {
-          "name": "off",
-          "description": "Desactivar la verificación",
-          "fullName": "verificacion off"
-        }
-      ]
-    },
-    {
-      "name": "verify",
-      "type": "slash",
-      "description": "Command",
-      "category": "Administración",
-      "subcommands": [
-        {
-          "name": "set",
-          "description": "Configure channel/roles and (optionally) send panel",
-          "fullName": "verify set"
-        },
-        {
-          "name": "panel",
-          "description": "Send/recreate the panel in the configured channel",
-          "fullName": "verify panel"
-        },
-        {
-          "name": "status",
-          "description": "Show verification status",
-          "fullName": "verify status"
-        },
-        {
-          "name": "off",
-          "description": "Disable verification",
-          "fullName": "verify off"
-        }
-      ]
-    },
-    {
-      "name": "withdraw",
-      "description": "Withdraw coins from your bank into your balance.",
-      "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
-    },
-    {
-      "name": "work",
-      "type": "slash",
-      "description": "Work to earn coins and experience.",
-      "category": "Economía",
-      "subcommands": [
-        {
-          "name": "list",
-          "description": "Mira la lista de trabajos",
-          "fullName": "work list"
-        },
-        {
-          "name": "apply",
-          "description": "Aplica a un trabajo",
-          "fullName": "work apply"
-        },
-        {
-          "name": "leave",
-          "description": "Renuncia a tu trabajo",
-          "fullName": "work leave"
-        },
-        {
-          "name": "shift",
-          "description": "Completa un turno de trabajo",
-          "fullName": "work shift"
-        },
-        {
-          "name": "stats",
-          "description": "Muestra tu progreso en el trabajo actual",
-          "fullName": "work stats"
-        },
-        {
-          "name": "top",
-          "description": "Mira los mejores empleados de tu profesión",
-          "fullName": "work top"
-        }
-      ]
-    },
-    {
       "name": "xmas",
-      "description": "Comando en desarrollo",
       "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
+      "cooldown": 0,
+      "type": "slash"
     },
     {
       "name": "zones",
-      "description": "View available zones (fishing/mining/exploration).",
+      "description": "Tipo de zonas a mostrar",
       "category": "Economía",
-      "usage": "",
-      "type": "slash",
-      "subcommands": []
+      "cooldown": 0,
+      "type": "slash"
     }
   ]
 }
