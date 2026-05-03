@@ -143,7 +143,7 @@ const translations = {
         'En vez de una lista infinita, aqui tienes un mapa claro: que hace Moxi y por que se siente diferente.',
       modules: {
         welcome: {
-          title: 'Bienvenida y boosts',
+          title: 'Bienvenida',
           description:
             'Mensajes de bienvenida, despedida y boosts con variables y estilos personalizados.',
           chips: ['Variables', 'Embeds', 'Auto roles'],
@@ -154,17 +154,17 @@ const translations = {
             'Reacciones, gifs y contadores para que la comunidad interactue y se divierta.',
           chips: ['+100 comandos', 'Contadores', 'Para todas las edades'],
         },
-        currency: {
+        economy: {
           title: 'Economia',
           description:
-            'Economia simple y rankings para incentivar actividad y recompensas.',
-          chips: ['Rankings', 'Recompensas', 'Balance'],
+            'Economia completa con tienda, trabajo, mineria, rankings y recompensas.',
+          chips: ['Rankings', 'Tienda', 'Recompensas'],
         },
         utilities: {
           title: 'Utilidades',
           description:
             'Automatizaciones, avisos y herramientas para llevar el server al dia.',
-          chips: ['Notificaciones', 'Auto tareas', 'Helpers'],
+          chips: ['Notificaciones', 'AFK', 'Info'],
         },
         moderation: {
           title: 'Moderacion',
@@ -172,11 +172,47 @@ const translations = {
             'Herramientas claras para mantener tu servidor seguro y ordenado.',
           chips: ['Anti-raid', 'Logs', 'Filtros'],
         },
-        vibes: {
-          title: 'Vibes personalizadas',
+        ai: {
+          title: 'Inteligencia Artificial',
           description:
-            'Pequenos detalles que hacen que Moxi se sienta "tuya": tonos, respuestas y estilo.',
-          chips: ['Personalidad', 'Estilo', 'Consistencia'],
+            'Moxi con IA: respuestas inteligentes, generacion de imagenes y mas.',
+          chips: ['Chat IA', 'Imagenes', 'Adaptativa'],
+        },
+        music: {
+          title: 'Musica',
+          description:
+            'Reproduce musica de alta calidad en canales de voz con cola y controles.',
+          chips: ['Cola', 'Calidad', 'Controles'],
+        },
+        giveaways: {
+          title: 'Sorteos',
+          description:
+            'Organiza sorteos facilmente con ganadores automaticos y multiples opciones.',
+          chips: ['Auto ganador', 'Requisitos', 'Personalizable'],
+        },
+        tickets: {
+          title: 'Tickets',
+          description:
+            'Sistema de soporte por tickets para atender a los miembros de tu servidor.',
+          chips: ['Soporte', 'Categorias', 'Logs'],
+        },
+        logs: {
+          title: 'Registros',
+          description:
+            'Registra todos los eventos del servidor: mensajes, entradas, salidas y mas.',
+          chips: ['Eventos', 'Mensajes', 'Miembros'],
+        },
+        automod: {
+          title: 'Automoderación',
+          description:
+            'Filtra contenido automaticamente y protege tu servidor sin intervención manual.',
+          chips: ['Filtros', 'Anti-spam', 'Anti-insultos'],
+        },
+        wiki: {
+          title: 'Wiki',
+          description:
+            'Base de conocimiento integrada para que tu comunidad encuentre respuestas rapido.',
+          chips: ['Busqueda', 'Articulos', 'Facil de usar'],
         },
       },
     },
@@ -476,7 +512,7 @@ const translations = {
         'Instead of an endless list, here is a clear map: what Moxi does and why it feels different.',
       modules: {
         welcome: {
-          title: 'Welcome & Boosts',
+          title: 'Welcome',
           description:
             'Welcome, farewell and boost messages with variables and custom styles.',
           chips: ['Variables', 'Embeds', 'Auto roles'],
@@ -487,17 +523,17 @@ const translations = {
             'Reactions, gifs and counters so the community interacts and has fun.',
           chips: ['100+ commands', 'Counters', 'All-ages'],
         },
-        currency: {
-          title: 'Currency',
+        economy: {
+          title: 'Economy',
           description:
-            'Simple economy and rankings to encourage activity and rewards.',
-          chips: ['Rankings', 'Rewards', 'Balance'],
+            'Full economy with shop, work, mining, rankings and rewards.',
+          chips: ['Rankings', 'Shop', 'Rewards'],
         },
         utilities: {
           title: 'Utilities',
           description:
             'Automations, alerts and tools to keep the server up to date.',
-          chips: ['Notifications', 'Auto tasks', 'Helpers'],
+          chips: ['Notifications', 'AFK', 'Info'],
         },
         moderation: {
           title: 'Moderation',
@@ -505,11 +541,47 @@ const translations = {
             'Clear tools to keep your server safe and organized.',
           chips: ['Anti-raid', 'Logs', 'Filters'],
         },
-        vibes: {
-          title: 'Custom vibes',
+        ai: {
+          title: 'Artificial Intelligence',
           description:
-            'Small details that make Moxi feel "yours": tone, replies and style.',
-          chips: ['Personality', 'Style', 'Consistency'],
+            'Moxi with AI: smart replies, image generation and more.',
+          chips: ['AI Chat', 'Images', 'Adaptive'],
+        },
+        music: {
+          title: 'Music',
+          description:
+            'Play high-quality music in voice channels with queue and controls.',
+          chips: ['Queue', 'Quality', 'Controls'],
+        },
+        giveaways: {
+          title: 'Giveaways',
+          description:
+            'Easily organize giveaways with automatic winners and multiple options.',
+          chips: ['Auto winner', 'Requirements', 'Customizable'],
+        },
+        tickets: {
+          title: 'Tickets',
+          description:
+            'Support ticket system to assist members of your server.',
+          chips: ['Support', 'Categories', 'Logs'],
+        },
+        logs: {
+          title: 'Logs',
+          description:
+            'Record all server events: messages, joins, leaves and more.',
+          chips: ['Events', 'Messages', 'Members'],
+        },
+        automod: {
+          title: 'AutoMod',
+          description:
+            'Automatically filter content and protect your server without manual intervention.',
+          chips: ['Filters', 'Anti-spam', 'Anti-slurs'],
+        },
+        wiki: {
+          title: 'Wiki',
+          description:
+            'Integrated knowledge base so your community finds answers fast.',
+          chips: ['Search', 'Articles', 'Easy to use'],
         },
       },
     },
@@ -802,34 +874,49 @@ const translations = {
       description: '不再是无尽列表，而是清晰地图：Moxi 做什么，以及它为何与众不同。',
       modules: {
         welcome: {
-          title: '欢迎与助力',
+          title: '欢迎系统',
           description: '欢迎、告别与助力消息，支持变量与自定义样式。',
           chips: ['变量', '嵌入', '自动身份组'],
         },
-        roleplay: {
-          title: '角色扮演',
-          description: '互动、GIF 与计数器，让社区更有乐趣。',
-          chips: ['100+ 命令', '计数器', '全年龄'],
-        },
-        currency: {
+        economy: {
           title: '经济',
-          description: '简单经济与排行榜，鼓励活跃与奖励。',
-          chips: ['排行榜', '奖励', '余额'],
+          description: '90+ 经济命令：余额、商店、工作、挖矿与排行榜。',
+          chips: ['排行榜', '商店', '奖励'],
         },
         utilities: {
           title: '工具',
-          description: '自动化、提醒与工具，让服务器保持新鲜。',
-          chips: ['通知', '自动任务', '助手'],
+          description: '自动化、提醒与工具，轻松让服务器保持新鲜。',
+          chips: ['通知', 'AFK', '信息'],
         },
         moderation: {
           title: '管理',
           description: '清晰的管理工具，保持安全与秩序。',
           chips: ['反袭击', '日志', '过滤器'],
         },
-        vibes: {
-          title: '专属氛围',
-          description: '小细节让 Moxi 更像你的：语气、回复与风格。',
-          chips: ['个性', '风格', '一致性'],
+        administration: {
+          title: '服务器管理',
+          description: '轻松管理身份组、表情、频道和权限。',
+          chips: ['身份组', '表情', '频道'],
+        },
+        music: {
+          title: '音乐',
+          description: '在语音频道中播放高质量音乐，支持队列和控制。',
+          chips: ['队列', '高质量', '控制'],
+        },
+        fun: {
+          title: '娱乐与游戏',
+          description: '小游戏、知识问答、8球等命令，让社区更热闹。',
+          chips: ['小游戏', '问答', '8球'],
+        },
+        roleplay: {
+          title: '角色扮演',
+          description: '互动、GIF 与计数器，让社区更有乐趣。',
+          chips: ['100+ 命令', '计数器', '全年龄'],
+        },
+        voice: {
+          title: '语音频道',
+          description: '为社区创建和管理临时、自定义语音频道。',
+          chips: ['临时', '自定义', '自动'],
         },
       },
     },
@@ -1122,34 +1209,49 @@ const translations = {
       description: '長い一覧ではなく、Moxi の特徴が一目でわかるマップです。',
       modules: {
         welcome: {
-          title: 'ウェルカム＆ブースト',
+          title: 'ウェルカムシステム',
           description: 'ウェルカムやフェアウェル、ブーストメッセージをカスタム。',
           chips: ['変数', '埋め込み', '自動ロール'],
         },
-        roleplay: {
-          title: 'ロールプレイ',
-          description: 'リアクション、GIF、カウンターで盛り上げます。',
-          chips: ['100+ コマンド', 'カウンター', '全年齢'],
-        },
-        currency: {
-          title: '通貨',
-          description: 'シンプルな経済とランキングで活動を促進。',
-          chips: ['ランキング', '報酬', '残高'],
+        economy: {
+          title: '経済',
+          description: '90以上の経済コマンド：残高、ショップ、仕事、マイニング、ランキング。',
+          chips: ['ランキング', 'ショップ', '報酬'],
         },
         utilities: {
           title: 'ユーティリティ',
-          description: '自動化、通知、便利ツールで最新の状態に。',
-          chips: ['通知', '自動タスク', 'ヘルパー'],
+          description: '自動化、通知、便利ツールで最新の状態に保ちます。',
+          chips: ['通知', 'AFK', '情報'],
         },
         moderation: {
           title: 'モデレーション',
           description: '安全で整理されたサーバーのための明確なツール。',
           chips: ['アンチレイド', 'ログ', 'フィルター'],
         },
-        vibes: {
-          title: 'カスタム雰囲気',
-          description: '口調や返信、スタイルで "自分の" Moxi に。',
-          chips: ['個性', 'スタイル', '一貫性'],
+        administration: {
+          title: 'サーバー管理',
+          description: 'ロール、絵文字、チャンネル、権限を簡単に管理。',
+          chips: ['ロール', '絵文字', 'チャンネル'],
+        },
+        music: {
+          title: 'ミュージック',
+          description: 'ボイスチャンネルでキューとコントロール付きの高品質音楽を再生。',
+          chips: ['キュー', '高品質', 'コントロール'],
+        },
+        fun: {
+          title: '楽しみ＆ゲーム',
+          description: 'ミニゲーム、トリビア、8ボールなどのコマンドでコミュニティを盛り上げ。',
+          chips: ['ミニゲーム', 'トリビア', '8ボール'],
+        },
+        roleplay: {
+          title: 'ロールプレイ',
+          description: 'リアクション、GIF、カウンターで盛り上げます。',
+          chips: ['100+ コマンド', 'カウンター', '全年齢'],
+        },
+        voice: {
+          title: 'ボイスチャンネル',
+          description: 'コミュニティ向けの一時的・カスタムボイスチャンネルを作成・管理。',
+          chips: ['一時的', 'カスタム', '自動'],
         },
       },
     },
@@ -1441,34 +1543,49 @@ const translations = {
       description: '끝없는 목록 대신, Moxi가 무엇을 하는지 명확한 지도로 보여줍니다.',
       modules: {
         welcome: {
-          title: '환영 및 부스트',
+          title: '환영 시스템',
           description: '변수와 맞춤 스타일로 환영, 작별, 부스트 메시지를 제공합니다.',
           chips: ['변수', '임베드', '자동 역할'],
         },
-        roleplay: {
-          title: '롤플레잉',
-          description: '리액션, GIF, 카운터로 커뮤니티를 즐겁게 합니다.',
-          chips: ['100+ 명령어', '카운터', '전 연령'],
-        },
-        currency: {
+        economy: {
           title: '경제',
-          description: '간단한 경제와 랭킹으로 활동과 보상을 유도합니다.',
-          chips: ['랭킹', '보상', '잔액'],
+          description: '90개 이상의 경제 명령어: 잔액, 상점, 작업, 채굴, 랭킹.',
+          chips: ['랭킹', '상점', '보상'],
         },
         utilities: {
           title: '유틸리티',
-          description: '자동화, 알림, 도구로 서버를 최신 상태로 유지합니다.',
-          chips: ['알림', '자동 작업', '헬퍼'],
+          description: '자동화, 알림, 도구로 서버를 손쉽게 최신 상태로 유지합니다.',
+          chips: ['알림', 'AFK', '정보'],
         },
         moderation: {
           title: '관리',
           description: '서버를 안전하고 정돈되게 유지하는 명확한 도구.',
           chips: ['안티 레이드', '로그', '필터'],
         },
-        vibes: {
-          title: '커스텀 분위기',
-          description: '말투, 응답, 스타일로 "나만의" Moxi를 만들 수 있어요.',
-          chips: ['개성', '스타일', '일관성'],
+        administration: {
+          title: '서버 관리',
+          description: '역할, 이모지, 채널, 권한을 손쉽게 관리하세요.',
+          chips: ['역할', '이모지', '채널'],
+        },
+        music: {
+          title: '음악',
+          description: '대기열과 컨트롤이 있는 고품질 음악을 음성 채널에서 재생.',
+          chips: ['대기열', '고품질', '컨트롤'],
+        },
+        fun: {
+          title: '재미 & 게임',
+          description: '미니게임, 퀴즈, 8볼 등으로 커뮤니티를 활기차게 만드세요.',
+          chips: ['미니게임', '퀴즈', '8볼'],
+        },
+        roleplay: {
+          title: '롤플레잉',
+          description: '리액션, GIF, 카운터로 커뮤니티를 즐겁게 합니다.',
+          chips: ['100+ 명령어', '카운터', '전 연령'],
+        },
+        voice: {
+          title: '음성 채널',
+          description: '커뮤니티를 위한 임시 및 맞춤 음성 채널을 만들고 관리하세요.',
+          chips: ['임시', '맞춤', '자동'],
         },
       },
     },
