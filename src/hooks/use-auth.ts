@@ -21,6 +21,7 @@ interface AuthState {
   accessToken: string | null;
   isLoading: boolean;
   isExchangingCode: boolean;
+  isRefreshingGuilds: boolean;
 }
 
 const STORAGE_KEY = 'moxi_auth_v1';
@@ -64,6 +65,7 @@ export function useAuth() {
     accessToken: null,
     isLoading: true,
     isExchangingCode: false,
+    isRefreshingGuilds: false,
   });
 
   useEffect(() => {
@@ -95,7 +97,7 @@ export function useAuth() {
           window.location.replace('/dashboard');
         })
         .catch(() => {
-          setState((prev) => ({ ...prev, isLoading: false, isExchangingCode: false }));
+          setState((prev) => ({ ...prev, isLoading: false, isExchangingCode: false, isRefreshingGuilds: false }));
         });
     } else if (stored) {
       setState({
@@ -104,23 +106,45 @@ export function useAuth() {
         accessToken: stored.accessToken,
         isLoading: false,
         isExchangingCode: false,
+        isRefreshingGuilds: false,
       });
+
+      void fetch(`/api/auth/guilds?ts=${Date.now()}`, {
+        headers: { Authorization: `Bearer ${stored.accessToken}` },
+        cache: 'no-store',
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json() as Promise<{ guilds: DiscordGuild[] }>;
+        })
+        .then((data) => {
+          const refreshedGuilds = data.guilds;
+          const updated: StoredAuth = { user: stored.user, guilds: refreshedGuilds, accessToken: stored.accessToken };
+          writeStorage(updated);
+          setState((prev) => ({ ...prev, guilds: refreshedGuilds, isRefreshingGuilds: false }));
+        })
+        .catch(() => {
+          setState((prev) => ({ ...prev, isRefreshingGuilds: false }));
+        });
     } else {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      setState((prev) => ({ ...prev, isLoading: false, isRefreshingGuilds: false }));
     }
   }, []);
 
   const logout = useCallback(() => {
     clearStorage();
-    setState({ user: null, guilds: [], accessToken: null, isLoading: false, isExchangingCode: false });
+    setState({ user: null, guilds: [], accessToken: null, isLoading: false, isExchangingCode: false, isRefreshingGuilds: false });
+    window.location.replace('/');
   }, []);
 
   const refreshGuilds = useCallback(async (token?: string) => {
     const t = token ?? state.accessToken;
     if (!t) return;
     try {
-      const res = await fetch('/api/auth/guilds', {
+      setState((prev) => ({ ...prev, isRefreshingGuilds: true }));
+      const res = await fetch(`/api/auth/guilds?ts=${Date.now()}`, {
         headers: { Authorization: `Bearer ${t}` },
+        cache: 'no-store',
       });
       if (!res.ok) return;
       const data = (await res.json()) as { guilds: DiscordGuild[] };
@@ -128,10 +152,10 @@ export function useAuth() {
         if (!prev.user) return prev;
         const updated: StoredAuth = { user: prev.user, guilds: data.guilds, accessToken: t };
         writeStorage(updated);
-        return { ...prev, guilds: data.guilds };
+        return { ...prev, guilds: data.guilds, isRefreshingGuilds: false };
       });
     } catch {
-      // ignore
+      setState((prev) => ({ ...prev, isRefreshingGuilds: false }));
     }
   }, [state.accessToken]);
 
