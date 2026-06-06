@@ -24,7 +24,11 @@ const PLAYGROUND_JOBS_COLLECTION =
 const LOGS_DASHBOARD_KEY = (process.env.LOGS_DASHBOARD_KEY ?? '').trim();
 const DISCORD_CLIENT_ID = (process.env.DISCORD_CLIENT_ID ?? process.env.VITE_DISCORD_CLIENT_ID ?? '').trim();
 const DISCORD_CLIENT_SECRET = (process.env.DISCORD_CLIENT_SECRET ?? '').trim();
-const DISCORD_REDIRECT_URI = (process.env.DISCORD_REDIRECT_URI ?? process.env.VITE_DISCORD_REDIRECT_URI ?? '').trim();
+const DISCORD_REDIRECT_URI = (
+  process.env.DISCORD_REDIRECT_URI ??
+  process.env.VITE_DISCORD_REDIRECT_URI ??
+  `${WEB_APP_URL || 'http://localhost:5173'}/dashboard`
+).trim();
 const logger = createLogger({
   level: process.env.LOG_LEVEL ?? 'info',
   logDirectory: path.resolve(process.cwd(), 'logs'),
@@ -1388,6 +1392,24 @@ app.get('/api/commands/:name', async (req, res) => {
 // Helper: fetch bot guild IDs
 async function fetchBotGuildIds() {
   try {
+    const botToken = (process.env.BOT_TOKEN ?? '').trim();
+    if (botToken) {
+      const directRes = await fetch('https://discord.com/api/v10/users/@me/guilds?with_counts=true', {
+        headers: { Authorization: `Bot ${botToken}` },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (directRes.ok) {
+        const directGuilds = await directRes.json();
+        if (Array.isArray(directGuilds)) {
+          return new Set(
+            directGuilds
+              .map((g) => (typeof g === 'string' ? g : String(g.id ?? '')))
+              .filter(Boolean),
+          );
+        }
+      }
+    }
+
     const headers = { Accept: 'application/json' };
     if (BOT_API_SECRET) headers['x-bot-secret'] = BOT_API_SECRET;
     const res = await fetch(`${BOT_API_URL}/api/guilds`, {
