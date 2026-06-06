@@ -111,7 +111,7 @@ function UserAvatar({ user }: { user: ReturnType<typeof useAuth>['user'] }) {
 }
 
 export function DashboardPage() {
-  const { user, guilds, isLoading, isExchangingCode, logout, refreshGuilds } = useAuth();
+  const { user, guilds, isLoading, isExchangingCode, isRefreshingGuilds, logout, refreshGuilds } = useAuth();
   const navigate = useNavigate();
   const { t } = useI18n();
 
@@ -124,10 +124,31 @@ export function DashboardPage() {
 
   // Refrescar servidores cada vez que se abre el dashboard (para detectar bots recién invitados)
   useEffect(() => {
-    if (user && !isLoading && !isExchangingCode) {
-      refreshGuilds();
-    }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!user || isLoading || isExchangingCode) return;
+
+    let cancelled = false;
+    const syncGuilds = () => {
+      if (!cancelled) refreshGuilds();
+    };
+
+    syncGuilds();
+
+    const handleFocus = () => syncGuilds();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        syncGuilds();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, isLoading, isExchangingCode, refreshGuilds]);
 
   const withBot = guilds.filter((g) => g.hasBot);
   const withoutBot = guilds.filter((g) => !g.hasBot);
@@ -170,10 +191,13 @@ export function DashboardPage() {
                 variant="outline"
                 size="sm"
                 className="gap-2"
-                onClick={() => refreshGuilds()}
+                disabled={isRefreshingGuilds}
+                onClick={() => {
+                  void refreshGuilds();
+                }}
               >
-                <RefreshCw className="w-4 h-4" />
-                {t('dashboard.refresh')}
+                <RefreshCw className={`w-4 h-4 ${isRefreshingGuilds ? 'animate-spin' : ''}`} />
+                {isRefreshingGuilds ? t('dashboard.refreshing') : t('dashboard.refresh')}
               </Button>
               <Button
                 variant="ghost"

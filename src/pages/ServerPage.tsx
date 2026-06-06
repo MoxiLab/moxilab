@@ -249,8 +249,10 @@ export function ServerPage() {
               <div>
                 <h1 className="text-3xl font-bold text-foreground">{guild.name}</h1>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="w-2 h-2 rounded-full bg-green-400" />
-                  <span className="text-sm text-muted-foreground">{t('server.moxiActive')}</span>
+                  <span className={`w-2 h-2 rounded-full ${guild.hasBot ? 'bg-green-400' : 'bg-amber-400'}`} />
+                  <span className={`text-sm ${guild.hasBot ? 'text-muted-foreground' : 'text-amber-400'}`}>
+                    {guild.hasBot ? t('server.moxiActive') : t('server.moxiInactive')}
+                  </span>
                 </div>
               </div>
             </div>
