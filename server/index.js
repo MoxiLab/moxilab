@@ -843,6 +843,65 @@ function mapCommandDoc(doc) {
   };
 }
 
+function normalizeCommandItem(item) {
+  if (!item || typeof item !== 'object') return null;
+
+  const name = typeof item.name === 'string' ? item.name.trim() : '';
+  if (!name) return null;
+
+  const type = item.type === 'prefix' ? 'prefix' : item.type === 'slash' ? 'slash' : 'slash';
+  const category = typeof item.category === 'string' ? item.category.trim() : '';
+  const usage = typeof item.usage === 'string' ? item.usage.trim() : '';
+  const description = typeof item.description === 'string' ? item.description.trim() : '';
+  const aliases = Array.isArray(item.aliases)
+    ? item.aliases.filter((alias) => typeof alias === 'string').map((alias) => alias.trim()).filter(Boolean).sort()
+    : [];
+  const subcommands = Array.isArray(item.subcommands)
+    ? item.subcommands
+        .map((subcommand) => {
+          if (!subcommand || typeof subcommand !== 'object') return null;
+          const fullName = typeof subcommand.fullName === 'string' ? subcommand.fullName.trim() : '';
+          if (!fullName) return null;
+          return {
+            fullName,
+            name: typeof subcommand.name === 'string' ? subcommand.name.trim() : '',
+            group: typeof subcommand.group === 'string' ? subcommand.group.trim() : '',
+            description: typeof subcommand.description === 'string' ? subcommand.description.trim() : '',
+            usage: typeof subcommand.usage === 'string' ? subcommand.usage.trim() : '',
+          };
+        })
+        .filter(Boolean)
+        .sort((a, b) => a.fullName.localeCompare(b.fullName))
+    : [];
+
+  return {
+    name,
+    type,
+    category,
+    usage,
+    description,
+    aliases,
+    subcommands,
+  };
+}
+
+function dedupeCommandItems(items) {
+  const byKey = new Map();
+
+  for (const rawItem of Array.isArray(items) ? items : []) {
+    const item = normalizeCommandItem(rawItem);
+    if (!item) continue;
+
+    const key = JSON.stringify(item);
+    const existing = byKey.get(key);
+    if (!existing) {
+      byKey.set(key, rawItem);
+    }
+  }
+
+  return [...byKey.values()];
+}
+
 const app = express();
 app.disable('x-powered-by');
 app.use(express.json({ limit: '1mb' }));
@@ -1271,7 +1330,14 @@ app.get('/api/commands', async (req, res) => {
   // 1) Intentar obtener desde la API interna del bot
   try {
     const data = await fetchBotCommands();
-    return res.json(data);
+    const items = dedupeCommandItems(data?.items ?? []);
+    return res.json({
+      ...data,
+      items,
+      count: items.length,
+      countPrefix: items.filter((c) => c.type === 'prefix').length,
+      countSlash: items.filter((c) => c.type === 'slash').length,
+    });
   } catch (botErr) {
     logger.warn('bot_api_unavailable_fallback_mongo', { error: botErr?.message ?? String(botErr) });
   }
@@ -1308,7 +1374,7 @@ app.get('/api/commands', async (req, res) => {
     };
 
     const docs = await commands.find(filter, { projection }).sort({ name: 1 }).limit(limit).toArray();
-    const items = docs.map(mapCommandDoc).filter(Boolean);
+    const items = dedupeCommandItems(docs.map(mapCommandDoc).filter(Boolean));
 
     res.json({
       generatedAt: new Date().toISOString(),
@@ -1449,9 +1515,10 @@ function mapUserGuilds(rawGuilds, botGuildIds) {
 // POST /api/auth/callback — intercambia code por token + datos del usuario
 app.post('/api/auth/callback', async (req, res) => {
   const code = String(req.body?.code ?? '').trim();
+  const redirectUri = String(req.body?.redirectUri ?? '').trim() || DISCORD_REDIRECT_URI;
   if (!code) return res.status(400).json({ error: 'Missing code' });
 
-  if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !DISCORD_REDIRECT_URI) {
+  if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET || !redirectUri) {
     logger.warn('auth_callback_not_configured');
     return res.status(500).json({ error: 'OAuth no configurado en el servidor. Agrega DISCORD_CLIENT_SECRET y DISCORD_REDIRECT_URI al .env.local' });
   }
@@ -1466,7 +1533,7 @@ app.post('/api/auth/callback', async (req, res) => {
         client_secret: DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
         code,
-        redirect_uri: DISCORD_REDIRECT_URI,
+        redirect_uri: redirectUri,
       }).toString(),
       signal: AbortSignal.timeout(8000),
     });
