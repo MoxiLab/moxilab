@@ -360,6 +360,7 @@ const translations = {
     server: {
       back: 'Mi panel',
       moxiActive: 'Moxi activo en este servidor',
+      moxiInactive: 'Moxi no está en este servidor',
       notFound: 'Servidor no encontrado o no tienes acceso.',
       backToPanel: 'Volver al panel',
       modulesTitle: 'Módulos disponibles',
@@ -735,6 +736,7 @@ const translations = {
     server: {
       back: 'My panel',
       moxiActive: 'Moxi active in this server',
+      moxiInactive: 'Moxi is not in this server',
       notFound: "Server not found or you don't have access.",
       backToPanel: 'Back to panel',
       modulesTitle: 'Available modules',
@@ -1075,6 +1077,7 @@ const translations = {
     server: {
       back: '我的面板',
       moxiActive: 'Moxi 在此服务器中活跃',
+      moxiInactive: 'Moxi 未在此服务器中',
       notFound: '未找到服务器或你没有访问权限。',
       backToPanel: '返回面板',
       modulesTitle: '可用模块',
@@ -1416,6 +1419,7 @@ const translations = {
     server: {
       back: 'マイパネル',
       moxiActive: 'Moxi がこのサーバーで稼働中',
+      moxiInactive: 'このサーバーには Moxi がいません',
       notFound: 'サーバーが見つからないか、アクセス権がありません。',
       backToPanel: 'パネルに戻る',
       modulesTitle: '利用可能なモジュール',
@@ -1756,6 +1760,7 @@ const translations = {
     server: {
       back: '내 패널',
       moxiActive: 'Moxi가 이 서버에서 활성화됨',
+      moxiInactive: '이 서버에는 Moxi가 없습니다',
       notFound: '서버를 찾을 수 없거나 접근 권한이 없습니다.',
       backToPanel: '패널로 돌아가기',
       modulesTitle: '사용 가능한 모듈',
