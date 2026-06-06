@@ -31,7 +31,7 @@ export function AIFeatures() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   return (
-    <section ref={sectionRef} className="py-20 bg-muted/20 dark:bg-muted/10">
+    <section id="ai" ref={sectionRef} className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -17,7 +17,7 @@ export function Currency() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   return (
-    <section ref={sectionRef} className="py-20 bg-muted/20 dark:bg-muted/10">
+    <section id="currency" ref={sectionRef} className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Ranking Card */}

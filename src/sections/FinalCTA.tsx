@@ -9,7 +9,7 @@ export function FinalCTA() {
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
 
   return (
-    <section ref={sectionRef} className="py-24 bg-muted/20 dark:bg-muted/10 relative overflow-hidden">
+    <section ref={sectionRef} className="py-24 relative overflow-hidden">
       {/* Decorative elements */}
       <motion.div
         className="absolute top-10 left-10 text-3xl"

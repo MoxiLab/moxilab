@@ -15,7 +15,7 @@ export function Hero() {
   const { t } = useI18n();
 
   return (
-    <section className="relative min-h-screen pt-20 overflow-hidden bg-gradient-to-br from-pink-50/60 via-background to-pink-50/30 dark:from-fuchsia-500/10 dark:via-background dark:to-indigo-500/15">
+    <section className="relative min-h-screen pt-20 overflow-hidden">
       {/* soft background blobs */}
       <div className="pointer-events-none absolute -top-28 -right-28 h-80 w-80 rounded-[3rem] rotate-12 bg-pink-500/10 blur-3xl dark:bg-fuchsia-500/12" />
       <div className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-[3.25rem] -rotate-6 bg-indigo-500/10 blur-3xl dark:bg-indigo-400/12" />

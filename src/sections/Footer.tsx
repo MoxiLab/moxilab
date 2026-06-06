@@ -1,17 +1,23 @@
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/lib/i18n';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { getLocalizedPath } from '@/lib/routing';
 
 export function Footer() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const { pathname } = useLocation();
+
+  const isStyledLandingRoute = /\/(modules|resources)\/[^/]+$/.test(pathname);
 
   const resourcesLinks = [
     { name: t('footer.links.patreon'), href: '#' },
-    { name: t('footer.links.wiki'), href: '#' },
-    { name: t('footer.links.gallery'), href: '#' },
+    { name: t('footer.links.wiki'), href: `${getLocalizedPath(language, 'home')}/resources/wiki` },
+    { name: t('footer.links.gallery'), href: `${getLocalizedPath(language, 'home')}/resources/gallery` },
   ];
 
   const moxiLinks = [
-    { name: t('footer.links.supportServer'), href: '#' },
+    { name: t('footer.links.supportServer'), href: `${getLocalizedPath(language, 'home')}/resources/support` },
     { name: t('footer.links.suggestions'), href: '#' },
     { name: t('footer.links.reports'), href: '#' },
     { name: t('footer.links.partners'), href: '#' },
@@ -24,12 +30,12 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className={isStyledLandingRoute ? 'border-t border-white/10 bg-transparent' : 'bg-background border-t border-border'}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <a href="/" className="flex items-center gap-2 mb-4">
+            <Link to={getLocalizedPath(language, 'home')} className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-2xl overflow-hidden">
                 <img
                   src="/moxi-hero.jpg"
@@ -38,7 +44,7 @@ export function Footer() {
                 />
               </div>
               <span className="font-bold text-lg text-foreground">Moxi</span>
-            </a>
+            </Link>
             <p className="text-muted-foreground text-sm mb-6">
               {t('footer.description')}
             </p>
@@ -114,7 +120,7 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-border mt-12 pt-8 text-center">
+        <div className={isStyledLandingRoute ? 'mt-12 border-t border-white/10 pt-8 text-center' : 'border-t border-border mt-12 pt-8 text-center'}>
           <p className="text-muted-foreground text-sm">
             {t('footer.copyright')}
           </p>

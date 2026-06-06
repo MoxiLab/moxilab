@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,10 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Sun, Moon, Crown, User, Menu, X, LayoutDashboard, LogOut } from 'lucide-react';
+import { ChevronDown, Sun, Moon, Crown, User, Menu, X, LayoutDashboard, LogOut, Bell, Shield, Sparkles, Wrench, Music2, Bot, Gift, Heart, BookOpen, Code2, Images, LifeBuoy } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useI18n, type Language } from '@/lib/i18n';
 import { useAuth } from '@/hooks/use-auth';
+import { getLocalizedPath, localizePathname, getLanguageFromPathname } from '@/lib/routing';
 
 const languages = [
   {
@@ -57,11 +58,15 @@ const languages = [
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [modulesMenuOpen, setModulesMenuOpen] = useState(false);
+  const [resourcesMenuOpen, setResourcesMenuOpen] = useState(false);
   const { language, setLanguage, t } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentLanguage = getLanguageFromPathname(location.pathname) ?? language;
   const loginHref = (() => {
     const customUrl = (import.meta.env.VITE_LOGIN_URL || '').trim();
     if (customUrl) return customUrl;
@@ -72,7 +77,8 @@ export function Header() {
     const fallbackOrigin =
       typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
     const redirectUri =
-      (import.meta.env.VITE_DISCORD_REDIRECT_URI || '').trim() || `${fallbackOrigin}/dashboard`;
+      (import.meta.env.VITE_DISCORD_REDIRECT_URI || '').trim() ||
+      `${fallbackOrigin}${getLocalizedPath(currentLanguage, 'dashboard')}`;
     const scopes =
       (import.meta.env.VITE_DISCORD_SCOPES || '').trim() || 'identify guilds';
 
@@ -98,20 +104,90 @@ export function Header() {
 
   const isDark = mounted && resolvedTheme === 'dark';
   const activeLanguage = languages.find((item) => item.id === language) ?? languages[0];
+  const goToLocalizedRoute = (nextLanguage: Language) => {
+    setLanguage(nextLanguage);
+    navigate(localizePathname(location.pathname, nextLanguage), { replace: true });
+  };
 
-  const modules = [
-    { name: t('header.modules.welcome'), href: '#' },
-    { name: t('header.modules.roleplay'), href: '#' },
-    { name: t('header.modules.currency'), href: '#' },
-    { name: t('header.modules.utilities'), href: '#' },
-    { name: t('header.modules.moderation'), href: '#' },
+  const moduleGroups = [
+    {
+      icon: Bell,
+      title: language === 'es' ? 'Alertas Sociales' : t('server.modules.streaming.name'),
+      description:
+        language === 'es'
+          ? 'Conecta Twitch, YouTube, Kick, TikTok, Instagram, X, Bluesky y Reddit en un solo flujo.'
+          : t('server.modules.streaming.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/social-alerts`,
+    },
+    {
+      icon: Heart,
+      title: t('modulesShowcase.modules.roleplay.title'),
+      description: t('modulesShowcase.modules.roleplay.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/roleplay`,
+    },
+    {
+      icon: Bot,
+      title: t('modulesShowcase.modules.economy.title'),
+      description: t('modulesShowcase.modules.economy.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/currency`,
+    },
+    {
+      icon: Wrench,
+      title: t('modulesShowcase.modules.utilities.title'),
+      description: t('modulesShowcase.modules.utilities.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/utilities`,
+    },
+    {
+      icon: Shield,
+      title: t('modulesShowcase.modules.moderation.title'),
+      description: t('modulesShowcase.modules.moderation.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/moderation`,
+    },
+    {
+      icon: Sparkles,
+      title: t('modulesShowcase.modules.ai.title'),
+      description: t('modulesShowcase.modules.ai.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/ai`,
+    },
+    {
+      icon: Music2,
+      title: t('modulesShowcase.modules.music.title'),
+      description: t('modulesShowcase.modules.music.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/music`,
+    },
+    {
+      icon: Gift,
+      title: t('modulesShowcase.modules.giveaways.title'),
+      description: t('modulesShowcase.modules.giveaways.description'),
+      href: `${getLocalizedPath(language, 'home')}/modules/giveaways`,
+    },
   ];
 
   const resources = [
-    { name: t('header.resources.documentation'), href: '#' },
-    { name: t('header.resources.commands'), href: '/commands' },
-    { name: t('header.resources.gallery'), href: '#' },
-    { name: t('header.resources.support'), href: '#' },
+    {
+      icon: BookOpen,
+      title: t('footer.links.wiki'),
+      description: t('resourcesMenu.wiki'),
+      href: `${getLocalizedPath(language, 'home')}/resources/wiki`,
+    },
+    {
+      icon: Code2,
+      title: t('header.resources.commands'),
+      description: t('resourcesMenu.commands'),
+      href: `${getLocalizedPath(language, 'home')}/resources/commands`,
+    },
+    {
+      icon: Images,
+      title: t('footer.links.gallery'),
+      description: t('resourcesMenu.gallery'),
+      href: `${getLocalizedPath(language, 'home')}/resources/gallery`,
+    },
+    {
+      icon: LifeBuoy,
+      title: t('footer.links.supportServer'),
+      description: t('resourcesMenu.support'),
+      href: `${getLocalizedPath(language, 'home')}/resources/support`,
+    },
   ];
 
   return (
@@ -121,86 +197,140 @@ export function Header() {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-background/95 backdrop-blur-md shadow-sm border-b border-border'
-          : 'bg-transparent'
+          ? 'bg-background/90 backdrop-blur-md shadow-sm border-b border-border/60'
+          : 'bg-background/55 backdrop-blur-sm border-b border-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-20 sm:h-22">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-4 group">
-            <div className="w-14 h-14 rounded-2xl overflow-hidden">
+          <Link to={getLocalizedPath(language, 'home')} className="flex items-center gap-3 group shrink-0">
+            <div className="w-11 h-11 rounded-2xl overflow-hidden ring-1 ring-border/40 shadow-sm">
               <img
                 src="/moxi-hero.jpg"
                 alt="Moxi"
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="font-bold text-2xl text-foreground">Moxi</span>
-          </a>
+            <span className="font-bold text-xl sm:text-2xl text-foreground tracking-tight">Moxi</span>
+          </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-3">
-            <a
-              href="/commands"
-              className="px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors"
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3">
+            <Link
+              to={getLocalizedPath(language, 'commands')}
+              className="rounded-full px-4 py-2.5 text-base font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
             >
               {t('header.nav.commands')}
-            </a>
+            </Link>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors">
-                  {t('header.nav.modules')}
-                  <ChevronDown className="w-6 h-6" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-64">
-                {modules.map((module) => (
-                  <DropdownMenuItem key={module.name} asChild>
-                    <a href={module.href} className="cursor-pointer">
-                      {module.name}
-                    </a>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div
+              className="relative"
+              onMouseEnter={() => setModulesMenuOpen(true)}
+              onMouseLeave={() => setModulesMenuOpen(false)}
+            >
+              <button className="flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors">
+                {t('header.nav.modules')}
+                <ChevronDown className="w-4 h-4" />
+              </button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-1 px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors">
-                  {t('header.nav.resources')}
-                  <ChevronDown className="w-6 h-6" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="center" className="w-64">
-                {resources.map((resource) => (
-                  <DropdownMenuItem key={resource.name} asChild>
-                    <a href={resource.href} className="cursor-pointer">
-                      {resource.name}
-                    </a>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <AnimatePresence>
+                {modulesMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, clipPath: 'inset(0 0 100% 0 round 24px)' }}
+                    animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0 round 24px)' }}
+                    exit={{ opacity: 0, y: -8, clipPath: 'inset(0 0 100% 0 round 24px)' }}
+                    transition={{ duration: 0.28, ease: [0.2, 1, 0.22, 1] }}
+                    className="absolute left-0 top-full z-50 pt-3"
+                  >
+                    <div className="w-[560px] rounded-[1.5rem] border border-border/70 bg-slate-950/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.35)] backdrop-blur-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        {moduleGroups.map((module) => {
+                          const Icon = module.icon;
+
+                          return (
+                            <Link key={module.title} to={module.href} onClick={() => setModulesMenuOpen(false)} className="flex items-start gap-3 rounded-xl p-3 cursor-pointer transition-colors hover:bg-white/5">
+                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/80">
+                                <Icon className="h-4 w-4" />
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-white">{module.title}</span>
+                                <span className="mt-1 line-clamp-2 block text-xs leading-5 text-white/70">
+                                  {module.description}
+                                </span>
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div
+              className="relative"
+              onMouseEnter={() => setResourcesMenuOpen(true)}
+              onMouseLeave={() => setResourcesMenuOpen(false)}
+            >
+              <button className="flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors">
+                {t('header.nav.resources')}
+                <ChevronDown className="w-4 h-4" />
+              </button>
+
+              <AnimatePresence>
+                {resourcesMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, clipPath: 'inset(0 0 100% 0 round 24px)' }}
+                    animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0 round 24px)' }}
+                    exit={{ opacity: 0, y: -8, clipPath: 'inset(0 0 100% 0 round 24px)' }}
+                    transition={{ duration: 0.28, ease: [0.2, 1, 0.22, 1] }}
+                    className="absolute left-0 top-full z-50 pt-3"
+                  >
+                    <div className="w-[560px] rounded-[1.5rem] border border-border/70 bg-slate-950/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.35)] backdrop-blur-md">
+                      <div className="grid grid-cols-2 gap-2">
+                        {resources.map((resource) => {
+                          const Icon = resource.icon;
+
+                          return (
+                            <Link key={resource.title} to={resource.href} onClick={() => setResourcesMenuOpen(false)} className="flex items-start gap-3 rounded-xl p-3 cursor-pointer transition-colors hover:bg-white/5">
+                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/80">
+                                <Icon className="h-4 w-4" />
+                              </span>
+                              <span className="min-w-0">
+                                <span className="block text-sm font-semibold text-white">{resource.title}</span>
+                                <span className="mt-1 line-clamp-2 block text-xs leading-5 text-white/70">
+                                  {resource.description}
+                                </span>
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </nav>
 
           {/* Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3 lg:gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 px-4 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors">
+                <button className="flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors">
                   <img
                     src={activeLanguage.flagSrc}
                     alt={activeLanguage.flagAlt}
-                    className="w-6 h-6"
+                    className="w-5 h-5"
                   />
                   <span>{activeLanguage.short}</span>
-                  <ChevronDown className="w-6 h-6" />
+                  <ChevronDown className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuRadioGroup value={language} onValueChange={(value) => setLanguage(value as Language)}>
+                <DropdownMenuRadioGroup value={language} onValueChange={(value) => goToLocalizedRoute(value as Language)}>
                   {languages.map((language) => (
                     <DropdownMenuRadioItem key={language.id} value={language.id}>
                       <span className="inline-flex items-center gap-2">
@@ -219,25 +349,28 @@ export function Header() {
 
             <button
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="p-3 text-foreground/80 hover:text-primary transition-colors"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground/80 shadow-sm transition-colors hover:bg-foreground/5 hover:text-foreground"
               aria-label={isDark ? t('header.theme.light') : t('header.theme.dark')}
             >
-              {isDark ? <Sun className="w-7 h-7" /> : <Moon className="w-7 h-7" />}
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
             <Button
               variant="outline"
-              className="gap-2 border-amber-400 text-amber-600 hover:bg-amber-50 px-5 py-3 text-lg"
+              className="h-11 gap-2 rounded-full border-amber-400 px-4 text-sm font-semibold text-amber-600 hover:bg-amber-50"
+              asChild
             >
-              <Crown className="w-6 h-6" />
-              {t('common.premium')}
+              <Link to={getLocalizedPath(language, 'premium')}>
+                <Crown className="w-4 h-4" />
+                {t('common.premium')}
+              </Link>
             </Button>
 
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-white/8 transition-colors">
-                    <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-primary/40">
+                  <button className="flex items-center gap-2 rounded-full px-2 py-1.5 hover:bg-foreground/5 transition-colors">
+                    <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-primary/30">
                       {user.avatar ? (
                         <img
                           src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`}
@@ -250,14 +383,14 @@ export function Header() {
                         </div>
                       )}
                     </div>
-                    <span className="text-sm font-medium text-foreground max-w-28 truncate">
+                    <span className="text-sm font-medium text-foreground max-w-24 truncate">
                       {user.globalName ?? user.username}
                     </span>
                     <ChevronDown className="w-4 h-4 text-foreground/60" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => navigate('/dashboard')} className="gap-2 cursor-pointer">
+                  <DropdownMenuItem onClick={() => navigate(getLocalizedPath(language, 'dashboard'))} className="gap-2 cursor-pointer">
                     <LayoutDashboard className="w-4 h-4" />
                     Mi panel
                   </DropdownMenuItem>
@@ -280,10 +413,10 @@ export function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-3 text-foreground/80"
+            className="md:hidden flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground/80 shadow-sm"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
@@ -296,7 +429,7 @@ export function Header() {
             className="md:hidden bg-background border-t border-border py-4"
           >
             <nav className="flex flex-col gap-2">
-              <a href="/commands" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
+              <a href={getLocalizedPath(language, 'commands')} className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
                 {t('header.nav.commands')}
               </a>
               <a href="#" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
@@ -309,7 +442,7 @@ export function Header() {
                 {user ? (
                   <div className="flex flex-col gap-2 px-4">
                     <button
-                      onClick={() => { setMobileMenuOpen(false); navigate('/dashboard'); }}
+                      onClick={() => { setMobileMenuOpen(false); navigate(getLocalizedPath(language, 'dashboard')); }}
                       className="flex items-center gap-2 py-2.5 text-lg text-foreground/80 hover:text-primary"
                     >
                       <LayoutDashboard className="w-5 h-5" />

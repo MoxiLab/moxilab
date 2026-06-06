@@ -5,6 +5,8 @@ import { motion, useInView } from 'framer-motion';
 import { ExternalLink, Search, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
+import { Link } from 'react-router-dom';
+import { getLocalizedPath } from '@/lib/routing';
 
 type Subcommand = {
   name: string;
@@ -181,7 +183,7 @@ function renderMarkdownLite(text: string) {
 
 
 export function CommandPlayground() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-120px' });
 
@@ -367,7 +369,7 @@ export function CommandPlayground() {
   }
 
   return (
-    <section ref={sectionRef} className="py-16 bg-background">
+    <section ref={sectionRef} className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] items-start">
           <div>
@@ -423,10 +425,10 @@ export function CommandPlayground() {
                 />
               </div>
               <Button asChild variant="outline" className="rounded-2xl gap-2">
-                <a href="/commands">
+                <Link to={getLocalizedPath(language, 'commands')}>
                   <ExternalLink className="h-4 w-4" />
                   {t('common.viewAll')}
-                </a>
+                </Link>
               </Button>
             </div>
 
