@@ -72,7 +72,7 @@ export function Header() {
     const fallbackOrigin =
       typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5173';
     const redirectUri =
-      (import.meta.env.VITE_DISCORD_REDIRECT_URI || '').trim() || `${fallbackOrigin}/`;
+      (import.meta.env.VITE_DISCORD_REDIRECT_URI || '').trim() || `${fallbackOrigin}/dashboard`;
     const scopes =
       (import.meta.env.VITE_DISCORD_SCOPES || '').trim() || 'identify guilds';
 
@@ -109,7 +109,7 @@ export function Header() {
 
   const resources = [
     { name: t('header.resources.documentation'), href: '#' },
-    { name: t('header.resources.commands'), href: '#/commands' },
+    { name: t('header.resources.commands'), href: '/commands' },
     { name: t('header.resources.gallery'), href: '#' },
     { name: t('header.resources.support'), href: '#' },
   ];
@@ -142,7 +142,7 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-3">
             <a
-              href="#/commands"
+              href="/commands"
               className="px-5 py-3 text-lg font-medium text-foreground/80 hover:text-primary transition-colors"
             >
               {t('header.nav.commands')}
@@ -296,7 +296,7 @@ export function Header() {
             className="md:hidden bg-background border-t border-border py-4"
           >
             <nav className="flex flex-col gap-2">
-              <a href="#/commands" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
+              <a href="/commands" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
                 {t('header.nav.commands')}
               </a>
               <a href="#" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">

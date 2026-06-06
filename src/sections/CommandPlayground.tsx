@@ -423,7 +423,7 @@ export function CommandPlayground() {
                 />
               </div>
               <Button asChild variant="outline" className="rounded-2xl gap-2">
-                <a href="#/commands">
+                <a href="/commands">
                   <ExternalLink className="h-4 w-4" />
                   {t('common.viewAll')}
                 </a>
