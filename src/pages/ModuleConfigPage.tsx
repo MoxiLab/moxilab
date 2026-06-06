@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/use-auth';
 import { useI18n } from '@/lib/i18n';
+import { getLocalizedPath } from '@/lib/routing';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -670,7 +671,7 @@ export function ModuleConfigPage() {
   const { guildId, moduleId } = useParams<{ guildId: string; moduleId: string }>();
   const { user, guilds, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { modules: moduleMeta } = useModules();
   const guild = guilds.find((g) => g.id === guildId);
   const safeModuleId = normalizeModuleId(moduleId ?? 'module');
@@ -711,13 +712,13 @@ export function ModuleConfigPage() {
   useEffect(() => {
     if (isLoading) return;
     if (!user) {
-      navigate('/', { replace: true });
+      navigate(getLocalizedPath(language, 'home'), { replace: true });
       return;
     }
     if (guildId && !guilds.find((g) => g.id === guildId)) {
-      navigate('/dashboard', { replace: true });
+      navigate(getLocalizedPath(language, 'dashboard'), { replace: true });
     }
-  }, [isLoading, user, guildId, guilds, navigate]);
+  }, [isLoading, user, guildId, guilds, navigate, language]);
 
   useEffect(() => {
     if (safeModuleId !== 'music' || !guildId) {
@@ -929,7 +930,7 @@ export function ModuleConfigPage() {
       <main className="min-h-screen flex flex-col items-center justify-center gap-4 text-muted-foreground">
         <p>{t('server.notFound')}</p>
         <Button variant="outline" asChild>
-          <Link to="/dashboard">
+          <Link to={getLocalizedPath(language, 'dashboard')}>
             <ChevronLeft className="w-4 h-4 mr-1" />
             {t('server.backToPanel')}
           </Link>
@@ -1073,7 +1074,7 @@ export function ModuleConfigPage() {
             className="mb-10"
           >
             <Link
-              to={`/dashboard/servers/${guildId}`}
+              to={getLocalizedPath(language, 'dashboard', ['servers', String(guildId ?? '')])}
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
             >
               <ChevronLeft className="w-4 h-4" />

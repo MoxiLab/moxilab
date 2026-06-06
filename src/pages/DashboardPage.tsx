@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth, type DiscordGuild } from '@/hooks/use-auth';
 import { useI18n } from '@/lib/i18n';
+import { getLocalizedPath } from '@/lib/routing';
 import { Button } from '@/components/ui/button';
 import { LogOut, RefreshCw, Settings, Plus, Crown } from 'lucide-react';
 import { getDashboardBackgroundTheme } from '@/lib/dashboard-background';
@@ -113,14 +114,14 @@ function UserAvatar({ user }: { user: ReturnType<typeof useAuth>['user'] }) {
 export function DashboardPage() {
   const { user, guilds, isLoading, isExchangingCode, isRefreshingGuilds, logout, refreshGuilds } = useAuth();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   // Si no hay sesión y no estamos cargando, redirigir al inicio
   useEffect(() => {
     if (!isLoading && !isExchangingCode && !user) {
-      navigate('/', { replace: true });
+      navigate(getLocalizedPath(language, 'home'), { replace: true });
     }
-  }, [isLoading, isExchangingCode, user, navigate]);
+  }, [isLoading, isExchangingCode, user, navigate, language]);
 
   // Refrescar servidores cada vez que se abre el dashboard (para detectar bots recién invitados)
   useEffect(() => {

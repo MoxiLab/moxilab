@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth, type DiscordGuild } from '@/hooks/use-auth';
 import { useI18n } from '@/lib/i18n';
+import { getLocalizedPath } from '@/lib/routing';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -102,7 +103,7 @@ export function ServerPage() {
   const { guildId } = useParams<{ guildId: string }>();
   const { user, guilds, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { modules: moduleMeta } = useModules();
 
   const [enabledModules, setEnabledModules] = useState<Record<string, boolean>>({});
@@ -153,14 +154,14 @@ export function ServerPage() {
   useEffect(() => {
     if (isLoading) return; // Esperar a que carguen los datos
     if (!user) {
-      navigate('/', { replace: true }); // No hay sesión
+      navigate(getLocalizedPath(language, 'home'), { replace: true }); // No hay sesión
       return;
     }
     // Validar que el servidor exista
     if (guildId && !guilds.find((g) => g.id === guildId)) {
-      navigate('/dashboard', { replace: true }); // Servidor no encontrado
+      navigate(getLocalizedPath(language, 'dashboard'), { replace: true }); // Servidor no encontrado
     }
-  }, [isLoading, user, guildId, guilds, navigate]);
+  }, [isLoading, user, guildId, guilds, navigate, language]);
 
   useEffect(() => {
     if (!guildId) return;
@@ -206,7 +207,7 @@ export function ServerPage() {
       <main className="min-h-screen flex flex-col items-center justify-center gap-4 text-muted-foreground">
         <p>{t('server.notFound')}</p>
         <Button variant="outline" asChild>
-          <Link to="/dashboard"><ChevronLeft className="w-4 h-4 mr-1" />{t('server.backToPanel')}</Link>
+          <Link to={getLocalizedPath(language, 'dashboard')}><ChevronLeft className="w-4 h-4 mr-1" />{t('server.backToPanel')}</Link>
         </Button>
       </main>
     );
@@ -229,7 +230,7 @@ export function ServerPage() {
             className="mb-10"
           >
             <Link
-              to="/dashboard"
+              to={getLocalizedPath(language, 'dashboard')}
               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
             >
               <ChevronLeft className="w-4 h-4" />

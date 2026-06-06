@@ -13,7 +13,7 @@ import { FinalCTA } from '@/sections/FinalCTA';
 
 export function HomePage() {
   return (
-    <main>
+    <main className="bg-gradient-to-br from-[#1a1630] via-[#13192c] to-[#10263a]">
       <Hero />
       <TrustedBy />
       <CommandPlayground />
