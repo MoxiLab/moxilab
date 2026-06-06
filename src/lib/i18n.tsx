@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { getLanguageFromPathname, isSupportedLanguage } from '@/lib/routing';
 
 const DEFAULT_LANGUAGE = 'es' as const;
 const STORAGE_KEY = 'moxi_lang';
@@ -21,6 +22,40 @@ const translations = {
       invite: 'Invitar',
       support: 'Soporte',
       viewAll: 'Ver todo',
+    },
+    premiumPage: {
+      badge: 'Premium',
+      title: 'Elige tu tier',
+      description:
+        'Accede a ventajas extra, límites ampliados y funciones exclusivas para llevar Moxi al siguiente nivel.',
+      patreonLink: 'Mirar directamente en Patreon',
+      planLabel: 'Personal',
+      period: '/ mes',
+      ctaFeatured: 'Súmate ahora',
+      ctaDefault: 'Elegir plan',
+      plans: {
+        basic: {
+          name: 'Donación Básica',
+          description: 'Plan mensual con ventajas pensadas para comunidades que quieren más.',
+          feature1: 'Acceso a comandos y ventajas premium básicas',
+          feature2: 'Rol exclusivo de premium',
+          feature3: 'Soporte prioritario',
+        },
+        intermediate: {
+          name: 'Donación Intermedia',
+          description: 'Todo lo del plan básico, con más límites y ventajas exclusivas.',
+          feature1: 'Todo lo del plan básico',
+          feature2: 'Más límites y ventajas exclusivas',
+          feature3: 'Acceso anticipado a novedades',
+        },
+        generative: {
+          name: 'Donación Generativa',
+          description: 'Un plan centrado en IA con funciones avanzadas y límites ampliados.',
+          feature1: 'Funciones avanzadas de IA',
+          feature2: 'Límites ampliados',
+          feature3: 'Prioridad máxima en mejoras',
+        },
+      },
     },
     header: {
       nav: {
@@ -290,6 +325,12 @@ const translations = {
         refund: 'Politica de reembolsos',
       },
     },
+    resourcesMenu: {
+      wiki: 'Todo lo que necesitas saber esta disponible en su Wiki oficial.',
+      commands: 'Mira la lista completa de comandos con filtros y categorias.',
+      gallery: 'Explora las capturas y vistas del bot en uso.',
+      support: 'Entra al servidor de soporte para recibir ayuda directa.',
+    },
     commands: {
       title: 'Comandos',
       subtitle: 'Mira la extensa lista de comandos de Moxi',
@@ -397,6 +438,40 @@ const translations = {
       invite: 'Invite',
       support: 'Support',
       viewAll: 'View all',
+    },
+    premiumPage: {
+      badge: 'Premium',
+      title: 'Choose your tier',
+      description:
+        'Get extra perks, expanded limits and exclusive features to take Moxi to the next level.',
+      patreonLink: 'View directly on Patreon',
+      planLabel: 'Personal',
+      period: '/ month',
+      ctaFeatured: 'Join now',
+      ctaDefault: 'Choose plan',
+      plans: {
+        basic: {
+          name: 'Basic Donation',
+          description: 'Monthly plan with perks designed for communities that want more.',
+          feature1: 'Access to commands and basic premium perks',
+          feature2: 'Exclusive premium role',
+          feature3: 'Priority support',
+        },
+        intermediate: {
+          name: 'Intermediate Donation',
+          description: 'Everything in the basic plan, with more limits and exclusive perks.',
+          feature1: 'Everything from the basic plan',
+          feature2: 'More limits and exclusive perks',
+          feature3: 'Early access to new features',
+        },
+        generative: {
+          name: 'Generative Donation',
+          description: 'An AI-focused plan with advanced features and expanded limits.',
+          feature1: 'Advanced AI features',
+          feature2: 'Expanded limits',
+          feature3: 'Top priority on improvements',
+        },
+      },
     },
     header: {
       nav: {
@@ -666,6 +741,12 @@ const translations = {
         refund: 'Refund Policy',
       },
     },
+    resourcesMenu: {
+      wiki: 'Everything you need to know is available on the official Wiki.',
+      commands: 'Browse the full command list with categories and filters.',
+      gallery: 'Explore bot screenshots and live usage previews.',
+      support: 'Join the support server for direct help and updates.',
+    },
     commands: {
       title: 'Commands',
       subtitle: 'See the extensive list of Moxi commands',
@@ -773,6 +854,39 @@ const translations = {
       invite: '邀请',
       support: '支持',
       viewAll: '查看全部',
+    },
+    premiumPage: {
+      badge: '高级版',
+      title: '选择你的等级',
+      description: '解锁额外特权、扩展限制和独家功能，让 Moxi 更进一步。',
+      patreonLink: '直接在 Patreon 查看',
+      planLabel: '个人',
+      period: '/ 月',
+      ctaFeatured: '立即加入',
+      ctaDefault: '选择方案',
+      plans: {
+        basic: {
+          name: '基础捐赠',
+          description: '适合想要更多功能的社区的月度方案。',
+          feature1: '可使用基础高级命令与特权',
+          feature2: '专属高级身份组',
+          feature3: '优先支持',
+        },
+        intermediate: {
+          name: '进阶捐赠',
+          description: '包含基础方案全部内容，并提供更多限制和独家特权。',
+          feature1: '包含基础方案全部内容',
+          feature2: '更多限制和独家特权',
+          feature3: '新功能抢先体验',
+        },
+        generative: {
+          name: '生成式捐赠',
+          description: '专注 AI 的方案，提供高级功能与更高额度。',
+          feature1: '高级 AI 功能',
+          feature2: '更高额度',
+          feature3: '改进优先级最高',
+        },
+      },
     },
     header: {
       nav: {
@@ -1008,6 +1122,12 @@ const translations = {
         refund: '退款政策',
       },
     },
+    resourcesMenu: {
+      wiki: '你需要的信息都在官方 Wiki。',
+      commands: '按分类和筛选浏览完整命令列表。',
+      gallery: '查看机器人的截图与实际展示。',
+      support: '加入支持服务器，直接获取帮助。',
+    },
     commands: {
       title: '命令',
       subtitle: '查看 Moxi 的完整命令列表',
@@ -1114,6 +1234,39 @@ const translations = {
       invite: '招待',
       support: 'サポート',
       viewAll: 'すべて見る',
+    },
+    premiumPage: {
+      badge: 'プレミアム',
+      title: 'ティアを選択',
+      description: '追加特典、拡張された制限、限定機能で Moxi を次のレベルへ。',
+      patreonLink: 'Patreon で直接見る',
+      planLabel: '個人',
+      period: '/ 月',
+      ctaFeatured: '今すぐ参加',
+      ctaDefault: 'プランを選ぶ',
+      plans: {
+        basic: {
+          name: 'ベーシック寄付',
+          description: 'もっと欲しいコミュニティ向けの月額プランです。',
+          feature1: '基本プレミアムコマンドと特典へのアクセス',
+          feature2: '限定プレミアムロール',
+          feature3: '優先サポート',
+        },
+        intermediate: {
+          name: '中間寄付',
+          description: 'ベーシックの内容に加えて、より多い制限と限定特典が付属します。',
+          feature1: 'ベーシックプランの内容すべて',
+          feature2: 'より多い制限と限定特典',
+          feature3: '新機能の先行アクセス',
+        },
+        generative: {
+          name: '生成 AI 寄付',
+          description: '高度な AI 機能と拡張された制限に特化したプランです。',
+          feature1: '高度な AI 機能',
+          feature2: '拡張された制限',
+          feature3: '改善への最優先対応',
+        },
+      },
     },
     header: {
       nav: {
@@ -1350,6 +1503,12 @@ const translations = {
         refund: '返金ポリシー',
       },
     },
+    resourcesMenu: {
+      wiki: '必要な情報は公式 Wiki にすべて揃っています。',
+      commands: 'カテゴリやフィルター付きでコマンド一覧を確認できます。',
+      gallery: 'ボットのスクリーンショットや実際の表示を見られます。',
+      support: 'サポートサーバーに参加して直接ヘルプを受けられます。',
+    },
     commands: {
       title: 'コマンド',
       subtitle: 'Moxi の豊富なコマンド一覧を確認',
@@ -1456,6 +1615,39 @@ const translations = {
       invite: '초대',
       support: '지원',
       viewAll: '전체 보기',
+    },
+    premiumPage: {
+      badge: '프리미엄',
+      title: '티어를 선택하세요',
+      description: '추가 혜택, 확장된 제한, 전용 기능으로 Moxi를 한 단계 더 끌어올리세요.',
+      patreonLink: 'Patreon에서 바로 보기',
+      planLabel: '개인',
+      period: '/ 월',
+      ctaFeatured: '지금 참여',
+      ctaDefault: '플랜 선택',
+      plans: {
+        basic: {
+          name: '기본 후원',
+          description: '더 많은 혜택을 원하는 커뮤니티를 위한 월간 플랜입니다.',
+          feature1: '기본 프리미엄 명령어와 혜택 이용',
+          feature2: '전용 프리미엄 역할',
+          feature3: '우선 지원',
+        },
+        intermediate: {
+          name: '중간 후원',
+          description: '기본 플랜의 모든 혜택에 더 많은 제한과 전용 혜택이 포함됩니다.',
+          feature1: '기본 플랜의 모든 내용',
+          feature2: '더 많은 제한과 전용 혜택',
+          feature3: '신기능 사전 이용',
+        },
+        generative: {
+          name: '생성형 후원',
+          description: '고급 AI 기능과 확장된 제한에 초점을 둔 플랜입니다.',
+          feature1: '고급 AI 기능',
+          feature2: '확장된 제한',
+          feature3: '개선 우선순위 최상',
+        },
+      },
     },
     header: {
       nav: {
@@ -1691,6 +1883,12 @@ const translations = {
         refund: '환불 정책',
       },
     },
+    resourcesMenu: {
+      wiki: '필요한 정보는 모두 공식 Wiki에 있습니다.',
+      commands: '카테고리와 필터로 전체 명령어 목록을 볼 수 있습니다.',
+      gallery: '봇 스크린샷과 실제 모습을 둘러보세요.',
+      support: '지원 서버에 참여해 직접 도움을 받아보세요.',
+    },
     commands: {
       title: '명령어',
       subtitle: 'Moxi의 방대한 명령어 목록을 확인하세요',
@@ -1818,6 +2016,8 @@ function formatTemplate(text: string, vars?: Record<string, string | number>) {
 
 function getInitialLanguage(): Language {
   if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
+  const pathLanguage = getLanguageFromPathname(window.location.pathname);
+  if (pathLanguage && isSupportedLanguage(pathLanguage)) return pathLanguage;
   const stored = window.localStorage.getItem(STORAGE_KEY) as Language | null;
   if (stored && stored in translations) return stored;
   return DEFAULT_LANGUAGE;
