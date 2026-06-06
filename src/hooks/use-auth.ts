@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getLocalizedPath, getLanguageFromPathname, type AppLanguage } from '@/lib/routing';
 
 export interface DiscordUser {
   id: string;
@@ -75,16 +76,23 @@ export function useAuth() {
     const code = params.get('code');
 
     if (code) {
+      // Debe coincidir exactamente con el redirect_uri usado al autorizar en Discord.
+      const callbackRedirectUri = `${window.location.origin}${window.location.pathname}`;
+
       // Limpia el code de la URL de inmediato
       const cleanUrl = window.location.pathname + window.location.hash;
       window.history.replaceState({}, '', cleanUrl);
+
+      const langFromPath = getLanguageFromPathname(window.location.pathname);
+      const storedLang = (window.localStorage.getItem('moxi_lang') as AppLanguage) || 'es';
+      const lang = langFromPath || storedLang;
 
       setState((prev) => ({ ...prev, isExchangingCode: true, isLoading: true }));
 
       fetch('/api/auth/callback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, redirectUri: callbackRedirectUri }),
       })
         .then((res) => {
           if (!res.ok) return Promise.reject(new Error(`HTTP ${res.status}`));
@@ -94,7 +102,7 @@ export function useAuth() {
           const toStore: StoredAuth = { user: data.user, guilds: data.guilds, accessToken: data.accessToken };
           writeStorage(toStore);
           // Redirigir al dashboard tras el login exitoso
-          window.location.replace('/dashboard');
+          window.location.replace(getLocalizedPath(lang, 'dashboard'));
         })
         .catch(() => {
           setState((prev) => ({ ...prev, isLoading: false, isExchangingCode: false, isRefreshingGuilds: false }));
@@ -132,9 +140,10 @@ export function useAuth() {
   }, []);
 
   const logout = useCallback(() => {
+    const lang = (window.localStorage.getItem('moxi_lang') as AppLanguage) || 'es';
     clearStorage();
     setState({ user: null, guilds: [], accessToken: null, isLoading: false, isExchangingCode: false, isRefreshingGuilds: false });
-    window.location.replace('/');
+    window.location.replace(getLocalizedPath(lang, 'home'));
   }, []);
 
   const refreshGuilds = useCallback(async (token?: string) => {
