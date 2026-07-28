@@ -9,28 +9,65 @@ export interface DiscordUser {
   globalName: string | null;
 }
 
+export function getUserAvatarUrl(user: DiscordUser | null, customAvatarUrl: string | null = null) {
+  if (customAvatarUrl) return customAvatarUrl;
+  if (!user) return null;
+  return user.avatar
+    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
+    : `https://cdn.discordapp.com/embed/avatars/${Number(user.discriminator) % 5}.png`;
+}
+
 export interface DiscordGuild {
   id: string;
   name: string;
   icon: string | null;
   hasBot: boolean;
+  serverTag?: string | null;
 }
 
 interface AuthState {
   user: DiscordUser | null;
   guilds: DiscordGuild[];
   accessToken: string | null;
+  profileAvatarUrl: string | null;
   isLoading: boolean;
   isExchangingCode: boolean;
   isRefreshingGuilds: boolean;
 }
 
 const STORAGE_KEY = 'moxi_auth_v1';
+const PROFILE_AVATAR_KEY = 'moxi_profile_avatar_v1';
+const PROFILE_AVATAR_EVENT = 'moxi_profile_avatar_changed';
 
 interface StoredAuth {
   user: DiscordUser;
   guilds: DiscordGuild[];
   accessToken: string;
+}
+
+function profileAvatarStorageKey(userId: string) {
+  return `${PROFILE_AVATAR_KEY}:${userId}`;
+}
+
+function readProfileAvatar(userId: string): string | null {
+  try {
+    return localStorage.getItem(profileAvatarStorageKey(userId));
+  } catch {
+    return null;
+  }
+}
+
+function writeProfileAvatar(userId: string, avatarUrl: string | null) {
+  try {
+    const key = profileAvatarStorageKey(userId);
+    if (avatarUrl) {
+      localStorage.setItem(key, avatarUrl);
+    } else {
+      localStorage.removeItem(key);
+    }
+  } catch {
+    // ignore
+  }
 }
 
 function readStorage(): StoredAuth | null {
@@ -64,6 +101,7 @@ export function useAuth() {
     user: null,
     guilds: [],
     accessToken: null,
+    profileAvatarUrl: null,
     isLoading: true,
     isExchangingCode: false,
     isRefreshingGuilds: false,
@@ -112,6 +150,7 @@ export function useAuth() {
         user: stored.user,
         guilds: stored.guilds,
         accessToken: stored.accessToken,
+        profileAvatarUrl: readProfileAvatar(stored.user.id),
         isLoading: false,
         isExchangingCode: false,
         isRefreshingGuilds: false,
@@ -129,7 +168,12 @@ export function useAuth() {
           const refreshedGuilds = data.guilds;
           const updated: StoredAuth = { user: stored.user, guilds: refreshedGuilds, accessToken: stored.accessToken };
           writeStorage(updated);
-          setState((prev) => ({ ...prev, guilds: refreshedGuilds, isRefreshingGuilds: false }));
+          setState((prev) => ({
+            ...prev,
+            guilds: refreshedGuilds,
+            profileAvatarUrl: readProfileAvatar(stored.user.id),
+            isRefreshingGuilds: false,
+          }));
         })
         .catch(() => {
           setState((prev) => ({ ...prev, isRefreshingGuilds: false }));
@@ -139,11 +183,32 @@ export function useAuth() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleProfileAvatarChange = () => {
+      setState((prev) => ({
+        ...prev,
+        profileAvatarUrl: prev.user ? readProfileAvatar(prev.user.id) : null,
+      }));
+    };
+
+    window.addEventListener(PROFILE_AVATAR_EVENT, handleProfileAvatarChange);
+    return () => window.removeEventListener(PROFILE_AVATAR_EVENT, handleProfileAvatarChange);
+  }, []);
+
   const logout = useCallback(() => {
     const lang = (window.localStorage.getItem('moxi_lang') as AppLanguage) || 'es';
     clearStorage();
-    setState({ user: null, guilds: [], accessToken: null, isLoading: false, isExchangingCode: false, isRefreshingGuilds: false });
+    setState({ user: null, guilds: [], accessToken: null, profileAvatarUrl: null, isLoading: false, isExchangingCode: false, isRefreshingGuilds: false });
     window.location.replace(getLocalizedPath(lang, 'home'));
+  }, []);
+
+  const setProfileAvatarUrl = useCallback((avatarUrl: string | null) => {
+    setState((prev) => {
+      if (!prev.user) return prev;
+      writeProfileAvatar(prev.user.id, avatarUrl);
+      window.dispatchEvent(new Event(PROFILE_AVATAR_EVENT));
+      return { ...prev, profileAvatarUrl: avatarUrl };
+    });
   }, []);
 
   const refreshGuilds = useCallback(async (token?: string) => {
@@ -168,5 +233,5 @@ export function useAuth() {
     }
   }, [state.accessToken]);
 
-  return { ...state, logout, refreshGuilds };
+  return { ...state, logout, refreshGuilds, setProfileAvatarUrl };
 }
