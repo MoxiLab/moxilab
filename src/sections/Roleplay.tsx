@@ -71,17 +71,16 @@ export function Roleplay() {
               <DiscordMessage username="Moxi" app>
                 <DiscordEmbed>
                   <div className="space-y-3">
-                    <p className="text-[#dcddde] text-sm">
-                      <span className="text-[#00b0f4]">@Gwee</span>{' '}
+                    <p className="text-muted-foreground text-sm">
+                      <span className="text-primary">@Nini</span>{' '}
                       {t('roleplay.mockup.hugVerb')}{' '}
-                      <span className="text-[#00b0f4]">@Kwee</span>{' '}
-                      <span className="text-pink-400">💕</span>
+                      <span className="text-primary">@Neno</span>
                     </p>
-                    <div className="rounded-lg overflow-hidden">
+                    <div className="rounded-lg overflow-hidden border border-border/60 bg-muted/30 aspect-[4/3] sm:aspect-[16/9]">
                       <img
-                        src="https://media.giphy.com/media/3o7TKtnuHOHHUjR38Y/giphy.gif"
+                        src="https://media.giphy.com/media/WynnqxhdFEPYY/giphy.gif"
                         alt="Anime hug"
-                        className="w-full h-32 object-cover"
+                        className="h-full w-full object-contain"
                       />
                     </div>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -89,9 +88,9 @@ export function Roleplay() {
                     </div>
                   </div>
                 </DiscordEmbed>
-                <div className="mt-2 text-sm text-[#dcddde]">
+                <div className="mt-2 text-sm text-muted-foreground">
                   {t('roleplay.mockup.timesHugged')}{' '}
-                  <span className="text-pink-400 font-bold">
+                  <span className="text-pink-500 font-bold">
                     {isInView && <AnimatedCounter target={42} />}
                   </span>
                 </div>

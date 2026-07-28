@@ -63,7 +63,7 @@ export function Header() {
   const { language, setLanguage, t } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, logout, profileAvatarUrl } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const currentLanguage = getLanguageFromPathname(location.pathname) ?? language;
@@ -195,13 +195,13 @@ export function Header() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`sk-nav fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-background/90 backdrop-blur-md shadow-sm border-b border-border/60'
-          : 'bg-background/55 backdrop-blur-sm border-b border-transparent'
+          ? 'sk-nav-scrolled'
+          : 'sk-nav-top'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="sk-nav-inner max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 sm:h-22">
           {/* Logo */}
           <Link to={getLocalizedPath(language, 'home')} className="flex items-center gap-3 group shrink-0">
@@ -219,7 +219,7 @@ export function Header() {
           <nav className="hidden md:flex items-center gap-2 lg:gap-3">
             <Link
               to={getLocalizedPath(language, 'commands')}
-              className="rounded-full px-4 py-2.5 text-base font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
+              className="sk-nav-link rounded-full px-4 py-2.5 text-base font-medium transition-colors"
             >
               {t('header.nav.commands')}
             </Link>
@@ -229,7 +229,7 @@ export function Header() {
               onMouseEnter={() => setModulesMenuOpen(true)}
               onMouseLeave={() => setModulesMenuOpen(false)}
             >
-              <button className="flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors">
+              <button className="sk-nav-link flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium transition-colors">
                 {t('header.nav.modules')}
                 <ChevronDown className="w-4 h-4" />
               </button>
@@ -243,19 +243,19 @@ export function Header() {
                     transition={{ duration: 0.28, ease: [0.2, 1, 0.22, 1] }}
                     className="absolute left-0 top-full z-50 pt-3"
                   >
-                    <div className="w-[560px] rounded-[1.5rem] border border-border/70 bg-slate-950/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.35)] backdrop-blur-md">
+                    <div className="sk-nav-mega w-[560px] rounded-[1.5rem] p-3 backdrop-blur-md">
                       <div className="grid grid-cols-2 gap-2">
                         {moduleGroups.map((module) => {
                           const Icon = module.icon;
 
                           return (
-                            <Link key={module.title} to={module.href} onClick={() => setModulesMenuOpen(false)} className="flex items-start gap-3 rounded-xl p-3 cursor-pointer transition-colors hover:bg-white/5">
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/80">
+                            <Link key={module.title} to={module.href} onClick={() => setModulesMenuOpen(false)} className="sk-nav-mega-item flex items-start gap-3 rounded-xl p-3 cursor-pointer transition-colors">
+                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-foreground/20 bg-background/70 text-foreground/80">
                                 <Icon className="h-4 w-4" />
                               </span>
                               <span className="min-w-0">
-                                <span className="block text-sm font-semibold text-white">{module.title}</span>
-                                <span className="mt-1 line-clamp-2 block text-xs leading-5 text-white/70">
+                                <span className="block text-sm font-semibold text-foreground">{module.title}</span>
+                                <span className="mt-1 line-clamp-2 block text-xs leading-5 text-muted-foreground">
                                   {module.description}
                                 </span>
                               </span>
@@ -274,7 +274,7 @@ export function Header() {
               onMouseEnter={() => setResourcesMenuOpen(true)}
               onMouseLeave={() => setResourcesMenuOpen(false)}
             >
-              <button className="flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors">
+              <button className="sk-nav-link flex items-center gap-1.5 rounded-full px-4 py-2.5 text-base font-medium transition-colors">
                 {t('header.nav.resources')}
                 <ChevronDown className="w-4 h-4" />
               </button>
@@ -288,19 +288,19 @@ export function Header() {
                     transition={{ duration: 0.28, ease: [0.2, 1, 0.22, 1] }}
                     className="absolute left-0 top-full z-50 pt-3"
                   >
-                    <div className="w-[560px] rounded-[1.5rem] border border-border/70 bg-slate-950/95 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.35)] backdrop-blur-md">
+                    <div className="sk-nav-mega w-[560px] rounded-[1.5rem] p-3 backdrop-blur-md">
                       <div className="grid grid-cols-2 gap-2">
                         {resources.map((resource) => {
                           const Icon = resource.icon;
 
                           return (
-                            <Link key={resource.title} to={resource.href} onClick={() => setResourcesMenuOpen(false)} className="flex items-start gap-3 rounded-xl p-3 cursor-pointer transition-colors hover:bg-white/5">
-                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-white/80">
+                            <Link key={resource.title} to={resource.href} onClick={() => setResourcesMenuOpen(false)} className="sk-nav-mega-item flex items-start gap-3 rounded-xl p-3 cursor-pointer transition-colors">
+                              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-foreground/20 bg-background/70 text-foreground/80">
                                 <Icon className="h-4 w-4" />
                               </span>
                               <span className="min-w-0">
-                                <span className="block text-sm font-semibold text-white">{resource.title}</span>
-                                <span className="mt-1 line-clamp-2 block text-xs leading-5 text-white/70">
+                                <span className="block text-sm font-semibold text-foreground">{resource.title}</span>
+                                <span className="mt-1 line-clamp-2 block text-xs leading-5 text-muted-foreground">
                                   {resource.description}
                                 </span>
                               </span>
@@ -319,7 +319,7 @@ export function Header() {
           <div className="hidden md:flex items-center gap-3 lg:gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors">
+                <button className="sk-nav-link flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-colors">
                   <img
                     src={activeLanguage.flagSrc}
                     alt={activeLanguage.flagAlt}
@@ -349,7 +349,7 @@ export function Header() {
 
             <button
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground/80 shadow-sm transition-colors hover:bg-foreground/5 hover:text-foreground"
+              className="sk-nav-icon-btn flex h-11 w-11 items-center justify-center rounded-full transition-colors"
               aria-label={isDark ? t('header.theme.light') : t('header.theme.dark')}
             >
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -357,7 +357,7 @@ export function Header() {
 
             <Button
               variant="outline"
-              className="h-11 gap-2 rounded-full border-amber-400 px-4 text-sm font-semibold text-amber-600 hover:bg-amber-50"
+              className="sk-nav-premium h-11 gap-2 rounded-full px-4 text-sm font-semibold"
               asChild
             >
               <Link to={getLocalizedPath(language, 'premium')}>
@@ -369,11 +369,11 @@ export function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 rounded-full px-2 py-1.5 hover:bg-foreground/5 transition-colors">
+                  <button className="sk-nav-user flex items-center gap-2 rounded-full px-2 py-1.5 transition-colors">
                     <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-primary/30">
-                      {user.avatar ? (
+                      {profileAvatarUrl || user.avatar ? (
                         <img
-                          src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`}
+                          src={profileAvatarUrl ?? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`}
                           alt={user.globalName ?? user.username}
                           className="w-full h-full object-cover"
                         />
@@ -413,7 +413,7 @@ export function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground/80 shadow-sm"
+            className="sk-nav-icon-btn md:hidden flex h-11 w-11 items-center justify-center rounded-full"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -426,24 +426,24 @@ export function Header() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background border-t border-border py-4"
+            className="sk-nav-mobile md:hidden py-4"
           >
             <nav className="flex flex-col gap-2">
-              <a href={getLocalizedPath(language, 'commands')} className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
+              <a href={getLocalizedPath(language, 'commands')} className="sk-nav-mobile-link px-4 py-2.5 text-lg">
                 {t('header.nav.commands')}
               </a>
-              <a href="#" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
+              <a href="#" className="sk-nav-mobile-link px-4 py-2.5 text-lg">
                 {t('header.nav.modules')}
               </a>
-              <a href="#" className="px-4 py-2.5 text-lg text-foreground/80 hover:text-primary">
+              <a href="#" className="sk-nav-mobile-link px-4 py-2.5 text-lg">
                 {t('header.nav.resources')}
               </a>
-              <div className="border-t border-border pt-2 mt-2">
+              <div className="border-t border-border/50 pt-2 mt-2">
                 {user ? (
                   <div className="flex flex-col gap-2 px-4">
                     <button
                       onClick={() => { setMobileMenuOpen(false); navigate(getLocalizedPath(language, 'dashboard')); }}
-                      className="flex items-center gap-2 py-2.5 text-lg text-foreground/80 hover:text-primary"
+                      className="sk-nav-mobile-link flex items-center gap-2 py-2.5 text-lg"
                     >
                       <LayoutDashboard className="w-5 h-5" />
                       Mi panel

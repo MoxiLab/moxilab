@@ -54,9 +54,9 @@ export function Utilities() {
                 <DiscordMessage
                   username="Nini"
                   avatar="/nini.png"
-                  nameClassName="font-semibold text-white"
+                  nameClassName="font-semibold text-foreground"
                 >
-                  <div className="text-[#dcddde] text-sm">
+                  <div className="text-muted-foreground text-sm">
                     /anime notify <span className="text-[#00b0f4]">Buddy Daddies</span>
                   </div>
                 </DiscordMessage>
@@ -65,13 +65,13 @@ export function Utilities() {
                     <div className="flex items-start gap-3">
                       <Bell className="w-5 h-5 text-pink-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-white font-semibold text-sm">
+                        <p className="text-foreground font-semibold text-sm">
                           {t('utilities.mockup.newEpisode')}
                         </p>
                         <p className="text-pink-400 text-sm mt-1">
                           Buddy Daddies
                         </p>
-                        <p className="text-[#dcddde] text-sm">
+                        <p className="text-muted-foreground text-sm">
                           {t('utilities.mockup.episodeTitle')}
                         </p>
                         <button className="mt-2 inline-flex items-center gap-1 px-3 py-1.5 bg-pink-500/20 text-pink-400 text-xs rounded hover:bg-pink-500/30 transition-colors">
@@ -87,9 +87,9 @@ export function Utilities() {
                 <DiscordMessage
                   username="Nini"
                   avatar="/nini.png"
-                  nameClassName="font-semibold text-white"
+                  nameClassName="font-semibold text-foreground"
                 >
-                  <div className="text-[#dcddde] text-sm">
+                  <div className="text-muted-foreground text-sm">
                     /protection status
                   </div>
                 </DiscordMessage>
@@ -98,10 +98,10 @@ export function Utilities() {
                     <div className="flex items-start gap-3">
                       <Shield className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="text-white font-semibold text-sm">
+                        <p className="text-foreground font-semibold text-sm">
                           {t('utilities.mockup.protectionTitle')}
                         </p>
-                        <p className="text-[#dcddde] text-sm mt-1">
+                        <p className="text-muted-foreground text-sm mt-1">
                           {t('utilities.mockup.protectionBody')}
                         </p>
                       </div>

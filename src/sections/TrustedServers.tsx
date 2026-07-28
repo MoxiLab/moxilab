@@ -14,6 +14,10 @@ interface TrustedServerItem {
   verified: boolean;
 }
 
+function sortTrustedServers(servers: TrustedServerItem[]) {
+  return [...servers].sort((a, b) => b.members - a.members);
+}
+
 const FALLBACK_SERVERS: TrustedServerItem[] = [
   { id: 'germanclan', name: 'GermanClan', members: 334706, iconUrl: null, verified: true },
   { id: 'auroners', name: 'AURONERS', members: 320374, iconUrl: null, verified: true },
@@ -66,7 +70,7 @@ export function TrustedServers() {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
   const [guildCount, setGuildCount] = useState(FALLBACK_COUNT);
-  const [servers, setServers] = useState<TrustedServerItem[]>(FALLBACK_SERVERS);
+  const [servers, setServers] = useState(() => sortTrustedServers(FALLBACK_SERVERS));
 
   useEffect(() => {
     fetch('/api/stats')
@@ -95,7 +99,7 @@ export function TrustedServers() {
           .slice(0, MAX_VISIBLE_SERVERS);
 
         if (top.length > 0) {
-          setServers(top);
+          setServers(sortTrustedServers(top));
         }
       })
       .catch(() => null);

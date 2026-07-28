@@ -1,20 +1,78 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight, Crown, Sparkles } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 
-const rankingData = [
-  { rank: 1, name: 'User1', score: 1234567, crown: true },
-  { rank: 2, name: 'User2', score: 987654, crown: false },
-  { rank: 3, name: 'User3', score: 567890, crown: false },
-  { rank: 4, name: 'User4', score: 345678, crown: false },
-  { rank: 5, name: 'User5', score: 123456, crown: false },
-];
+interface RankingApiItem {
+  rank?: number;
+  name?: string;
+  score?: number;
+}
+
+interface RankingApiResponse {
+  items?: RankingApiItem[];
+}
 
 export function Currency() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const [rankingApi, setRankingApi] = useState<Array<{ name: string; score: number }>>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRanking() {
+      try {
+        const ac = new AbortController();
+        const timer = window.setTimeout(() => ac.abort(), 5000);
+        const response = await fetch('/api/economy/global-ranking?limit=5', {
+          cache: 'no-store',
+          signal: ac.signal,
+        });
+        window.clearTimeout(timer);
+
+        if (!response.ok) throw new Error(`ranking_status_${response.status}`);
+
+        const json = (await response.json()) as RankingApiResponse;
+        const items = Array.isArray(json?.items) ? json.items : [];
+
+        const normalized = items
+          .map((item) => ({
+            name: String(item?.name ?? '').trim(),
+            score: Number(item?.score ?? 0),
+          }))
+          .filter((item) => item.name && Number.isFinite(item.score) && item.score >= 0);
+
+        if (!cancelled) {
+          setRankingApi(normalized);
+        }
+      } catch {
+        if (!cancelled) {
+          setRankingApi([]);
+        }
+      }
+    }
+
+    void loadRanking();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const rankingList = useMemo(
+    () =>
+      [...rankingApi]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5)
+        .map((user, index) => ({ ...user, rank: index + 1 })),
+    [rankingApi]
+  );
+
+  const scoreFormatter = useMemo(
+    () => new Intl.NumberFormat(language === 'es' ? 'es-ES' : 'en-US'),
+    [language]
+  );
 
   return (
     <section id="currency" ref={sectionRef} className="py-20">
@@ -36,7 +94,7 @@ export function Currency() {
               </div>
 
               <div className="space-y-3">
-                {rankingData.map((user, index) => (
+                {rankingList.map((user, index) => (
                   <motion.div
                     key={user.rank}
                     initial={{ opacity: 0, x: -20 }}
@@ -53,13 +111,13 @@ export function Currency() {
                         user.rank === 1
                           ? 'bg-amber-400 text-white'
                           : user.rank === 2
-                          ? 'bg-muted text-muted-foreground'
+                          ? 'bg-slate-300 text-slate-800 dark:bg-slate-500 dark:text-slate-100'
                           : user.rank === 3
-                          ? 'bg-amber-600 text-white'
+                          ? 'bg-amber-700 text-amber-50 dark:bg-amber-800 dark:text-amber-100'
                           : 'bg-muted/70 text-muted-foreground'
                       }`}
                     >
-                      {user.rank === 1 ? (
+                      {user.rank <= 3 ? (
                         <Crown className="w-4 h-4" />
                       ) : (
                         user.rank
@@ -71,11 +129,17 @@ export function Currency() {
                     <div className="flex items-center gap-1 text-pink-500">
                       <Sparkles className="w-4 h-4" />
                       <span className="font-semibold">
-                        {user.score.toLocaleString()}
+                        {scoreFormatter.format(user.score)}
                       </span>
                     </div>
                   </motion.div>
                 ))}
+
+                {rankingList.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-border/70 bg-muted/20 px-4 py-6 text-center text-sm text-muted-foreground">
+                    {t('currency.emptyRanking')}
+                  </div>
+                ) : null}
               </div>
             </div>
           </motion.div>

@@ -1,13 +1,65 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { DiscordMockup, DiscordMessage, DiscordEmbed } from '@/components/DiscordMockup';
 import { useI18n } from '@/lib/i18n';
 
+interface GuildListItem {
+  memberCount?: number;
+}
+
+interface GuildsResponse {
+  items?: GuildListItem[];
+}
+
 export function WelcomeMessages() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
+  const [memberTotal, setMemberTotal] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadMemberTotal() {
+      try {
+        const ac = new AbortController();
+        const timer = window.setTimeout(() => ac.abort(), 5000);
+        const response = await fetch('/api/guilds', {
+          cache: 'no-store',
+          signal: ac.signal,
+        });
+        window.clearTimeout(timer);
+
+        if (!response.ok) throw new Error(`guilds_status_${response.status}`);
+
+        const json = (await response.json()) as GuildsResponse;
+        const items = Array.isArray(json?.items) ? json.items : [];
+        const total = items.reduce((acc, item) => {
+          const count = Number(item?.memberCount ?? 0);
+          return acc + (Number.isFinite(count) && count > 0 ? count : 0);
+        }, 0);
+
+        if (!cancelled) {
+          setMemberTotal(total);
+        }
+      } catch {
+        if (!cancelled) {
+          setMemberTotal(null);
+        }
+      }
+    }
+
+    void loadMemberTotal();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const formattedMembers = useMemo(() => {
+    if (memberTotal === null) return '...';
+    return new Intl.NumberFormat(language).format(memberTotal);
+  }, [language, memberTotal]);
 
   return (
     <section id="welcome" ref={sectionRef} className="py-20">
@@ -23,13 +75,13 @@ export function WelcomeMessages() {
               <DiscordMessage username="Moxi" app>
                 <DiscordEmbed>
                   <div className="space-y-2">
-                    <p className="text-[#dcddde] text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {t('welcomeMessages.mockup.line1')}
                     </p>
-                    <p className="text-[#dcddde] text-sm">
+                    <p className="text-muted-foreground text-sm">
                       {t('welcomeMessages.mockup.line2Prefix')}{' '}
-                      <span className="text-[#00b0f4]">@User</span>! {t('welcomeMessages.mockup.line2Middle')}{' '}
-                      <span className="font-bold">1,000</span> {t('welcomeMessages.mockup.line2Suffix')}
+                      <span className="text-primary">@User</span>! {t('welcomeMessages.mockup.line2Middle')}{' '}
+                      <span className="font-bold">{formattedMembers}</span> {t('welcomeMessages.mockup.line2Suffix')}
                     </p>
                   </div>
                 </DiscordEmbed>

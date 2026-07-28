@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { Link } from 'react-router-dom';
 import { getLocalizedPath } from '@/lib/routing';
+import { useAuth } from '@/hooks/use-auth';
 
 type Subcommand = {
   name: string;
@@ -184,6 +185,7 @@ function renderMarkdownLite(text: string) {
 
 export function CommandPlayground() {
   const { t, language } = useI18n();
+  const { guilds } = useAuth();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: '-120px' });
 
@@ -307,6 +309,17 @@ export function CommandPlayground() {
     if (!preview?.matched) return null;
     return preview.job ?? null;
   }, [preview]);
+
+  const previewServerTag = useMemo(() => {
+    const preferredGuild = guilds.find((g) => g.hasBot && g.serverTag) ?? guilds.find((g) => g.serverTag);
+    const raw = preferredGuild?.serverTag;
+    if (!raw || typeof raw !== 'string') return null;
+
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+
+    return trimmed.slice(0, 4);
+  }, [guilds]);
 
   const previewUi = previewJob?.ui;
 
@@ -465,16 +478,17 @@ export function CommandPlayground() {
             transition={{ duration: 0.5, delay: 0.05 }}
             className="relative"
           >
-            <DiscordMockup className="shadow-sm bg-gradient-to-br from-[#22122f] via-[#1c1630] to-[#121826]">
+            <DiscordMockup className="shadow-sm">
               <div className="space-y-4">
                 <DiscordMessage
                   username="Nini"
                   avatar="/nini.png"
-                  nameClassName="font-semibold text-white"
-                  tag="WUUWA"
+                  nameClassName="font-semibold text-amber-400 dark:text-amber-300"
+                  tag={previewServerTag ?? undefined}
+                  tagClassName="px-1.5 py-0.5 rounded bg-neutral-800/90 text-neutral-100 border border-neutral-700 text-[10px] font-medium"
                   timestamp="19:01"
                 >
-                  <div className="text-[#dcddde] text-sm font-medium">{niniText}</div>
+                  <div className="text-muted-foreground text-sm font-medium">{niniText}</div>
                 </DiscordMessage>
 
                 <DiscordMessage username="Moxi" app timestamp="19:01">
@@ -483,7 +497,7 @@ export function CommandPlayground() {
                       {previewUi.components.map((comp, idx) => renderUiComponent(comp, idx))}
                     </div>
                   ) : (
-                    <div className="text-[#dcddde] text-sm">
+                    <div className="text-muted-foreground text-sm">
                       {t('commandPlayground.noPreview')}
                     </div>
                   )}
