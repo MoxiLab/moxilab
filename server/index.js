@@ -21,6 +21,8 @@ const DB_OVERRIDE = process.env.MONGODB_DB;
 const COMMANDS_COLLECTION = process.env.MONGODB_COMMANDS_COLLECTION ?? 'commands';
 const PLAYGROUND_JOBS_COLLECTION =
   process.env.MONGODB_PLAYGROUND_JOBS_COLLECTION ?? 'playground_jobs';
+const ECONOMY_COLLECTION = process.env.MONGODB_ECONOMY_COLLECTION ?? 'economies';
+const USERS_COLLECTION = process.env.MONGODB_USERS_COLLECTION ?? 'users';
 const LOGS_DASHBOARD_KEY = (process.env.LOGS_DASHBOARD_KEY ?? '').trim();
 const DISCORD_CLIENT_ID = (process.env.DISCORD_CLIENT_ID ?? process.env.VITE_DISCORD_CLIENT_ID ?? '').trim();
 const DISCORD_CLIENT_SECRET = (process.env.DISCORD_CLIENT_SECRET ?? '').trim();
@@ -354,6 +356,77 @@ async function fetchBotJson(apiPath, timeoutMs = 4000) {
   return res.json();
 }
 
+function normalizeBotRankingItems(payload, limit) {
+  const rawItems = Array.isArray(payload?.items)
+    ? payload.items
+    : Array.isArray(payload?.data)
+      ? payload.data
+      : Array.isArray(payload)
+        ? payload
+        : [];
+
+  const normalized = rawItems
+    .map((item) => {
+      const userId = String(item?.userId ?? item?.userID ?? item?.id ?? '').trim();
+      const name = String(item?.name ?? item?.username ?? item?.user ?? '').trim();
+      const score = Number(
+        item?.score ??
+          item?.total ??
+          item?.money ??
+          item?.coins ??
+          item?.amount ??
+          item?.balance ??
+          0
+      );
+      const rank = Number(item?.rank ?? 0);
+
+      if (!Number.isFinite(score)) return null;
+
+      return {
+        userId,
+        name: name || (userId ? `User ${userId.slice(-4)}` : 'Unknown'),
+        score: Math.max(0, Math.floor(score)),
+        rank: Number.isFinite(rank) && rank > 0 ? Math.floor(rank) : 0,
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (a.rank > 0 && b.rank > 0) return a.rank - b.rank;
+      return b.score - a.score;
+    })
+    .slice(0, limit)
+    .map((item, index) => ({
+      ...item,
+      rank: item.rank > 0 ? item.rank : index + 1,
+    }));
+
+  return normalized;
+}
+
+async function fetchBotEconomyGlobalRanking(limit) {
+  const candidatePaths = [
+    `/api/economy/global-ranking?limit=${limit}`,
+    `/api/economy/global?limit=${limit}`,
+    `/api/economy/ranking?limit=${limit}`,
+    `/api/economy/leaderboard?limit=${limit}`,
+    `/api/economy/top?limit=${limit}`,
+  ];
+
+  for (const path of candidatePaths) {
+    try {
+      const payload = await fetchBotJson(path, 4000);
+      const items = normalizeBotRankingItems(payload, limit);
+      if (items.length > 0) {
+        return { endpoint: path, items };
+      }
+    } catch {
+      // noop: probar siguiente ruta candidata
+    }
+  }
+
+  return null;
+}
+
 const client = new MongoClient(MONGODB_URI, {
   maxPoolSize: 10,
   serverSelectionTimeoutMS: 5000,
@@ -378,6 +451,15 @@ async function getPlaygroundJobsCollection() {
   await connectPromise;
   const db = DB_OVERRIDE ? client.db(DB_OVERRIDE) : client.db();
   return db.collection(PLAYGROUND_JOBS_COLLECTION);
+}
+
+async function getCollectionByName(name) {
+  if (!connectPromise) {
+    connectPromise = client.connect();
+  }
+  await connectPromise;
+  const db = DB_OVERRIDE ? client.db(DB_OVERRIDE) : client.db();
+  return db.collection(name);
 }
 
 function clampInt(value, { min, max, fallback }) {
@@ -1239,6 +1321,115 @@ app.get('/api/guilds/:guildId/economy-settings', async (req, res) => {
   }
 });
 
+app.get('/api/economy/global-ranking', async (req, res) => {
+  const limit = clampInt(req.query.limit, { min: 3, max: 25, fallback: 5 });
+
+  try {
+    const botRanking = await fetchBotEconomyGlobalRanking(limit);
+    if (botRanking) {
+      return res.json({
+        source: 'bot',
+        endpoint: botRanking.endpoint,
+        count: botRanking.items.length,
+        items: botRanking.items,
+      });
+    }
+
+    const economiesCollection = await getCollectionByName(ECONOMY_COLLECTION);
+    const usersCollection = await getCollectionByName(USERS_COLLECTION);
+
+    const economyRows = await economiesCollection
+      .aggregate([
+        {
+          $project: {
+            userId: { $toString: '$userId' },
+            balance: {
+              $convert: {
+                input: '$balance',
+                to: 'double',
+                onError: 0,
+                onNull: 0,
+              },
+            },
+            bank: {
+              $convert: {
+                input: '$bank',
+                to: 'double',
+                onError: 0,
+                onNull: 0,
+              },
+            },
+            globalTotalXp: {
+              $convert: {
+                input: '$globalTotalXp',
+                to: 'double',
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+        },
+        {
+          $addFields: {
+            score: { $add: ['$balance', '$bank'] },
+          },
+        },
+        {
+          $sort: {
+            score: -1,
+            globalTotalXp: -1,
+            userId: 1,
+          },
+        },
+        { $limit: limit },
+      ])
+      .toArray();
+
+    const userIds = economyRows
+      .map((row) => String(row?.userId ?? '').trim())
+      .filter(Boolean);
+
+    const userDocs = userIds.length
+      ? await usersCollection
+          .find(
+            { userID: { $in: userIds } },
+            { projection: { userID: 1, username: 1, guildID: 1 } }
+          )
+          .toArray()
+      : [];
+
+    const usernameByUserId = new Map();
+    for (const doc of userDocs) {
+      const userId = String(doc?.userID ?? '').trim();
+      const username = String(doc?.username ?? '').trim();
+      if (!userId || !username) continue;
+
+      const existing = usernameByUserId.get(userId);
+      if (!existing || String(doc?.guildID ?? '').trim() === 'GLOBAL') {
+        usernameByUserId.set(userId, username);
+      }
+    }
+
+    const items = economyRows.map((row, index) => {
+      const userId = String(row?.userId ?? '').trim();
+      const scoreRaw = Number(row?.score ?? 0);
+      const safeScore = Number.isFinite(scoreRaw) ? Math.max(0, Math.floor(scoreRaw)) : 0;
+
+      return {
+        rank: index + 1,
+        userId,
+        name: usernameByUserId.get(userId) ?? `User ${userId.slice(-4) || '????'}`,
+        score: safeScore,
+      };
+    });
+
+    return res.json({ source: 'mongodb', collection: ECONOMY_COLLECTION, count: items.length, items });
+  } catch (err) {
+    logger.warn('api_economy_global_ranking_failed', { error: err?.message ?? String(err) });
+    return res.status(503).json({ error: 'No se pudo obtener el ranking global de economía.' });
+  }
+});
+
 app.put('/api/guilds/:guildId/economy-settings', async (req, res) => {
   const guildId = String(req.params.guildId ?? '').trim();
   const payload = req.body ?? {};
@@ -1503,12 +1694,24 @@ function mapUserGuilds(rawGuilds, botGuildIds) {
       const perms = BigInt(g.permissions ?? 0);
       return (perms & MANAGE_GUILD) === MANAGE_GUILD || (perms & ADMINISTRATOR) === ADMINISTRATOR;
     })
-    .map((g) => ({
-      id: String(g.id ?? ''),
-      name: String(g.name ?? ''),
-      icon: g.icon ?? null,
-      hasBot: botGuildIds.has(String(g.id ?? '')),
-    }))
+    .map((g) => {
+      const rawTag =
+        g?.serverTag ??
+        g?.server_tag ??
+        g?.primary_guild?.tag ??
+        g?.primaryGuild?.tag ??
+        null;
+
+      const normalizedTag = typeof rawTag === 'string' ? rawTag.trim() : '';
+
+      return {
+        id: String(g.id ?? ''),
+        name: String(g.name ?? ''),
+        icon: g.icon ?? null,
+        hasBot: botGuildIds.has(String(g.id ?? '')),
+        serverTag: normalizedTag || null,
+      };
+    })
     .sort((a, b) => Number(b.hasBot) - Number(a.hasBot));
 }
 
