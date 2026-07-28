@@ -106,7 +106,7 @@ export function MarketingLanding({
   finalAction,
 }: MarketingLandingProps) {
   return (
-    <main className="relative overflow-hidden bg-transparent pt-24 text-white">
+    <main className="sk-page-flow relative overflow-hidden bg-transparent pt-24 text-white">
       <div className="pointer-events-none absolute -right-28 top-24 h-72 w-72 rounded-[3rem] rotate-12 bg-pink-400/20 blur-3xl" />
       <div className="pointer-events-none absolute -left-28 top-[42%] h-80 w-80 rounded-[3rem] -rotate-6 bg-cyan-400/16 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 bottom-[8%] h-72 w-72 rounded-[3rem] rotate-6 bg-fuchsia-400/12 blur-3xl" />
