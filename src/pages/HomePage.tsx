@@ -13,19 +13,42 @@ import { FinalCTA } from '@/sections/FinalCTA';
 
 export function HomePage() {
   return (
-    <main className="bg-gradient-to-br from-[#1a1630] via-[#13192c] to-[#10263a]">
-      <Hero />
-      <TrustedBy />
-      <CommandPlayground />
-      <WelcomeMessages />
-      <Roleplay />
-      <Currency />
-      <Utilities />
-      <FeaturesGrid />
-      <TrustedServers />
-      <AIFeatures />
-      <WikiCTA />
-      <FinalCTA />
+    <main className="sk-shell bg-background text-foreground">
+      <div className="sk-paper" aria-hidden="true" />
+      <div className="sk-stage">
+        <section className="sk-panel sk-accent-peach">
+          <Hero />
+          <TrustedBy />
+        </section>
+
+        <section className="sk-panel sk-panel-right sk-accent-sky">
+          <CommandPlayground />
+        </section>
+
+        <section className="sk-panel sk-panel-left sk-accent-lime">
+          <WelcomeMessages />
+          <Roleplay />
+        </section>
+
+        <section className="sk-panel sk-panel-right sk-accent-rose">
+          <Currency />
+        </section>
+
+        <section className="sk-panel sk-panel-left sk-accent-sky">
+          <Utilities />
+          <FeaturesGrid />
+        </section>
+
+        <section className="sk-panel sk-panel-right sk-accent-lime">
+          <TrustedServers />
+          <AIFeatures />
+        </section>
+
+        <section className="sk-panel sk-accent-rose">
+          <WikiCTA />
+          <FinalCTA />
+        </section>
+      </div>
     </main>
   );
 }

@@ -196,7 +196,7 @@ export function ServerPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main className="sk-page-flow min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </main>
     );
@@ -204,7 +204,7 @@ export function ServerPage() {
 
   if (!guild) {
     return (
-      <main className="min-h-screen flex flex-col items-center justify-center gap-4 text-muted-foreground">
+      <main className="sk-page-flow min-h-screen flex flex-col items-center justify-center gap-4 text-muted-foreground">
         <p>{t('server.notFound')}</p>
         <Button variant="outline" asChild>
           <Link to={getLocalizedPath(language, 'dashboard')}><ChevronLeft className="w-4 h-4 mr-1" />{t('server.backToPanel')}</Link>
@@ -214,7 +214,7 @@ export function ServerPage() {
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="sk-page-flow min-h-screen">
       <div className="relative overflow-hidden pb-16 pt-32" style={bgTheme.containerStyle}>
         {/* Blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10">
