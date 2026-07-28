@@ -125,6 +125,7 @@ const translations = {
     currency: {
       title: 'Economia',
       ranking: 'Ranking global',
+      emptyRanking: 'Todavía no hay jugadores en el ranking global.',
       description1:
         'Moxi tiene un sistema global de economia completo que fomenta la interaccion entre los miembros del servidor.',
       description2:
@@ -388,7 +389,11 @@ const translations = {
       signingIn: 'Iniciando sesión…',
       refresh: 'Actualizar',
       logout: 'Cerrar sesión',
-      moxiActive: 'Moxi activo',
+      changeAvatar: 'Cambiar foto',
+      resetAvatar: 'Restaurar Discord',
+      avatarHint: 'La foto solo cambia dentro de Moxi y no modifica tu avatar de Discord.',
+      configurable: 'Servidores configurables',
+      moxiActive: 'Moxi está activo',
       serverSingular: 'servidor',
       serverPlural: 'servidores',
       canInvite: 'Puedes invitar Moxi',
@@ -541,6 +546,7 @@ const translations = {
     currency: {
       title: 'Currency',
       ranking: 'Global ranking',
+      emptyRanking: 'There are no players in the global ranking yet.',
       description1:
         'Moxi has a complete global currency system that encourages interaction between server members.',
       description2:
@@ -804,7 +810,11 @@ const translations = {
       signingIn: 'Signing in…',
       refresh: 'Refresh',
       logout: 'Log out',
-      moxiActive: 'Moxi active',
+      changeAvatar: 'Change photo',
+      resetAvatar: 'Restore Discord',
+      avatarHint: 'This photo only changes inside Moxi and does not modify your Discord avatar.',
+      configurable: 'Configurable servers',
+      moxiActive: 'Moxi is active',
       serverSingular: 'server',
       serverPlural: 'servers',
       canInvite: 'You can invite Moxi',
@@ -955,6 +965,7 @@ const translations = {
     currency: {
       title: '经济',
       ranking: '全球排行榜',
+      emptyRanking: '全球排行榜暂时还没有玩家。',
       description1: 'Moxi 拥有完整的全球经济系统，鼓励成员互动。',
       description2: '等级、余额、宠物、俱乐部、婚姻等。Moxi 的经济系统非常完整且有趣。',
       description3:
@@ -1184,6 +1195,10 @@ const translations = {
       signingIn: '登录中…',
       refresh: '刷新',
       logout: '退出登录',
+      changeAvatar: '更换头像',
+      resetAvatar: '恢复 Discord 头像',
+      avatarHint: '此头像仅在 Moxi 中显示，不会修改你的 Discord 头像。',
+      configurable: '可配置服务器',
       moxiActive: 'Moxi 已激活',
       serverSingular: '个服务器',
       serverPlural: '个服务器',
@@ -1336,6 +1351,7 @@ const translations = {
     currency: {
       title: '通貨',
       ranking: 'グローバルランキング',
+      emptyRanking: 'グローバルランキングには、まだプレイヤーがいません。',
       description1: 'Moxi にはメンバーの交流を促す完全なグローバル通貨システムがあります。',
       description2: 'レベル、残高、ペット、クラブ、結婚など。Moxi の通貨はとても充実しています。',
       description3:
@@ -1565,6 +1581,10 @@ const translations = {
       signingIn: 'ログイン中…',
       refresh: '更新',
       logout: 'ログアウト',
+      changeAvatar: '写真を変更',
+      resetAvatar: 'Discord に戻す',
+      avatarHint: 'この写真は Moxi 内のみで変更され、Discord のアバターは変更されません。',
+      configurable: '設定可能なサーバー',
       moxiActive: 'Moxi 稼働中',
       serverSingular: 'サーバー',
       serverPlural: 'サーバー',
@@ -1716,6 +1736,7 @@ const translations = {
     currency: {
       title: '경제',
       ranking: '글로벌 랭킹',
+      emptyRanking: '글로벌 랭킹에 아직 플레이어가 없습니다.',
       description1: 'Moxi는 서버 구성원 간의 상호작용을 장려하는 완전한 글로벌 경제 시스템을 갖추고 있습니다.',
       description2: '레벨, 잔액, 펫, 클럽, 결혼 등. Moxi의 경제는 매우 풍부하고 재미있습니다.',
       description3:
@@ -1945,6 +1966,10 @@ const translations = {
       signingIn: '로그인 중…',
       refresh: '새로고침',
       logout: '로그아웃',
+      changeAvatar: '사진 변경',
+      resetAvatar: 'Discord로 복원',
+      avatarHint: '이 사진은 Moxi 안에서만 변경되며 Discord 아바타는 바뀌지 않습니다.',
+      configurable: '설정 가능한 서버',
       moxiActive: 'Moxi 활성화',
       serverSingular: '개 서버',
       serverPlural: '개 서버',
